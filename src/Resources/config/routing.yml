@@ -1,0 +1,3 @@
+formmanager:
+  resource: "@AlnvContaoFormManagerBundle/Controller"
+  type: annotation

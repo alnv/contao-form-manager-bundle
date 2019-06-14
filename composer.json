@@ -1,0 +1,34 @@
+{
+  "name": "alnv/form-manager-bundle",
+  "type": "contao-bundle",
+  "license": "proprietary",
+  "autoload": {
+    "psr-4": {
+      "Alnv\\ContaoFormManagerBundle\\": "src/"
+    },
+    "classmap": [
+      "src/Resources/contao/"
+    ],
+    "exclude-from-classmap": [
+      "src/Resources/contao/dca/",
+      "src/Resources/contao/config/",
+      "src/Resources/contao/languages/"
+    ]
+  },
+  "require": {
+    "php":">=7.1",
+    "contao/core-bundle":"~4.4",
+    "sensio/framework-extra-bundle": "^5.2"
+  },
+  "config": {
+    "preferred-install": "dist"
+  },
+  "extra": {
+    "contao": {
+      "sources": {
+        "": "system/modules/contao-form-manager-bundle"
+      }
+    },
+    "contao-manager-plugin": "Alnv\\ContaoFormManagerBundle\\ContaoManager\\Plugin"
+  }
+}
