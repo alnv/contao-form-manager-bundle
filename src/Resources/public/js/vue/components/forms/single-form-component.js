@@ -19,7 +19,6 @@ const singleFormComponent = Vue.component( 'single-form', {
                             this['model'][ strName ] = objResponse.body[ strName ]['value'];
                         }
                     }
-                    console.log(this['components']);
                 }
             });
         },
