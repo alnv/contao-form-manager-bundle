@@ -1,4 +1,4 @@
-Vue.component( 'select-field', {
+Vue.component( 'checkbox-field', {
     data: function () {
         return {
             //
@@ -30,13 +30,10 @@ Vue.component( 'select-field', {
         }
     },
     template:
-    '<div class="field-component select">' +
+    '<div class="field-component checkbox">' +
         '<div class="field-component-container">' +
             '{{eval.label}}' +
-            '<select v-model="value">' +
-                '<option v-for="option in eval.options" :value="option.value">{{option.label}}</option>' +
-            '</select>' +
+            '<input type="checkbox" v-model="value">' +
         '</div>' +
     '</div>'
 });
-

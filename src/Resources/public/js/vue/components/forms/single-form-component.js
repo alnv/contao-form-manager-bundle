@@ -13,12 +13,15 @@ const singleFormComponent = Vue.component( 'single-form', {
                 }
             }).then( function ( objResponse ) {
                 if ( objResponse.body ) {
+                    console.log(objResponse.body);
+                    /*
                     this['components'] = objResponse.body;
                     for ( var strName in this['components'] ) {
                         if ( this['components'].hasOwnProperty( strName ) ) {
                             this['model'][ strName ] = objResponse.body[ strName ]['value'];
                         }
                     }
+                    */
                 }
             });
         },
@@ -40,6 +43,7 @@ const singleFormComponent = Vue.component( 'single-form', {
             default: []
         }
     },
+    // @todo impl palettes handler
     template:
     '<div class="form-component">' +
         '<div class="form-component-container">' +

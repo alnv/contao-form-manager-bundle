@@ -1,4 +1,4 @@
-Vue.component( 'select-field', {
+Vue.component( 'textarea-field', {
     data: function () {
         return {
             //
@@ -30,13 +30,10 @@ Vue.component( 'select-field', {
         }
     },
     template:
-    '<div class="field-component select">' +
+    '<div class="field-component textarea">' +
         '<div class="field-component-container">' +
             '{{eval.label}}' +
-            '<select v-model="value">' +
-                '<option v-for="option in eval.options" :value="option.value">{{option.label}}</option>' +
-            '</select>' +
+            '<textarea v-model="value"></textarea>' +
         '</div>' +
     '</div>'
 });
-

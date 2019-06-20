@@ -31,9 +31,12 @@ class FormController extends Controller {
             $arrFields = \Input::get('fields');
         }
 
-        $objDcaFormResolver = new DcaFormResolver( $table, $arrFields );
+        $objDcaFormResolver = new DcaFormResolver( $table, [
+
+            'fields' => $arrFields
+        ]);
         header('Content-Type: application/json');
-        echo json_encode( $objDcaFormResolver->getFields(), 512 );
+        echo json_encode( $objDcaFormResolver->getPalette(), 512 );
         exit;
     }
 }

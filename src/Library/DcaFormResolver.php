@@ -9,62 +9,45 @@ class DcaFormResolver {
 
 
     protected $strTable = null;
-    protected $arrFields = [];
+    protected $arrPalette = [];
 
 
-    public function __construct( $strTable, $arrFields = [] ) {
-
-        \Controller::loadDataContainer( $strTable );
-
-        if ( !isset( $GLOBALS['TL_DCA'][ $strTable ] ) ) {
-
-            return null;
-        }
-
-        if ( !isset( $GLOBALS['TL_DCA'][ $strTable ]['fields'] ) || !is_array( $GLOBALS['TL_DCA'][ $strTable ]['fields'] ) ) {
-
-            return null;
-        }
-
-        if ( empty( $arrFields ) ) {
-
-            $arrFields = array_keys( $GLOBALS['TL_DCA'][ $strTable ]['fields'] );
-        }
-
-        foreach ( $arrFields as $strField ) {
-
-            $arrField = $GLOBALS['TL_DCA'][ $strTable ]['fields'][ $strField ];
-
-            if ( !$arrField ) {
-
-                continue;
-            }
-
-            $this->arrFields[ $strField ] = $arrField;
-        }
+    public function __construct( $strTable, $arrOptions = [] ) {
 
         $this->strTable = $strTable;
+        $this->setOptions( $arrOptions );
     }
 
 
-    public function getFields() {
+    public function getPalette() {
 
-        $arrFields = [];
+        $arrPalettes = [];
 
-        foreach ( $this->arrFields as $strFieldname => $arrField ) {
+        foreach ( $this->arrPalette as $strPalette => $arrPalette ) {
 
-            $arrAttributes = $this->parseAttributes( $strFieldname, $arrField );
+            $objPalette = new \stdClass();
+            $objPalette->label = '';
+            $objPalette->fields = [];
+            $objPalette->name = $strPalette ?: '';
+            $objPalette->hide = $arrPalette['blnHide'];
 
-            if ( !$arrAttributes ) {
+            foreach ( $arrPalette['arrFields'] as $arrFieldname ) {
 
-                continue;
+                $arrAttributes = $this->parseAttributes( $arrFieldname, $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $arrFieldname ] );
+
+                if ( !$arrAttributes ) {
+
+                    continue;
+                }
+
+                $arrAttributes['component'] = Toolkit::convertTypeToComponent( $arrAttributes['type'], $arrAttributes['rgxp'] );
+                $objPalette->fields[ $arrFieldname ] = $arrAttributes;
             }
 
-            $arrAttributes['component'] = Toolkit::convertTypeToComponent( $arrAttributes['type'], $arrAttributes['rgxp'] );
-            $arrFields[ $strFieldname ] = $arrAttributes;
+            $arrPalettes[] = $objPalette;
         }
 
-        return $arrFields;
+        return $arrPalettes;
     }
 
 
@@ -78,5 +61,18 @@ class DcaFormResolver {
         }
 
         return $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
+    }
+
+
+    protected function setOptions( $arrOptions ) {
+
+        \Controller::loadDataContainer( $this->strTable );
+
+        if ( !isset( $GLOBALS['TL_DCA'][ $this->strTable ] ) ) {
+
+            return null;
+        }
+
+        $this->arrPalette = Toolkit::extractPaletteToArray( $GLOBALS['TL_DCA'][ $this->strTable ]['palettes']['default'], $arrOptions['fields'] );
     }
 }

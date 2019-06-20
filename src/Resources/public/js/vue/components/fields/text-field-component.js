@@ -30,8 +30,9 @@ Vue.component( 'text-field', {
         }
     },
     template:
-    '<div class="field-component">' +
+    '<div class="field-component text">' +
         '<div class="field-component-container">' +
+            '{{eval.label}}' +
             '<input type="text" v-model="value">' +
         '</div>' +
     '</div>'
