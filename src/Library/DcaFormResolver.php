@@ -2,6 +2,8 @@
 
 namespace Alnv\ContaoFormManagerBundle\Library;
 
+use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
+
 
 class DcaFormResolver {
 
@@ -58,6 +60,7 @@ class DcaFormResolver {
                 continue;
             }
 
+            $arrAttributes['component'] = Toolkit::convertTypeToComponent( $arrAttributes['type'], $arrAttributes['rgxp'] );
             $arrFields[ $strFieldname ] = $arrAttributes;
         }
 

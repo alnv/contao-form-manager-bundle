@@ -26,9 +26,9 @@ class FormController extends Controller {
         $arrFields = [];
         $this->container->get( 'contao.framework' )->initialize();
 
-        if ( \Input::get('field') !== null && is_array( \Input::get('field') ) ) {
+        if ( \Input::get('fields') !== null && is_array( \Input::get('fields') ) ) {
 
-            $arrFields = \Input::get('field');
+            $arrFields = \Input::get('fields');
         }
 
         $objDcaFormResolver = new DcaFormResolver( $table, $arrFields );
