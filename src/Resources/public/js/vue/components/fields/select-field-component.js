@@ -10,6 +10,9 @@ Vue.component( 'select-field', {
     watch: {
         value: function() {
             this.$emit( 'input', this.value );
+            if ( this.eval.submitOnChange ) {
+                this.$parent.submitOnChange( this.value, this.name )
+            }
         }
     },
     props: {
@@ -20,11 +23,11 @@ Vue.component( 'select-field', {
         },
         name: {
             default: '',
-            type: Object,
+            type: String,
             required: true
         },
         value: {
-            type: Object,
+            type: Object|Array,
             default: null,
             required: false
         }

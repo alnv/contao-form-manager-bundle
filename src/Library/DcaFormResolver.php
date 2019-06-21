@@ -19,7 +19,17 @@ class DcaFormResolver {
     }
 
 
-    public function getPalette() {
+    public function getForm() {
+
+        return [
+
+            'palettes' => $this->getPalette(),
+            'subPalettes' => $GLOBALS['TL_DCA'][ $this->strTable ]['palettes']['__selector__'] ?: []
+        ];
+    }
+
+
+    protected function getPalette() {
 
         $arrPalettes = [];
 
@@ -66,6 +76,7 @@ class DcaFormResolver {
 
     protected function setOptions( $arrOptions ) {
 
+        \System::loadLanguageFile( $this->strTable );
         \Controller::loadDataContainer( $this->strTable );
 
         if ( !isset( $GLOBALS['TL_DCA'][ $this->strTable ] ) ) {
@@ -73,6 +84,23 @@ class DcaFormResolver {
             return null;
         }
 
-        $this->arrPalette = Toolkit::extractPaletteToArray( $GLOBALS['TL_DCA'][ $this->strTable ]['palettes']['default'], $arrOptions['fields'] );
+        $arrSubPalettes = [];
+        $strType = $arrOptions['type'] ?: 'default';
+
+        if ( is_array( $arrOptions['subPalettes'] ) && !empty( $arrOptions['subPalettes'] ) ) {
+
+            foreach ( $arrOptions['subPalettes'] as $arrSubPalettesNames ) {
+
+                foreach ( $arrSubPalettesNames as $strSubPalette ) {
+
+                    if ( isset( $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strSubPalette ] ) )  {
+
+                        $arrSubPalettes[ $strSubPalette ] = $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strSubPalette ];
+                    }
+                }
+            }
+        }
+
+        $this->arrPalette = Toolkit::extractPaletteToArray( $GLOBALS['TL_DCA'][ $this->strTable ]['palettes'][ $strType ], $arrSubPalettes );
     }
 }

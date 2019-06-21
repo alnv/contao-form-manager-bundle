@@ -10,6 +10,9 @@ Vue.component( 'checkbox-field', {
     watch: {
         value: function() {
             this.$emit( 'input', this.value );
+            if ( this.eval.submitOnChange ) {
+                this.$parent.submitOnChange( this.value, this.name )
+            }
         }
     },
     props: {
@@ -19,21 +22,19 @@ Vue.component( 'checkbox-field', {
             required: true
         },
         name: {
-            default: '',
-            type: Object,
+            type: String,
             required: true
         },
         value: {
-            type: Object,
             default: null,
-            required: false
+            type: String|Array
         }
     },
     template:
     '<div class="field-component checkbox">' +
         '<div class="field-component-container">' +
             '{{eval.label}}' +
-            '<input type="checkbox" v-model="value">' +
+            '<input type="checkbox" v-model="value" true-value="1" false-value="">' +
         '</div>' +
     '</div>'
 });

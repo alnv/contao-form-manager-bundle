@@ -1,4 +1,4 @@
-Vue.component( 'radio-field', {
+Vue.component( 'date-field', {
     data: function () {
         return {
             //
@@ -10,9 +10,6 @@ Vue.component( 'radio-field', {
     watch: {
         value: function() {
             this.$emit( 'input', this.value );
-            if ( this.eval.submitOnChange ) {
-                this.$parent.submitOnChange( this.value, this.name )
-            }
         }
     },
     props: {
@@ -27,15 +24,17 @@ Vue.component( 'radio-field', {
             required: true
         },
         value: {
-            type: String,
-            default: null
+            type: Object,
+            default: null,
+            required: false
         }
     },
     template:
-    '<div class="field-component radio">' +
+    '<div class="field-component date">' +
         '<div class="field-component-container">' +
             '{{eval.label}}' +
-            '<input type="radio" v-model="value">' +
+            '<input type="date" v-model="value">' +
         '</div>' +
     '</div>'
 });
+
