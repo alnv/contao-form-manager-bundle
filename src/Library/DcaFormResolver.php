@@ -8,6 +8,7 @@ use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 class DcaFormResolver {
 
 
+    protected $arrOptions = [];
     protected $strTable = null;
     protected $arrPalette = [];
 
@@ -15,17 +16,59 @@ class DcaFormResolver {
     public function __construct( $strTable, $arrOptions = [] ) {
 
         $this->strTable = $strTable;
-        $this->setOptions( $arrOptions );
+        $this->arrOptions = $arrOptions;
+        \Controller::loadDataContainer( $strTable );
+        \System::loadLanguageFile( $strTable, $arrOptions['language'] );
     }
 
 
     public function getForm() {
 
-        return [
+        $arrForm = [
 
-            'palettes' => $this->getPalette(),
-            'subPalettes' => $GLOBALS['TL_DCA'][ $this->strTable ]['palettes']['__selector__'] ?: []
+            'palettes' => [],
+            'subPalettes' => []
         ];
+
+        if ( !$GLOBALS['TL_DCA'][ $this->strTable ] ) {
+
+            return $arrForm;
+        }
+
+        if ( !$this->arrOptions['subPalettes'] ) {
+
+            $this->arrOptions['subPalettes'] = [];
+        }
+
+        $arrSubSelectors = $GLOBALS['TL_DCA'][ $this->strTable ]['palettes']['__selector__'];
+
+        if ( !empty( $arrSubSelectors ) && is_array( $arrSubSelectors ) ) {
+
+            foreach ( $arrSubSelectors as $strFieldname ) {
+
+                if ( $strFieldname == 'type' ) {
+
+                    // set default only on initialize
+                    if ( !isset( $this->arrOptions['type'] ) ) {
+
+                        $this->arrOptions['type'] = $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $strFieldname ]['default'];
+                    }
+
+                    continue;
+                }
+
+                if ( !in_array( $strFieldname, $this->arrOptions['subPalettes'] ) && $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $strFieldname ]['default'] ) {
+
+                    $this->arrOptions['subPalettes'][] = [ $strFieldname, $strFieldname . '_' . $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $strFieldname ]['default'] ];
+                }
+            }
+        }
+
+        $this->extractPalette();
+        $arrForm['palettes'] = $this->getPalette();
+        $arrForm['subPalettes'] = $GLOBALS['TL_DCA'][ $this->strTable ]['palettes']['__selector__'];
+
+        return $arrForm;
     }
 
 
@@ -41,17 +84,16 @@ class DcaFormResolver {
             $objPalette->name = $strPalette ?: '';
             $objPalette->hide = $arrPalette['blnHide'];
 
-            foreach ( $arrPalette['arrFields'] as $arrFieldname ) {
+            foreach ( $arrPalette['arrFields'] as $strFieldname ) {
 
-                $arrAttributes = $this->parseAttributes( $arrFieldname, $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $arrFieldname ] );
+                $arrAttributes = $this->parseAttributes( $strFieldname, $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $strFieldname ] );
 
                 if ( !$arrAttributes ) {
 
                     continue;
                 }
 
-                $arrAttributes['component'] = Toolkit::convertTypeToComponent( $arrAttributes['type'], $arrAttributes['rgxp'] );
-                $objPalette->fields[ $arrFieldname ] = $arrAttributes;
+                $objPalette->fields[ $strFieldname ] = $arrAttributes;
             }
 
             $arrPalettes[] = $objPalette;
@@ -70,26 +112,21 @@ class DcaFormResolver {
             return null;
         }
 
-        return $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
+        $arrAttributes = $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
+        $arrAttributes['component'] = Toolkit::convertTypeToComponent( $arrAttributes['type'], $arrAttributes['rgxp'] );
+
+        return $arrAttributes;
     }
 
 
-    protected function setOptions( $arrOptions ) {
-
-        \System::loadLanguageFile( $this->strTable );
-        \Controller::loadDataContainer( $this->strTable );
-
-        if ( !isset( $GLOBALS['TL_DCA'][ $this->strTable ] ) ) {
-
-            return null;
-        }
+    protected function extractPalette() {
 
         $arrSubPalettes = [];
-        $strType = $arrOptions['type'] ?: 'default';
+        $strType = $this->arrOptions['type'] ?: 'default';
 
-        if ( is_array( $arrOptions['subPalettes'] ) && !empty( $arrOptions['subPalettes'] ) ) {
+        if ( is_array( $this->arrOptions['subPalettes'] ) && !empty( $this->arrOptions['subPalettes'] ) ) {
 
-            foreach ( $arrOptions['subPalettes'] as $arrSubPalettesNames ) {
+            foreach ( $this->arrOptions['subPalettes'] as $arrSubPalettesNames ) {
 
                 foreach ( $arrSubPalettesNames as $strSubPalette ) {
 

@@ -20,7 +20,9 @@ const singleFormComponent = Vue.component( 'single-form', {
                     for ( var i = 0; i < objResponse.body.palettes.length; i++ ) {
                         for ( var strFieldname in objResponse.body.palettes[i].fields ) {
                             if ( objResponse.body.palettes[i].fields.hasOwnProperty( strFieldname ) ) {
-                                this.model[ strFieldname ] = this.model[ strFieldname ] || objResponse.body.palettes[i].fields[ strFieldname ]['value'];
+                                if ( !this.model.hasOwnProperty( strFieldname ) ) {
+                                    this.model[ strFieldname ] = this.model[ strFieldname ] || objResponse.body.palettes[i].fields[ strFieldname ]['value'];
+                                }
                             }
                         }
                     }
@@ -28,21 +30,25 @@ const singleFormComponent = Vue.component( 'single-form', {
             });
         },
         submitOnChange: function ( strValue, strName ) {
+            if ( this.setSubPalettes( strValue, strName ) ) {
+                this.fetch();
+            }
+        },
+        setSubPalettes: function ( strValue, strName ) {
             if ( this.subPalettes.indexOf( strName ) !== -1 ) {
                 if ( strName === 'type' ) {
                     this.type = strValue;
-                    this.fetch();
-                    return null;
+                    return true;
                 }
                 if ( strValue ) {
                     this.activeSubPalettes[ strName ] = [ strName, strName + '_' + strValue ];
-                    this.fetch();
                 }
                 else {
                     delete this.activeSubPalettes[ strName ];
-                    this.fetch();
                 }
+                return true;
             }
+            return false;
         },
         onSubmit: function () {
             console.log( this.model );

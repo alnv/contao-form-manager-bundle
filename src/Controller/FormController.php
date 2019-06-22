@@ -23,22 +23,23 @@ class FormController extends Controller {
      */
     public function getProduct( $table ) {
 
-        $arrSubPalettes = [];
         $this->container->get( 'contao.framework' )->initialize();
+        $arrOptions = [];
+
+        if ( \Input::get('type') != '' || \Input::get('type') != null ) {
+
+            $arrOptions['type'] = \Input::get('type');
+        }
 
         if ( \Input::get('subPalettes') !== null && is_array( \Input::get('subPalettes') ) ) {
 
-            $arrSubPalettes = \Input::get('subPalettes');
+            $arrOptions['subPalettes'] = \Input::get('subPalettes');
         }
 
-        $objDcaFormResolver = new DcaFormResolver( $table, [
-
-            'type' => \Input::get('type'),
-            'subPalettes' => $arrSubPalettes
-        ]);
+        $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
 
         header('Content-Type: application/json');
-        //echo json_encode( $objDcaFormResolver->getForm(), 512 );
+        echo json_encode( $objDcaFormResolver->getForm(), 512 );
         exit;
     }
 }
