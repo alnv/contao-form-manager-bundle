@@ -17,6 +17,7 @@ class DcaFormResolver {
 
         $this->strTable = $strTable;
         $this->arrOptions = $arrOptions;
+
         \Controller::loadDataContainer( $strTable );
         \System::loadLanguageFile( $strTable, $arrOptions['language'] );
     }
@@ -49,9 +50,9 @@ class DcaFormResolver {
                 if ( $strFieldname == 'type' ) {
 
                     // set default only on initialize
-                    if ( !isset( $this->arrOptions['type'] ) ) {
+                    if ( $this->arrOptions['initialized'] === false ) {
 
-                        $this->arrOptions['type'] = $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $strFieldname ]['default'];
+                        $this->arrOptions['type'] = $GLOBALS['TL_DCA'][ $this->strTable ]['fields']['type']['default'];
                     }
 
                     continue;
@@ -66,6 +67,7 @@ class DcaFormResolver {
 
         $this->extractPalette();
         $arrForm['palettes'] = $this->getPalette();
+        $arrForm['type'] = $this->arrOptions['type'];
         $arrForm['subPalettes'] = $GLOBALS['TL_DCA'][ $this->strTable ]['palettes']['__selector__'];
 
         return $arrForm;
@@ -93,7 +95,7 @@ class DcaFormResolver {
                     continue;
                 }
 
-                $objPalette->fields[ $strFieldname ] = $arrAttributes;
+                $objPalette->fields[] = $arrAttributes;
             }
 
             $arrPalettes[] = $objPalette;

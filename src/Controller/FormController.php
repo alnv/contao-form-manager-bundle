@@ -3,6 +3,7 @@
 namespace Alnv\ContaoFormManagerBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
+use Alnv\ContaoFormManagerBundle\Library\FormResolver;
 use Alnv\ContaoFormManagerBundle\Library\DcaFormResolver;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -18,28 +19,36 @@ class FormController extends Controller {
 
     /**
      *
-     * @Route("/getForm/{table}", name="getFormByTable")
+     * @Route("/getDcForm/{table}", name="getDcFormByTable")
      * @Method({"GET"})
      */
-    public function getProduct( $table ) {
-
+    public function getDcFormByTable( $table ) {
         $this->container->get( 'contao.framework' )->initialize();
-        $arrOptions = [];
-
-        if ( \Input::get('type') != '' || \Input::get('type') != null ) {
-
-            $arrOptions['type'] = \Input::get('type');
-        }
-
+        $arrOptions = [
+            'type' => \Input::get('type') ?: '',
+            'initialized' => \Input::get('initialized') === 'true'
+        ];
         if ( \Input::get('subPalettes') !== null && is_array( \Input::get('subPalettes') ) ) {
-
             $arrOptions['subPalettes'] = \Input::get('subPalettes');
         }
-
         $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
-
         header('Content-Type: application/json');
         echo json_encode( $objDcaFormResolver->getForm(), 512 );
+        exit;
+    }
+
+
+    /**
+     *
+     * @Route("/getForm/{id}", name="getFormById")
+     * @Method({"GET"})
+     */
+    public function getFormByTable( $id ) {
+
+        $arrOptions = [];
+        $objFormResolver = new FormResolver( $id, $arrOptions );
+        header('Content-Type: application/json');
+        echo json_encode( $objFormResolver->getForm(), 512 );
         exit;
     }
 }

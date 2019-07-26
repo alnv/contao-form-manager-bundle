@@ -35,7 +35,7 @@ Vue.component( 'select-field', {
     template:
     '<div class="field-component select">' +
         '<div class="field-component-container">' +
-            '{{eval.label}}' +
+            '<label>{{ eval.label }}</label>' +
             '<select v-model="value">' +
                 '<option v-for="option in eval.options" :value="option.value">{{option.label}}</option>' +
             '</select>' +
