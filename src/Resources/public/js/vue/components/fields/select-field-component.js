@@ -1,7 +1,7 @@
 Vue.component( 'select-field', {
     data: function () {
         return {
-            //
+            value: ''
         }
     },
     methods: {
@@ -11,7 +11,7 @@ Vue.component( 'select-field', {
         value: function() {
             this.$emit( 'input', this.value );
             if ( this.eval.submitOnChange ) {
-                this.$parent.submitOnChange( this.value, this.name )
+                this.$parent.submitOnChange( this.value, this.name, this.eval.isSelector )
             }
         }
     },
@@ -27,10 +27,13 @@ Vue.component( 'select-field', {
             required: true
         },
         value: {
-            type: Object|Array,
-            default: null,
-            required: false
+            default: '',
+            required: false,
+            type: Object|Array
         }
+    },
+    mounted: function () {
+        //
     },
     template:
     '<div class="field-component select">' +

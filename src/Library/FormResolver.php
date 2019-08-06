@@ -50,9 +50,7 @@ class FormResolver {
             $objPalette->fields[] = $arrAttributes;
         }
 
-        $arrForm['palettes'][] = $objPalette;
-
-        return $arrForm;
+        return [ $objPalette ];
     }
 
 

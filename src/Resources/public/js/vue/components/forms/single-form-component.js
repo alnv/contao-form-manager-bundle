@@ -33,9 +33,8 @@ var objInstances = {};
 const singleFormComponent = Vue.component( 'single-form', {
     data: function () {
         return {
-            activeSubPalettes: {},
             initialized: false,
-            subPalettes: [],
+            subpalettes: {},
             palettes: [],
             model: {},
             type: ''
@@ -47,27 +46,28 @@ const singleFormComponent = Vue.component( 'single-form', {
                 params: {
                     type: this.type,
                     initialized: this.initialized,
-                    subPalettes: this.activeSubPalettes
+                    subpalettes: this.subpalettes
                 }
-            }).then( function ( objResponse ) {
+            }).then(function ( objResponse ) {
                 if ( objResponse.body ) {
                     var objModel = {};
-                    this.subPalettes = objResponse.body.subPalettes;
-                    this.palettes = objResponse.body.palettes;
-                    this.type = objResponse.body.type;
-                    this.initialized = true;
-                    for ( var i = 0; i < objResponse.body.palettes.length; i++ ) {
-                        for ( var intKey in objResponse.body.palettes[i].fields ) {
-                            if ( objResponse.body.palettes[i].fields.hasOwnProperty( intKey ) ) {
-                                var strFieldname = objResponse.body.palettes[i].fields[ intKey ]['name'];
+                    for ( var i = 0; i < objResponse.body.length; i++ ) {
+                        for ( var intKey in objResponse.body[i].fields ) {
+                            if ( objResponse.body[i].fields.hasOwnProperty( intKey ) ) {
+                                var strFieldname = objResponse.body[i].fields[ intKey ]['name'];
                                 if ( !strFieldname ) {
                                     continue;
                                 }
-                                objModel[ strFieldname ] = this.model[ strFieldname ] || objResponse.body.palettes[i].fields[ intKey ]['value'];
+                                if ( strFieldname === 'type' ) {
+                                    this.type = objResponse.body[i].fields[ intKey ]['value'];
+                                }
+                                objModel[ strFieldname ] = this.model[ strFieldname ] || objResponse.body[i].fields[ intKey ]['value'];
                             }
                         }
                     }
                     this.model = objModel;
+                    this.initialized = true;
+                    this.palettes = objResponse.body;
                 }
             });
         },
@@ -81,26 +81,14 @@ const singleFormComponent = Vue.component( 'single-form', {
                     break;
             }
         },
-        submitOnChange: function ( strValue, strName ) {
-            if ( this.setSubPalettes( strValue, strName ) ) {
-                this.fetchBySource();
+        submitOnChange: function ( strValue, strName, blnIsSelector ) {
+            if ( strName === 'type' ) {
+                this.type = strValue;
             }
-        },
-        setSubPalettes: function ( strValue, strName ) {
-            if ( this.subPalettes.indexOf( strName ) !== -1 ) {
-                if ( strName === 'type' ) {
-                    this.type = strValue;
-                    return true;
-                }
-                if ( strValue ) {
-                    this.activeSubPalettes[ strName ] = [ strName, strName + '_' + strValue ];
-                }
-                else {
-                    delete this.activeSubPalettes[ strName ];
-                }
-                return true;
+            if ( blnIsSelector === true ) {
+                this.subpalettes[ strName ] = strName + '::' + strValue;
             }
-            return false;
+            this.fetchBySource();
         },
         onSubmit: function () {
             console.log( this.model );
@@ -109,9 +97,7 @@ const singleFormComponent = Vue.component( 'single-form', {
     watch: {
         id: function (newId, oldId) {
             objInstances[ oldId ] = {
-                activeSubPalettes: this.activeSubPalettes,
                 initialized: this.initialized,
-                subPalettes: this.subPalettes,
                 palettes: this.palettes,
                 model: this.model,
                 type: this.type

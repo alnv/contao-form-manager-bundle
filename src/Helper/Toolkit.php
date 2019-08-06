@@ -83,6 +83,7 @@ class Toolkit {
 
             if ( !empty( $arrSubFields ) ) {
 
+                $arrReturn = array_filter( $arrReturn );
                 $arrReturn = array_merge( $arrReturn, self::pluckSubPalettes( $arrSubFields, $arrSubPalettes ) );
             }
         }

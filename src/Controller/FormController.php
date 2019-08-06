@@ -28,8 +28,8 @@ class FormController extends Controller {
             'type' => \Input::get('type') ?: '',
             'initialized' => \Input::get('initialized') === 'true'
         ];
-        if ( \Input::get('subPalettes') !== null && is_array( \Input::get('subPalettes') ) ) {
-            $arrOptions['subPalettes'] = \Input::get('subPalettes');
+        if ( \Input::get('subpalettes') !== null && is_array( \Input::get('subpalettes') ) ) {
+            $arrOptions['subpalettes'] = \Input::get('subpalettes');
         }
         $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
         header('Content-Type: application/json');
