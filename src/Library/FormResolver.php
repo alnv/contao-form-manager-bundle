@@ -72,6 +72,7 @@ class FormResolver {
         }
 
         $arrReturn['component'] = Toolkit::convertTypeToComponent( $arrReturn['type'], $arrReturn['rgxp'] );
+        $arrReturn['value'] = Toolkit::convertValue( $arrReturn['value'], $arrReturn['type'], $arrReturn['rgxp'] );
 
         return $arrReturn;
     }

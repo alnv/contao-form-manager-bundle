@@ -29,6 +29,17 @@ class Toolkit {
     }
 
 
+    public static function convertValue( $strValue, $strType, $strRgxp = null ) {
+
+        if ( in_array( $strType, [ 'select', 'checkbox' ] ) && !is_array( $strValue ) ) {
+
+            return $strValue ? [ $strValue ] : [];
+        }
+
+        return $strValue;
+    }
+
+
     public static function extractPaletteToArray( $strPalette, $arrSubPalettes = [] ) {
 
         $arrPalette = [];
