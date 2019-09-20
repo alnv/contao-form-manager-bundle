@@ -65,6 +65,7 @@ const singleFormComponent = Vue.component( 'single-form', {
                             }
                         }
                     }
+
                     this.model = objModel;
                     this.initialized = true;
                     this.palettes = objResponse.body;
@@ -91,7 +92,15 @@ const singleFormComponent = Vue.component( 'single-form', {
             this.fetchBySource();
         },
         onSubmit: function () {
-            console.log( this.model );
+            // @todo
+        },
+        setInput: function () {
+            for ( var strFieldname in this.model ) {
+                if ( this.model.hasOwnProperty( strFieldname ) ) {
+                    this.$parent.shared[ strFieldname ] = this.model[ strFieldname ];
+                }
+            }
+            this.$parent.onChange( this );
         }
     },
     watch: {
@@ -135,7 +144,7 @@ const singleFormComponent = Vue.component( 'single-form', {
                     '<div class="palette" v-bind:class="palette.name">' +
                         '<div class="palette-container">' +
                             '<template v-for="field in palette.fields" v-if="field.component">' +
-                                '<component :is="field.component" :eval="field" :name="field.name" v-model="model[ field.name ]"></component>' +
+                                '<component :is="field.component" :eval="field" :name="field.name" v-model="model[ field.name ]" v-on:input="setInput"></component>' +
                             '</template>' +
                         '</div>' +
                     '</div>' +
