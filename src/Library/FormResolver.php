@@ -72,7 +72,13 @@ class FormResolver {
         }
 
         $arrReturn['component'] = Toolkit::convertTypeToComponent( $arrReturn['type'], $arrReturn['rgxp'] );
-        $arrReturn['value'] = Toolkit::convertValue( $arrReturn['value'], $arrReturn['type'], $arrReturn['rgxp'] );
+        $arrReturn['multiple'] = Toolkit::convertMultiple( $arrReturn['multiple'], $arrReturn );
+        $arrReturn['value'] = Toolkit::convertValue( $arrReturn['value'], $arrReturn );
+
+        if ( $arrReturn['name'] == 'simple' ) {
+
+            // $arrReturn['value'] = 'geli';
+        }
 
         return $arrReturn;
     }

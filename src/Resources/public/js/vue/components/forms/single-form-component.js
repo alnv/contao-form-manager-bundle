@@ -42,6 +42,7 @@ const singleFormComponent = Vue.component( 'single-form', {
     },
     methods: {
         fetch: function (strSource) {
+
             this.$http.get( '/form-manager/' + strSource + '/' + this.identifier, {
                 params: {
                     type: this.type,
@@ -118,6 +119,7 @@ const singleFormComponent = Vue.component( 'single-form', {
         }
     },
     mounted: function () {
+        this.disableSubmit = this.disableSubmit === 'true';
         this.fetchBySource();
     },
     props: {
@@ -134,6 +136,10 @@ const singleFormComponent = Vue.component( 'single-form', {
             type: String,
             default: null,
             required: true
+        },
+        disableSubmit: {
+            type: Boolean,
+            default: false
         }
     },
     template:
@@ -149,7 +155,7 @@ const singleFormComponent = Vue.component( 'single-form', {
                         '</div>' +
                     '</div>' +
                 '</template>' +
-                '<div class="form-buttons-container">' +
+                '<div v-if="!disableSubmit" class="form-buttons-container">' +
                     '<div class="form-submit">' +
                         '<button type="submit" class="submit">Senden</button>' +
                     '</div>' +

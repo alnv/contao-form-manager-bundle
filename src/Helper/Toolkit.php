@@ -29,14 +29,32 @@ class Toolkit {
     }
 
 
-    public static function convertValue( $strValue, $strType, $strRgxp = null ) {
+    public static function convertValue( $strValue, $arrField ) {
 
-        if ( in_array( $strType, [ 'select', 'checkbox' ] ) && !is_array( $strValue ) ) {
+        if ( $arrField['multiple'] ) {
+
+            if ( is_array( $strValue ) ) {
+
+                return $strValue;
+            }
 
             return $strValue ? [ $strValue ] : [];
         }
 
         return $strValue;
+    }
+
+
+    public static function convertMultiple( $varMultiple, $arrField ) {
+
+        $varMultiple = ( $varMultiple || $arrField['type'] == 'checkbox' ) ? true : false;
+
+        if ( $arrField['type'] == 'checkbox' && count( $arrField['options'] ) < 2 ) {
+
+            $varMultiple = false;
+        }
+
+        return $varMultiple;
     }
 
 

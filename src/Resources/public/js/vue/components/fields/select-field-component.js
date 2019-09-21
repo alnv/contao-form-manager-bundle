@@ -1,7 +1,7 @@
 Vue.component( 'select-field', {
     data: function () {
         return {
-            value: ''
+            //
         }
     },
     methods: {
@@ -11,7 +11,7 @@ Vue.component( 'select-field', {
         value: function() {
             this.$emit( 'input', this.value );
             if ( this.eval.submitOnChange ) {
-                this.$parent.submitOnChange( this.value, this.name, this.eval.isSelector )
+                this.$parent.submitOnChange( this.value, this.name, this.eval['isSelector'] )
             }
         }
     },
@@ -29,18 +29,16 @@ Vue.component( 'select-field', {
         value: {
             default: '',
             required: false,
-            type: Object|Array
+            type: String|Array
         }
-    },
-    mounted: function () {
-        //
     },
     template:
     '<div class="field-component select">' +
         '<div class="field-component-container">' +
-            '<label>{{ eval.label }}</label>' +
-            '<select v-model="value">' +
-                '<option v-for="option in eval.options" :value="option.value">{{option.label}}</option>' +
+            '<label :for="name">{{ eval.label }}</label>' +
+            '<select v-model="value" :id="name" :multiple="eval.multiple">' +
+                '<option value="">-</option>' +
+                '<option v-for="option in eval.options" v-bind:value="option.value">{{option.label}}</option>' +
             '</select>' +
         '</div>' +
     '</div>'
