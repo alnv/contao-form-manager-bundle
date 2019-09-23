@@ -51,7 +51,7 @@ Vue.component( 'checkbox-field', {
     '<div class="field-component checkbox">' +
         '<div class="field-component-container">' +
             '<p class="label">{{eval.label}}</p>' +
-            '<span v-if="eval.multiple" class="all">' +
+            '<span v-if="eval.multiple" class="all" v-bind:class="{ \'checked\': selectAll }">' +
                 '<input type="checkbox" v-model="selectAll" id="selectAll" @click="setSelectAll()">' +
                 '<label for="selectAll">Alle</label>' +
             '</span>'+
