@@ -42,7 +42,6 @@ const singleFormComponent = Vue.component( 'single-form', {
     },
     methods: {
         fetch: function (strSource) {
-
             this.$http.get( '/form-manager/' + strSource + '/' + this.identifier, {
                 params: {
                     type: this.type,
