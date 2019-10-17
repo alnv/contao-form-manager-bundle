@@ -9,7 +9,7 @@ Vue.component( 'select-field', {
     },
     watch: {
         value: function() {
-            this.$emit( 'change', this.value );
+            this.$emit( 'input', this.value );
             if ( this.eval.submitOnChange ) {
                 this.$parent.submitOnChange( this.value, this.name, this.eval['isSelector'] )
             }

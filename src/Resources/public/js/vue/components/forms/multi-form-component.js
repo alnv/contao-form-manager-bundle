@@ -5,7 +5,32 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
         }
     },
     methods: {
-        //
+        save: function() {
+            var objMultiFormSummary = this;
+            if ( this.$parent.completeForm.hasOwnProperty('source') ) {
+               for ( var i = 0; i < this.$children.length; i++ ) {
+                   if ( this.$children[i].$vnode.componentOptions.tag === 'single-form' ) {
+                       this.$children[i].getSubmitPromise().then( function ( objResponse ) {
+                           if ( objResponse.body ) {
+                               this.setValidation( objResponse.body );
+                               if ( objResponse.body.success ) {
+                                   objMultiFormSummary.completeMultiForm();
+                               }
+                               for ( var x = 0; x < this.$children.length; x++ ) {
+                                   this.$children[x].$forceUpdate();
+                               }
+                           }
+                       });
+                       break;
+                   }
+               }
+            } else {
+                objMultiFormSummary.completeMultiForm();
+            }
+        },
+        completeMultiForm: function() {
+            //
+        }
     },
     mounted: function () {
         for ( var i = 0; i < this.$parent.forms.length; i++ ) {
@@ -48,6 +73,10 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                 '</template>' +
                 '<button class="summary-button" @click="$parent.goTo(summary.form,index)">Ändern</button>' +
             '</div>' +
+            '<template v-if="$parent.completeForm.hasOwnProperty(\'source\')">' +
+                '<component is="single-form" v-bind:disable-submit="true" v-bind:id="$parent.completeForm.id" v-bind:source="$parent.completeForm.source" v-bind:identifier="$parent.completeForm.identifier"></component>' +
+            '</template>' +
+            '<button @click="save" class="submit">Kostenpflichtig bestellen</button>' +
         '</div>' +
     '</div>'
 });
@@ -62,6 +91,11 @@ const multiFormComponent = Vue.component( 'multi-form', {
             default: [],
             type: Array,
             required: true
+        },
+        completeForm: {
+            default: {},
+            type: Object,
+            required: false
         }
     },
     methods: {

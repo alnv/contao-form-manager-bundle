@@ -91,28 +91,11 @@ const singleFormComponent = Vue.component( 'single-form', {
             this.fetchBySource();
         },
         onSubmit: function () {
-            var objParent = this.$parent;
-            if ( !objParent.shared ) {
-                objParent = this.$parent.$parent;
-            }
-            this.$http.post( '/form-manager/validate/form/' + this.identifier, this.model,{
-                emulateJSON: true,
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }).then(function ( objResponse ) {
+            var objParent = this.getParentSharedInstance(this.$parent);
+            this.getSubmitPromise().then(function ( objResponse ) {
                 if ( objResponse.body ) {
-                    if ( !objResponse.body.success ) {
-                        for ( var j = 0; j < this.palettes.length; j++ ) {
-                            for ( var f = 0; f < this.palettes[j].fields.length; f++ ) {
-                                for ( var i = 0; i < objResponse.body.errors.length; i++ ) {
-                                    if ( objResponse.body.errors[i].name ===  this.palettes[j].fields[f].name ) {
-                                        this.palettes[j].fields[f]['messages'] = objResponse.body.errors[i].message;
-                                        this.palettes[j].fields[f]['validate'] = objResponse.body.errors[i].validate;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else {
+                    this.setValidation( objResponse.body );
+                    if ( objResponse.body.success ) {
                         this.setActiveStateInMultipleForm();
                         objParent.onChange( this );
                     }
@@ -122,11 +105,26 @@ const singleFormComponent = Vue.component( 'single-form', {
                 }
             });
         },
-        setInput: function (field) {
-            var objParent = this.$parent;
-            if ( !objParent.shared ) {
-                objParent = this.$parent.$parent;
+        getSubmitPromise: function() {
+            return this.$http.post( '/form-manager/validate/form/' + this.identifier, this.model,{
+                emulateJSON: true,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            });
+        },
+        setValidation: function( objResponse ) {
+            for ( var j = 0; j < this.palettes.length; j++ ) {
+                for ( var f = 0; f < this.palettes[j].fields.length; f++ ) {
+                    for ( var i = 0; i < objResponse.errors.length; i++ ) {
+                        if ( objResponse.errors[i].name ===  this.palettes[j].fields[f].name ) {
+                            this.palettes[j].fields[f]['messages'] = objResponse.errors[i].message;
+                            this.palettes[j].fields[f]['validate'] = objResponse.errors[i].validate;
+                        }
+                    }
+                }
             }
+        },
+        setInput: function (field) {
+            var objParent = this.getParentSharedInstance(this.$parent);
             for ( var strFieldname in this.model ) {
                 if ( this.model.hasOwnProperty( strFieldname ) ) {
                     objParent.shared[ strFieldname ] = this.model[ strFieldname ];
@@ -154,6 +152,12 @@ const singleFormComponent = Vue.component( 'single-form', {
                 }
             }
         },
+        getParentSharedInstance: function(parent) {
+            if ( typeof parent.shared === 'undefined' ) {
+                return this.getParentSharedInstance(parent.$parent);
+            }
+            return parent;
+        },
         saveInstance: function () {
             objInstances[ this.id ] = {
                 initialized: this.initialized,
@@ -163,8 +167,8 @@ const singleFormComponent = Vue.component( 'single-form', {
             };
         },
         getInstance: function (id) {
-            if ( objInstances.hasOwnProperty( id)  ) {
-                objectAssign( this.$data, objInstances[ id ] );
+            if ( objInstances.hasOwnProperty(id)  ) {
+                objectAssign( this.$data, objInstances[id] );
             }
         }
     },
