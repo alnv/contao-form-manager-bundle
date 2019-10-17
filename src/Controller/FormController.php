@@ -51,4 +51,19 @@ class FormController extends Controller {
         echo json_encode( $objFormResolver->getForm(), 512 );
         exit;
     }
+
+    /**
+     *
+     * @Route("/validate/form/{id}", name="validateForm")
+     * @Method({"POST"})
+     */
+    public function validateForm($id) {
+
+        $arrOptions = [];
+        $objFormResolver = new FormResolver( $id, $arrOptions );
+
+        header('Content-Type: application/json');
+        echo json_encode( $objFormResolver->validate(), 512 );
+        exit;
+    }
 }

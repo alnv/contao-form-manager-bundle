@@ -65,7 +65,6 @@ const singleFormComponent = Vue.component( 'single-form', {
                             }
                         }
                     }
-
                     this.model = objModel;
                     this.initialized = true;
                     this.palettes = objResponse.body;
@@ -92,33 +91,91 @@ const singleFormComponent = Vue.component( 'single-form', {
             this.fetchBySource();
         },
         onSubmit: function () {
-            // @todo
+            var objParent = this.$parent;
+            if ( !objParent.shared ) {
+                objParent = this.$parent.$parent;
+            }
+            this.$http.post( '/form-manager/validate/form/' + this.identifier, this.model,{
+                emulateJSON: true,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }).then(function ( objResponse ) {
+                if ( objResponse.body ) {
+                    if ( !objResponse.body.success ) {
+                        for ( var j = 0; j < this.palettes.length; j++ ) {
+                            for ( var f = 0; f < this.palettes[j].fields.length; f++ ) {
+                                for ( var i = 0; i < objResponse.body.errors.length; i++ ) {
+                                    if ( objResponse.body.errors[i].name ===  this.palettes[j].fields[f].name ) {
+                                        this.palettes[j].fields[f]['messages'] = objResponse.body.errors[i].message;
+                                        this.palettes[j].fields[f]['validate'] = objResponse.body.errors[i].validate;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        this.setActiveStateInMultipleForm();
+                        objParent.onChange( this );
+                    }
+                    for ( var x = 0; x < this.$children.length; x++ ) {
+                        this.$children[x].$forceUpdate();
+                    }
+                }
+            });
         },
-        setInput: function () {
+        setInput: function (field) {
+            var objParent = this.$parent;
+            if ( !objParent.shared ) {
+                objParent = this.$parent.$parent;
+            }
             for ( var strFieldname in this.model ) {
                 if ( this.model.hasOwnProperty( strFieldname ) ) {
-                    this.$parent.shared[ strFieldname ] = this.model[ strFieldname ];
+                    objParent.shared[ strFieldname ] = this.model[ strFieldname ];
                 }
             }
-            this.$parent.onChange( this );
-        }
-    },
-    watch: {
-        id: function (newId, oldId) {
-            objInstances[ oldId ] = {
+            if ( field['isReactive'] ) {
+                objParent.onChange( this );
+            }
+        },
+        setActiveStateInMultipleForm: function () {
+            if ( this.$parent.forms ) {
+                for ( var i = 0; i < this.$parent.forms.length; i++ ) {
+                    if ( this.identifier === this.$parent.forms[i]['identifier'] && this.source === this.$parent.forms[i]['source'] ) {
+                        this.$parent.forms[i]['valid'] = true;
+                        if ( !this.$parent.forms[i]['valid'] ) {
+                            continue;
+                        }
+                        if ( this.$parent.forms[i+1] ) { // has next?
+                            this.$parent.setActive( this.$parent.forms[i+1], i+1 );
+                        }
+                        else {
+                            this.$parent.setComplete();
+                        }
+                    }
+                }
+            }
+        },
+        saveInstance: function () {
+            objInstances[ this.id ] = {
                 initialized: this.initialized,
                 palettes: this.palettes,
                 model: this.model,
                 type: this.type
             };
-            if ( objInstances.hasOwnProperty( newId)  ) {
-                objectAssign( this.$data, objInstances[ newId ] );
+        },
+        getInstance: function (id) {
+            if ( objInstances.hasOwnProperty( id)  ) {
+                objectAssign( this.$data, objInstances[ id ] );
             }
+        }
+    },
+    watch: {
+        id: function (newId) {
+            this.getInstance(newId);
             this.fetchBySource();
         }
     },
     mounted: function () {
-        this.disableSubmit = this.disableSubmit === 'true';
+        this.getInstance(this.id);
         this.fetchBySource();
     },
     props: {
@@ -149,7 +206,7 @@ const singleFormComponent = Vue.component( 'single-form', {
                     '<div class="palette" v-bind:class="palette.name">' +
                         '<div class="palette-container">' +
                             '<template v-for="field in palette.fields" v-if="field.component">' +
-                                '<component :is="field.component" :eval="field" :name="field.name" v-model="model[ field.name ]" v-on:input="setInput"></component>' +
+                                '<component :is="field.component" :eval="field" :name="field.name" v-model="model[field.name]" v-on:input="setInput(field)"></component>' +
                             '</template>' +
                         '</div>' +
                     '</div>' +

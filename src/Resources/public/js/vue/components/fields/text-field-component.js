@@ -24,16 +24,17 @@ Vue.component( 'text-field', {
             required: true
         },
         value: {
-            type: Object,
             default: null,
-            required: false
+            type: String|Array
         }
     },
     template:
     '<div class="field-component text">' +
         '<div class="field-component-container">' +
-            '{{eval.label}}' +
-            '<input type="text" v-model="value">' +
+            '<label :for="\'id_\' + name">{{ eval.label }}</label>' +
+            '<input type="text" v-model="value" :id="\'id_\' + name">' +
+            '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
+            '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
         '</div>' +
     '</div>'
 });

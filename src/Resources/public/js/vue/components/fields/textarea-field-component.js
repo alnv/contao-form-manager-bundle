@@ -32,8 +32,10 @@ Vue.component( 'textarea-field', {
     template:
     '<div class="field-component textarea">' +
         '<div class="field-component-container">' +
-            '{{eval.label}}' +
-            '<textarea v-model="value"></textarea>' +
+            '<label :for="\'id_\' + name">{{ eval.label }}</label>' +
+            '<textarea v-model="value" :id="\'id_\' + name"></textarea>' +
+            '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
+            '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
         '</div>' +
     '</div>'
 });

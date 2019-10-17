@@ -9,7 +9,7 @@ Vue.component( 'select-field', {
     },
     watch: {
         value: function() {
-            this.$emit( 'input', this.value );
+            this.$emit( 'change', this.value );
             if ( this.eval.submitOnChange ) {
                 this.$parent.submitOnChange( this.value, this.name, this.eval['isSelector'] )
             }
@@ -35,11 +35,12 @@ Vue.component( 'select-field', {
     template:
     '<div class="field-component select">' +
         '<div class="field-component-container">' +
-            '<label :for="name">{{ eval.label }}</label>' +
-            '<select v-model="value" :id="name" :multiple="eval.multiple">' +
-                '<option value="">-</option>' +
+            '<label :for="\'id_\' + name">{{ eval.label }}</label>' +
+            '<select v-model="value" :id="\'id_\' + name" :multiple="eval.multiple">' +
                 '<option v-for="option in eval.options" v-bind:value="option.value">{{option.label}}</option>' +
             '</select>' +
+            '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
+            '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
         '</div>' +
     '</div>'
 });

@@ -55,11 +55,13 @@ Vue.component( 'checkbox-field', {
                 '<input type="checkbox" v-model="selectAll" id="selectAll" @click="setSelectAll()">' +
                 '<label for="selectAll">Alle</label>' +
             '</span>'+
-            '<span v-for="(option,index) in eval.options" v-bind:class="{ \'checked\': checked( option.value ) }">' +
-                '<input v-if="eval.multiple" type="checkbox" v-model="value" :value="option.value" :id="name + \'_\' + index">' +
-                '<input v-if="!eval.multiple" type="checkbox" v-model="value" true-value="1" false-value="" :id="name + \'_\' + index">' +
-                '<label :for="name + \'_\' + index">{{option.label}}</label>' +
+            '<span v-for="(option,index) in eval.options" class="checkbox-container" v-bind:class="{ \'checked\': checked( option.value ) }">' +
+                '<input v-if="eval.multiple" type="checkbox" v-model="value" :value="option.value" :id="\'id_\' + name + \'_\' + index">' +
+                '<input v-if="!eval.multiple" type="checkbox" v-model="value" true-value="1" false-value="" :id="\'id_\' + name + \'_\' + index">' +
+                '<label :for="\'id_\' + name + \'_\' + index">{{option.label}}</label>' +
             '</span>' +
+            '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
+            '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
         '</div>' +
     '</div>'
 });

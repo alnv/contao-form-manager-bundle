@@ -135,6 +135,7 @@ class DcaFormResolver {
 
         $arrAttributes = $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
         $arrAttributes['component'] = Toolkit::convertTypeToComponent( $arrAttributes['type'], $arrAttributes['rgxp'] );
+        $arrAttributes['isReactive'] = in_array( $arrField['inputType'], [ 'select', 'radio', 'checkbox' ] );
         $arrAttributes['default'] = $arrField['default'];
 
         return $arrAttributes;

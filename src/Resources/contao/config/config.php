@@ -1,39 +1,30 @@
 <?php
 
 $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
-
     'text' => [
-
         'default' => 'text-field',
         'email' => 'text-field',
         'datim' => 'date-field',
         'time' => 'date-field',
         'date' => 'date-field'
     ],
-
     'textarea' => [
-
         'default' => 'textarea-field'
     ],
-
     'select' => [
-
         'default' => 'select-field'
     ],
-
     'checkbox' => [
-
         'default' => 'checkbox-field'
     ],
-
     'radio' => [
-
         'default' => 'radio-field'
     ],
-
     'fileTree' => [
-
         'default' => 'upload-field'
+    ],
+    'fieldsetStart' => [
+        'default' => 'fieldset-start'
     ]
 ];
 
@@ -47,3 +38,4 @@ $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/comp
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/upload-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/checkbox-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/textarea-field-component.js' );
+$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/fieldset-start-component.js' );
