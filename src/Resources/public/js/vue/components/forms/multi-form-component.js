@@ -95,7 +95,7 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                 '<button class="summary-button" @click="$parent.goTo(summary.form,index)">Ändern</button>' +
             '</div>' +
             '<template v-if="$parent.completeForm.hasOwnProperty(\'source\')">' +
-                '<component is="single-form" v-bind:disable-submit="true" v-bind:id="$parent.completeForm.id" v-bind:source="$parent.completeForm.source" v-bind:identifier="$parent.completeForm.identifier"></component>' +
+                '<component is="single-form" v-bind:validate-only="true" v-bind:disable-submit="true" v-bind:id="$parent.completeForm.id" v-bind:source="$parent.completeForm.source" v-bind:identifier="$parent.completeForm.identifier"></component>' +
             '</template>' +
             '<div v-if="!success" class="messages error">' +
                 '<ul>' +
