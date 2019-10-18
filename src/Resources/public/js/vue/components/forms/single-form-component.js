@@ -50,26 +50,29 @@ const singleFormComponent = Vue.component( 'single-form', {
                 }
             }).then(function ( objResponse ) {
                 if ( objResponse.body ) {
-                    var objModel = {};
-                    for ( var i = 0; i < objResponse.body.length; i++ ) {
-                        for ( var intKey in objResponse.body[i].fields ) {
-                            if ( objResponse.body[i].fields.hasOwnProperty( intKey ) ) {
-                                var strFieldname = objResponse.body[i].fields[ intKey ]['name'];
-                                if ( !strFieldname ) {
-                                    continue;
-                                }
-                                if ( strFieldname === 'type' ) {
-                                    this.type = objResponse.body[i].fields[ intKey ]['value'];
-                                }
-                                objModel[ strFieldname ] = this.model[ strFieldname ] || objResponse.body[i].fields[ intKey ]['value'];
-                            }
-                        }
-                    }
-                    this.model = objModel;
                     this.initialized = true;
-                    this.palettes = objResponse.body;
+                    this.model = this.setModel( objResponse.body );
+                    this.setPalette( objResponse.body );
                 }
             });
+        },
+        setModel: function( palettes ) {
+            var objModel = {};
+            for ( var i = 0; i < palettes.length; i++ ) {
+                for ( var intKey in palettes[i].fields ) {
+                    if ( palettes[i].fields.hasOwnProperty( intKey ) ) {
+                        var strFieldname = palettes[i].fields[ intKey ]['name'];
+                        if ( !strFieldname ) {
+                            continue;
+                        }
+                        if ( strFieldname === 'type' ) {
+                            this.type = palettes[i].fields[ intKey ]['value'];
+                        }
+                        objModel[ strFieldname ] = this.model[ strFieldname ] || palettes[i].fields[ intKey ]['value'];
+                    }
+                }
+            }
+            return objModel;
         },
         fetchBySource: function () {
             switch ( this.source ) {
@@ -92,36 +95,24 @@ const singleFormComponent = Vue.component( 'single-form', {
         },
         onSubmit: function () {
             var objParent = this.getParentSharedInstance(this.$parent);
-            this.getSubmitPromise().then(function ( objResponse ) {
+            this.getSubmitPromise().then( function ( objResponse ) {
                 if ( objResponse.body ) {
-                    this.setValidation( objResponse.body );
+                    this.setPalette( objResponse.body.form );
                     if ( objResponse.body.success ) {
                         this.setActiveStateInMultipleForm();
                         objParent.onChange( this );
-                    }
-                    for ( var x = 0; x < this.$children.length; x++ ) {
-                        this.$children[x].$forceUpdate();
                     }
                 }
             });
         },
         getSubmitPromise: function() {
-            return this.$http.post( '/form-manager/validate/form/' + this.identifier, this.model,{
+            return this.$http.post( '/form-manager/'+ ( this.validateOnly ? 'validate' : 'save' ) +'/form/' + this.identifier, this.model, {
                 emulateJSON: true,
                 'Content-Type': 'application/x-www-form-urlencoded'
             });
         },
-        setValidation: function( objResponse ) {
-            for ( var j = 0; j < this.palettes.length; j++ ) {
-                for ( var f = 0; f < this.palettes[j].fields.length; f++ ) {
-                    for ( var i = 0; i < objResponse.errors.length; i++ ) {
-                        if ( objResponse.errors[i].name ===  this.palettes[j].fields[f].name ) {
-                            this.palettes[j].fields[f]['messages'] = objResponse.errors[i].message;
-                            this.palettes[j].fields[f]['validate'] = objResponse.errors[i].validate;
-                        }
-                    }
-                }
-            }
+        setPalette: function ( palette ) {
+            this.palettes = palette;
         },
         setInput: function (field) {
             var objParent = this.getParentSharedInstance(this.$parent);
@@ -163,7 +154,9 @@ const singleFormComponent = Vue.component( 'single-form', {
                 initialized: this.initialized,
                 palettes: this.palettes,
                 model: this.model,
-                type: this.type
+                type: this.type,
+                _source: this.source,
+                _formId: this.identifier
             };
         },
         getInstance: function (id) {
@@ -196,6 +189,10 @@ const singleFormComponent = Vue.component( 'single-form', {
             type: String,
             default: null,
             required: true
+        },
+        validateOnly: {
+            type: Boolean,
+            default: false
         },
         disableSubmit: {
             type: Boolean,

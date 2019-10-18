@@ -1,7 +1,9 @@
 const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
     data: function () {
         return {
-            summaries: []
+            summaries: [],
+            success: true,
+            messages: []
         }
     },
     methods: {
@@ -12,12 +14,11 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                    if ( this.$children[i].$vnode.componentOptions.tag === 'single-form' ) {
                        this.$children[i].getSubmitPromise().then( function ( objResponse ) {
                            if ( objResponse.body ) {
-                               this.setValidation( objResponse.body );
+                               this.setModel( objResponse.body.form );
+                               this.setPalette( objResponse.body.form );
+                               this.saveInstance();
                                if ( objResponse.body.success ) {
                                    objMultiFormSummary.completeMultiForm();
-                               }
-                               for ( var x = 0; x < this.$children.length; x++ ) {
-                                   this.$children[x].$forceUpdate();
                                }
                            }
                        });
@@ -29,7 +30,23 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
             }
         },
         completeMultiForm: function() {
-            //
+            this.$http.post( '/form-manager/save/multiform', {
+                forms: objInstances
+            }, {
+                emulateJSON: true,
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }).then( function ( objResponse ) {
+                if ( objResponse.body ) {
+                    if ( objResponse.body['success'] ) {
+                        // @end redirect
+                        // console.log("Gekauft!")
+                    }
+                    else {
+                        this.success = false;
+                        this.messages = objResponse.body['messages'];
+                    }
+                }
+            });
         }
     },
     mounted: function () {
@@ -50,8 +67,8 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                         for ( var c = 0; c < objInstance.palettes[j].fields.length; c++ ) {
                             if ( objInstance.palettes[j].fields[c].name ) {
                                 objSummary.palettes[j].fields.push({
-                                    label: objInstance.palettes[j].fields[c].label,
-                                    value: objInstance.model[ objInstance.palettes[j].fields[c].name ]
+                                    label: objInstance.palettes[j].fields[c]['label'],
+                                    value: objInstance.palettes[j].fields[c]['labelValue']
                                 });
                             }
                         }
@@ -68,7 +85,11 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                 '<p class="summary-headline">{{ summary.label }}</p>' +
                 '<template v-for="palette in summary.palettes">' +
                     '<div class="summary-fields" v-for="field in palette.fields">' +
-                        '<p><span class="label">{{ field.label }}: </span><span class="value">{{ field.value }}</span></p>' +
+                        '<p>' +
+                            '<span class="label">{{ field.label }}: </span>' +
+                            '<span v-if="!Array.isArray( field.value )" class="value">{{ field.value }}</span>' +
+                            '<span v-if="Array.isArray( field.value )" class="value"><ul><li v-for="value in field.value">{{ value }}</li></ul></span>' +
+                        '</p>' +
                     '</div>' +
                 '</template>' +
                 '<button class="summary-button" @click="$parent.goTo(summary.form,index)">Ändern</button>' +
@@ -76,6 +97,11 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
             '<template v-if="$parent.completeForm.hasOwnProperty(\'source\')">' +
                 '<component is="single-form" v-bind:disable-submit="true" v-bind:id="$parent.completeForm.id" v-bind:source="$parent.completeForm.source" v-bind:identifier="$parent.completeForm.identifier"></component>' +
             '</template>' +
+            '<div v-if="!success" class="messages error">' +
+                '<ul>' +
+                    '<li v-for="message in messages" class="error">{{ message }}</li>' +
+                '</ul>' +
+            '</div>' +
             '<button @click="save" class="submit">Kostenpflichtig bestellen</button>' +
         '</div>' +
     '</div>'
@@ -149,7 +175,7 @@ const multiFormComponent = Vue.component( 'multi-form', {
                 '</div>' +
             '</div>' +
             '<template>' +
-                '<component :is="active.component" v-bind:id="active.id" v-bind:source="active.source" v-bind:identifier="active.identifier"></component>' +
+                '<component :is="active.component" v-bind:validate-only="true" v-bind:id="active.id" v-bind:source="active.source" v-bind:identifier="active.identifier"></component>' +
             '</template>' +
         '</div>' +
     '</div>'

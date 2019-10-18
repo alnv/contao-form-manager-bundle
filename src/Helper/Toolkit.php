@@ -138,4 +138,48 @@ class Toolkit {
 
         return [];
     }
+
+
+    protected static function getSelectedOptions( $varValue, $arrOptions ) {
+
+        $arrReturn = [];
+
+        foreach ( $arrOptions as $arrValue ) {
+
+            if ( is_array( $varValue ) && in_array( $arrValue['value'], $varValue ) ) {
+
+                $arrReturn[] = self::parseLabelValue( $arrValue['label'] );
+
+                continue;
+            }
+
+            if ( $varValue == $arrValue['value'] ) {
+
+                $arrReturn[] = self::parseLabelValue( $arrValue['label'] );
+            }
+        }
+
+        return $arrReturn;
+    }
+
+
+    public static function getLabelValue( $varValue, $arrField ) {
+
+        if ( is_array( $arrField['options'] ) && !empty( $arrField['options'] ) ) {
+
+            return static::getSelectedOptions( $varValue, $arrField['options'] );
+        }
+
+        return $varValue;
+    }
+
+
+    protected static function parseLabelValue( $strValue ) {
+
+        $strValue = \Controller::replaceInsertTags( $strValue );
+
+        // @todo translate
+
+        return $strValue;
+    }
 }
