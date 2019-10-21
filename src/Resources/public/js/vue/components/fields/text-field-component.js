@@ -1,11 +1,6 @@
 Vue.component( 'text-field', {
     data: function () {
-        return {
-            //
-        }
-    },
-    methods: {
-        //
+        return {}
     },
     watch: {
         value: function() {

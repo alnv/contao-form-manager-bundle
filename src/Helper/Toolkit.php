@@ -182,4 +182,10 @@ class Toolkit {
 
         return $strValue;
     }
+
+
+    public static function pluckConditions( $strConditions ) {
+
+        return array_filter( explode(';', \Controller::replaceInsertTags( $strConditions ) ) );
+    }
 }

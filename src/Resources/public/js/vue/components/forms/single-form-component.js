@@ -163,14 +163,42 @@ const singleFormComponent = Vue.component( 'single-form', {
             if ( objInstances.hasOwnProperty(id)  ) {
                 objectAssign( this.$data, objInstances[id] );
             }
+        },
+        checkConditions: function (field) { // @todo
+            function callCondition( conditions ) {
+                var blnReturn = true;
+                if ( !conditions.length ) {
+                    return blnReturn;
+                }
+                for ( var i = 0; i < conditions.length; i++ ) {
+                    if ( !eval( conditions[i] ) ) {
+                        blnReturn = false;
+                    }
+                }
+                return blnReturn;
+            }
+            return callCondition.bind( this.model, field['conditions'] )();
         }
     },
     watch: {
         id: function (newId) {
             this.getInstance(newId);
             this.fetchBySource();
+        },
+        mode: {
+            handler: function () {
+                for ( var i = 0; i < this.palettes.length; i++ ) {
+                    for ( var intKey in this.palettes[i].fields ) {
+                        if ( this.palettes[i].fields.hasOwnProperty( intKey ) ) {
+                            this.checkConditions( this.palettes[i].fields[ intKey ] );
+                        }
+                    }
+                }
+            },
+            deep: true
         }
-    },
+    }
+    ,
     mounted: function () {
         this.getInstance(this.id);
         this.fetchBySource();
@@ -207,7 +235,7 @@ const singleFormComponent = Vue.component( 'single-form', {
                     '<div class="palette" v-bind:class="palette.name">' +
                         '<div class="palette-container">' +
                             '<template v-for="field in palette.fields" v-if="field.component">' +
-                                '<component :is="field.component" :eval="field" :name="field.name" v-model="model[field.name]" v-on:input="setInput(field)"></component>' +
+                                '<component v-if="checkConditions(field)" :is="field.component" :eval="field" :name="field.name" v-model="model[field.name]" v-on:input="setInput(field)"></component>' +
                             '</template>' +
                         '</div>' +
                     '</div>' +

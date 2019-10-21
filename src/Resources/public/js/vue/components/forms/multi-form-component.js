@@ -81,19 +81,21 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
     template:
     '<div class="summary-component">' +
         '<div class="summary-component-container">' +
-            '<div v-for="(summary,index) in summaries">' +
-                '<p class="summary-headline">{{ summary.label }}</p>' +
-                '<template v-for="palette in summary.palettes">' +
-                    '<div class="summary-fields" v-for="field in palette.fields">' +
-                        '<p>' +
-                            '<span class="label">{{ field.label }}: </span>' +
-                            '<span v-if="!Array.isArray( field.value )" class="value">{{ field.value }}</span>' +
-                            '<span v-if="Array.isArray( field.value )" class="value"><ul><li v-for="value in field.value">{{ value }}</li></ul></span>' +
-                        '</p>' +
-                    '</div>' +
-                '</template>' +
-                '<button class="summary-button" @click="$parent.goTo(summary.form,index)">Ändern</button>' +
-            '</div>' +
+            '<slot :summaries="summaries">' +
+                '<div v-for="(summary,index) in summaries">' +
+                    '<p class="summary-headline">{{ summary.label }}</p>' +
+                    '<template v-for="palette in summary.palettes">' +
+                        '<div class="summary-fields" v-for="field in palette.fields">' +
+                            '<div>' +
+                                '<span class="label">{{ field.label }}: </span>' +
+                                '<span v-if="!Array.isArray( field.value )" class="value">{{ field.value }}</span>' +
+                                '<span v-if="Array.isArray( field.value )" class="value"><ul><li v-for="value in field.value">{{ value }}</li></ul></span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</template>' +
+                    '<button class="summary-button" @click="$parent.goTo(summary.form,index)">Ändern</button>' +
+                '</div>' +
+            '</slot>' +
             '<template v-if="$parent.completeForm.hasOwnProperty(\'source\')">' +
                 '<component is="single-form" v-bind:validate-only="true" v-bind:disable-submit="true" v-bind:id="$parent.completeForm.id" v-bind:source="$parent.completeForm.source" v-bind:identifier="$parent.completeForm.identifier"></component>' +
             '</template>' +
@@ -175,7 +177,11 @@ const multiFormComponent = Vue.component( 'multi-form', {
                 '</div>' +
             '</div>' +
             '<template>' +
-                '<component :is="active.component" v-bind:validate-only="true" v-bind:id="active.id" v-bind:source="active.source" v-bind:identifier="active.identifier"></component>' +
+                '<component :is="active.component" v-bind:validate-only="true" v-bind:id="active.id" v-bind:source="active.source" v-bind:identifier="active.identifier">' +
+                    '<template v-if="active.component === \'multi-form-summary\'" v-slot:default="slotProps">' +
+                        '<slot :summaries="slotProps.summaries" :goTo="goTo"></slot>' +
+                    '</template>' +
+                '</component>' +
             '</template>' +
         '</div>' +
     '</div>'

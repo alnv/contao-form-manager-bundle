@@ -50,9 +50,9 @@ class FormResolver extends \System {
 
             $arrField = $objFormFields->row();
 
-            if ( $objFormFields->name != '' && isset($GLOBALS['TL_DCA']['tl_form_field']['palettes'][ $objFormFields->type] ) && preg_match('/[,;]name[,;]/', $GLOBALS['TL_DCA']['tl_form_field']['palettes'][ $objFormFields->type ] ) ) {
+            if ( $objFormFields->name != '' && isset( $GLOBALS['TL_DCA']['tl_form_field']['palettes'][ $objFormFields->type] ) && preg_match('/[,;]name[,;]/', $GLOBALS['TL_DCA']['tl_form_field']['palettes'][ $objFormFields->type ] ) ) {
 
-                $this->arrFormFields[$objFormFields->name] = $arrField;
+                $this->arrFormFields[ $objFormFields->name ] = $arrField;
             }
 
             else {
@@ -111,10 +111,44 @@ class FormResolver extends \System {
         $arrReturn['multiple'] = Toolkit::convertMultiple( $arrReturn['multiple'], $arrReturn );
         $arrReturn['value'] = Toolkit::convertValue( $arrReturn['value'], $arrReturn );
         $arrReturn['labelValue'] = Toolkit::getLabelValue( $arrReturn['value'], $arrReturn );
+        $arrReturn['conditions'] = Toolkit::pluckConditions( $arrReturn['conditions'] );
 
         return $arrReturn;
     }
 
+    /*
+    protected function checkConditions( $arrField ) {
+
+        $blnReturn = true;
+        $objContext = new \stdClass();
+        $arrConditions = Toolkit::pluckConditions( $arrField['conditions'] );
+
+        if ( !count( $arrConditions ) ) {
+
+            return $blnReturn;
+        }
+
+        foreach ( array_keys( $_POST ) as $strFieldname ) {
+
+            $objContext->{$strFieldname} = \Input::post( $strFieldname );
+        }
+
+        $objContext->checkConditions = function ( $strCondition ) {
+
+            return eval( $strCondition );
+        };
+
+        foreach ( $arrConditions as $strCondition ) {
+
+            if ( !$objContext->checkConditions( $strCondition ) ) {
+
+                $blnReturn = false;
+            }
+        }
+
+        return $blnReturn;
+    }
+    */
 
     public function save( $blnValidateOnly = false ) {
 
