@@ -105,15 +105,26 @@ class FormResolver extends \System {
             $arrReturn[ $strFieldname ] = $objField->{$strFieldname};
         }
 
+        $arrReturn['isReactive'] = $this->isReactive( $arrReturn );
         $arrReturn['label'] = \Controller::replaceInsertTags( $arrReturn['label'] );
         $arrReturn['component'] = Toolkit::convertTypeToComponent( $arrReturn['type'], $arrReturn['rgxp'] );
-        $arrReturn['isReactive'] = in_array( $arrField['type'], [ 'select', 'radio', 'checkbox' ] );
         $arrReturn['multiple'] = Toolkit::convertMultiple( $arrReturn['multiple'], $arrReturn );
         $arrReturn['value'] = Toolkit::convertValue( $arrReturn['value'], $arrReturn );
         $arrReturn['labelValue'] = Toolkit::getLabelValue( $arrReturn['value'], $arrReturn );
         $arrReturn['conditions'] = Toolkit::pluckConditions( $arrReturn['conditions'] );
 
         return $arrReturn;
+    }
+
+
+    protected function isReactive( $arrField ) {
+
+        if ( in_array( $arrField['type'], [ 'select', 'radio', 'checkbox' ] ) ) {
+
+            return true;
+        }
+
+        return $arrField['isReactive'] ? true : false;
     }
 
     /*

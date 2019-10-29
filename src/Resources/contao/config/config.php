@@ -8,6 +8,9 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
         'time' => 'date-field',
         'date' => 'date-field'
     ],
+    'hidden' => [
+        'default' => 'hidden-field'
+    ],
     'textarea' => [
         'default' => 'textarea-field'
     ],
@@ -35,6 +38,7 @@ $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/comp
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/date-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/radio-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/select-field-component.js' );
+$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/hidden-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/upload-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/checkbox-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/textarea-field-component.js' );
