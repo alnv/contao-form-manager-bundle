@@ -6,7 +6,7 @@ Vue.component( 'radio-field', {
     },
     methods: {
         checked: function ( strValue ) {
-            if ( Array.isArray(this.value) ) {
+            if ( Array.isArray( this.value ) ) {
                 return this.value.indexOf( strValue ) !== -1;
             }
             return this.value === strValue;
@@ -52,7 +52,7 @@ Vue.component( 'radio-field', {
     '<div class="field-component radio">' +
         '<div class="field-component-container">' +
             '<p class="label">{{eval.label}}</p>' +
-            '<span v-for="(option, index) in eval.options" class="radio-container" v-bind:class="{ \'checked\': checked( option.value ) || option.default }">' +
+            '<span v-for="(option, index) in eval.options" class="radio-container" v-bind:class="{ \'checked\': checked( option.value ) }">' +
                 '<input type="radio" v-model="value" :value="option.value" :id="\'id_\' + name + \'_\' + index">' +
                 '<label :for="\'id_\' + name + \'_\' + index">{{option.label}}</label>' +
             '</span>' +
