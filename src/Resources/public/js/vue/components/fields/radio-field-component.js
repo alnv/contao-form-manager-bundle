@@ -10,6 +10,15 @@ Vue.component( 'radio-field', {
                 return this.value.indexOf( strValue ) !== -1;
             }
             return this.value === strValue;
+        },
+        setDefault: function () {
+            if ( this.eval.options ) {
+                for ( var i = 0; i < this.eval.options.length; i++ ) {
+                    if ( this.eval.options[i]['default'] ) {
+                        this.value = this.eval.options[i]['value'];
+                    }
+                }
+            }
         }
     },
     watch: {
@@ -36,11 +45,14 @@ Vue.component( 'radio-field', {
             default: null
         }
     },
+    mounted: function () {
+        this.setDefault();
+    },
     template:
     '<div class="field-component radio">' +
         '<div class="field-component-container">' +
             '<p class="label">{{eval.label}}</p>' +
-            '<span v-for="(option, index) in eval.options" class="radio-container" v-bind:class="{ \'checked\': checked( option.value ) }">' +
+            '<span v-for="(option, index) in eval.options" class="radio-container" v-bind:class="{ \'checked\': checked( option.value ) || option.default }">' +
                 '<input type="radio" v-model="value" :value="option.value" :id="\'id_\' + name + \'_\' + index">' +
                 '<label :for="\'id_\' + name + \'_\' + index">{{option.label}}</label>' +
             '</span>' +
