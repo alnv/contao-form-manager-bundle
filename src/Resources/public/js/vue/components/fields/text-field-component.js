@@ -4,7 +4,16 @@ Vue.component( 'text-field', {
     },
     watch: {
         value: function() {
-            this.$emit( 'input', this.value );
+            // this.$emit( 'input', this.value );
+        }
+    },
+    methods: {
+        onInput: function () {
+            var timeout = null;
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                this.$emit( 'input', this.value );
+            }.bind(this), 800);
         }
     },
     props: {
@@ -27,7 +36,7 @@ Vue.component( 'text-field', {
     '<div class="field-component text">' +
         '<div class="field-component-container">' +
             '<label :for="\'id_\' + name">{{ eval.label }}</label>' +
-            '<input type="text" v-model="value" :id="\'id_\' + name">' +
+            '<input type="text" v-model="value" :id="\'id_\' + name" @input="onInput()">' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
         '</div>' +
