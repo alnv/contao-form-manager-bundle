@@ -1,14 +1,17 @@
 Vue.component( 'text-field', {
     data: function () {
-        return {}
+        return {
+            timeout: null
+        }
     },
     watch: {
         value: function() {
-            var timeout = null;
-            clearTimeout( timeout );
-            timeout = setTimeout(function () {
+            if ( this.timeout !== null ) {
+                clearTimeout( this.timeout );
+            }
+            this.timeout = setTimeout(function () {
                 this.$emit( 'input', this.value );
-            }.bind(this),800);
+            }.bind(this), 800);
         }
     },
     props: {
