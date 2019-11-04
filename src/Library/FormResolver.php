@@ -113,6 +113,15 @@ class FormResolver extends \System {
         $arrReturn['labelValue'] = Toolkit::getLabelValue( $arrReturn['value'], $arrReturn );
         $arrReturn['conditions'] = Toolkit::pluckConditions( $arrReturn['conditions'] );
 
+        if ( isset( $GLOBALS['TL_HOOKS']['compileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['compileFormField'] ) ) {
+
+            foreach ( $GLOBALS['TL_HOOKS']['compileFormField'] as $arrCallback ) {
+
+                $this->import( $arrCallback[0] );
+                $arrReturn = $this->{$arrCallback[0]}->{$arrCallback[1]}( $arrReturn, $this );
+            }
+        }
+
         return $arrReturn;
     }
 
