@@ -1,12 +1,12 @@
 <?php
 
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['text'] .= ';{filter_legend:hide},isReactive;{conditional_legend:hide},conditions;';
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio'] .= ';{conditional_legend:hide},conditions;';
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['select'] .= ';{conditional_legend:hide},conditions;';
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox'] .= ';{conditional_legend:hide},conditions;';
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['textarea'] .= ';{conditional_legend:hide},conditions;';
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['fieldsetStop'] .= ';{conditional_legend:hide},conditions;';
-$GLOBALS['TL_DCA']['tl_form_field']['palettes']['fieldsetStart'] .= ';{conditional_legend:hide},conditions;';
+$GLOBALS['TL_DCA']['tl_form_field']['palettes']['text'] .= ';{filter_legend:hide},isReactive;';
+// $GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio'] .= ';{conditional_legend:hide},conditions;';
+// $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select'] .= ';{conditional_legend:hide},conditions;';
+// $GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox'] .= ';{conditional_legend:hide},conditions;';
+// $GLOBALS['TL_DCA']['tl_form_field']['palettes']['textarea'] .= ';{conditional_legend:hide},conditions;';
+// $GLOBALS['TL_DCA']['tl_form_field']['palettes']['fieldsetStop'] .= ';{conditional_legend:hide},conditions;';
+// $GLOBALS['TL_DCA']['tl_form_field']['palettes']['fieldsetStart'] .= ';{conditional_legend:hide},conditions;';
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['conditions'] = [
     'inputType' => 'text',
