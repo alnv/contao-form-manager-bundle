@@ -197,8 +197,7 @@ const singleFormComponent = Vue.component( 'single-form', {
             },
             deep: true
         }
-    }
-    ,
+    },
     mounted: function () {
         this.getInstance(this.id);
         this.fetchBySource();
