@@ -5,12 +5,14 @@ namespace Alnv\ContaoFormManagerBundle\Library;
 use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
 
-class DcaFormResolver {
+class DcaFormResolver extends \System {
 
 
     protected $arrOptions = [];
     protected $strTable = null;
     protected $arrPalette = [];
+    protected $blnSuccess = true;
+    protected $blnValidate = false;
 
 
     public function __construct( $strTable, $arrOptions = [] ) {
@@ -27,8 +29,43 @@ class DcaFormResolver {
         ];
         */
 
+        \System::loadLanguageFile('default');
         \Controller::loadDataContainer( $strTable );
         \System::loadLanguageFile( $strTable, $arrOptions['language'] );
+    }
+
+
+    public function getWizard() {
+
+        $this->arrOptions['type'] = null;
+
+        if ( !$GLOBALS['TL_DCA'][ $this->strTable ] ) {
+
+            return null;
+        }
+
+        $objPalette = new \stdClass();
+        $objPalette->label = '';
+        $objPalette->fields = [];
+        $objPalette->hide = false;
+        $objPalette->name = $this->arrOptions['wizard'];
+
+        $arrFields = $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $this->arrOptions['wizard'] ]['eval']['form'] ?: [];
+
+        foreach ( $arrFields as $strFieldname => $arrField ) {
+
+            $arrAttributes = $this->parseAttributes( $strFieldname, $arrField );
+
+            if ( !$arrAttributes ) {
+
+                continue;
+            }
+
+            // $arrAttributes['name'] = $objPalette->name . '.' . $strFieldname;
+            $objPalette->fields[] = $arrAttributes;
+        }
+
+        return [ $objPalette ];
     }
 
 
@@ -66,9 +103,12 @@ class DcaFormResolver {
             foreach ( $this->arrOptions['subpalettes'] as $strSelector ) {
 
                 list( $strFieldname, $strValue ) = explode( '::', $strSelector );
+
                 if ( $strValue == '1' ) {
+
                     $strValue = '';
                 }
+
                 $strPalette = $strFieldname . ( $strValue ? '_' . $strValue : '' ); $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strFieldname . ( $strValue ? '_' . $strValue : '' ) ];
 
                 if ( isset( $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strPalette ] ) ) {
@@ -90,7 +130,7 @@ class DcaFormResolver {
         foreach ( $this->arrPalette as $strPalette => $arrPalette ) {
 
             $objPalette = new \stdClass();
-            $objPalette->label = '';
+            $objPalette->label = $GLOBALS['TL_LANG'][ $this->strTable ][$strPalette];
             $objPalette->fields = [];
             $objPalette->name = $strPalette ?: '';
             $objPalette->hide = $arrPalette['blnHide'];
@@ -121,6 +161,7 @@ class DcaFormResolver {
 
     protected function parseAttributes( $strFieldname, $arrField ) {
 
+        $arrReturn = [];
         $strClass = $GLOBALS['TL_FFL'][ $arrField['inputType'] ];
 
         if ( !class_exists( $strClass ) ) {
@@ -134,10 +175,95 @@ class DcaFormResolver {
         }
 
         $arrAttributes = $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
-        $arrAttributes['component'] = Toolkit::convertTypeToComponent( $arrAttributes['type'], $arrAttributes['rgxp'] );
-        $arrAttributes['isReactive'] = in_array( $arrField['inputType'], [ 'select', 'radio', 'checkbox' ] );
-        $arrAttributes['default'] = $arrField['default'];
+        $objField = new $strClass( $arrAttributes );
 
-        return $arrAttributes;
+        if ( $this->blnValidate ) {
+
+            $objField->validate();
+
+            if ( $objField->hasErrors() ) {
+
+                $this->blnSuccess = false;
+                $arrReturn['validate'] = false;
+                $arrReturn['messages'] = $objField->getErrors();
+            }
+        }
+
+        foreach ( $arrAttributes as $strFieldname => $strValue ) {
+
+            $arrReturn[ $strFieldname ] = $objField->{$strFieldname};
+        }
+
+        $arrReturn['label'] = \Controller::replaceInsertTags( $arrReturn['label'] );
+        // $arrReturn['isReactive'] = in_array( $arrReturn['inputType'], [ 'select', 'radio', 'checkbox' ] );
+        $arrReturn['component'] = Toolkit::convertTypeToComponent( $arrReturn['type'], $arrReturn['rgxp'] );
+        $arrReturn['value'] = Toolkit::convertValue( $arrReturn['value'], $arrReturn );
+        $arrReturn['labelValue'] = Toolkit::getLabelValue( $arrReturn['value'], $arrReturn );
+        $arrReturn['default'] = $arrField['default'];
+
+        return $arrReturn;
+    }
+
+
+    public function save( $blnValidateOnly = false ) {
+
+        $this->blnValidate = true;
+        $arrForm = $this->getForm();
+
+        if ( $this->blnSuccess && !$blnValidateOnly ) {
+
+            $this->saveEntry( $arrForm );
+        }
+
+        return [
+            'success' => $this->blnSuccess,
+            'saved' => !$blnValidateOnly,
+            'form' => $arrForm
+        ];
+    }
+
+
+    public function validate() {
+
+        return $this->save(true);
+    }
+
+
+    protected function saveEntry( $arrForm ) {
+
+        $arrSubmitted = [];
+
+        foreach ( $arrForm as $objPalette ) {
+
+            foreach ( $objPalette->fields as $arrField ) {
+
+                $arrSubmitted[ $arrField['name'] ] = $arrField['value'];
+            }
+        }
+
+        $arrSubmitted['tstamp'] = time();
+
+        if ( isset( $GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] ) && is_array($GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] ) ) {
+
+            foreach ( $GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] as $arrCallback ) {
+
+                $this->import( $arrCallback[0] );
+                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $arrForm, $this );
+            }
+        }
+
+        if ( isset( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] ) && is_array( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] ) ) {
+
+            foreach ( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] as $arrCallback ) {
+
+                $this->import( $arrCallback[0] );
+                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $arrForm, $this );
+            }
+
+            return null;
+        }
+
+        $objDatabase = \Database::getInstance();
+        $objDatabase->prepare('INSERT INTO '. $this->strTable .' %s')->set( $arrSubmitted )->execute();
     }
 }

@@ -41,6 +41,23 @@ class FormController extends Controller {
 
     /**
      *
+     * @Route("/getFormWizard/{table}", name="getFormWizard")
+     * @Method({"GET"})
+     */
+    public function getFormWizard( $table ) {
+        $this->container->get( 'contao.framework' )->initialize();
+        $arrOptions = [
+            'wizard' => \Input::get('wizard') ?: null
+        ];
+        $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
+        header('Content-Type: application/json');
+        echo json_encode(  $objDcaFormResolver->getWizard(), 512 );
+        exit;
+    }
+
+
+    /**
+     *
      * @Route("/getForm/{id}", name="getFormById")
      * @Method({"GET"})
      */
@@ -55,10 +72,10 @@ class FormController extends Controller {
 
     /**
      *
-     * @Route("/validate/form/{id}", name="validate")
+     * @Route("/validate/form/{id}", name="validateForm")
      * @Method({"POST"})
      */
-    public function validate($id) {
+    public function validateForm($id) {
         $this->container->get( 'contao.framework' )->initialize();
         $arrOptions = [];
         $objFormResolver = new FormResolver( $id, $arrOptions );
@@ -69,10 +86,10 @@ class FormController extends Controller {
 
     /**
      *
-     * @Route("/save/form/{id}", name="validateAndSave")
+     * @Route("/save/form/{id}", name="validateAndSaveForm")
      * @Method({"POST"})
      */
-    public function validateAndSave($id) {
+    public function validateAndSaveForm($id) {
         $this->container->get( 'contao.framework' )->initialize();
         $arrOptions = [];
         $objFormResolver = new FormResolver( $id, $arrOptions );
@@ -80,6 +97,36 @@ class FormController extends Controller {
         echo json_encode( $objFormResolver->save(), 512 );
         exit;
     }
+
+
+    /**
+     *
+     * @Route("/save/dc/{table}", name="validateAndSaveDc")
+     * @Method({"POST"})
+     */
+    public function validateAndSaveDc($table) {
+        $this->container->get( 'contao.framework' )->initialize();
+        $arrOptions = [];
+        $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
+        header('Content-Type: application/json');
+        echo json_encode( $objDcaFormResolver->save(), 512 );
+        exit;
+    }
+
+    /**
+     *
+     * @Route("/validate/dc/{table}", name="validateDc")
+     * @Method({"POST"})
+     */
+    public function validateDc($table) {
+        $this->container->get( 'contao.framework' )->initialize();
+        $arrOptions = [];
+        $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
+        header('Content-Type: application/json');
+        echo json_encode( $objDcaFormResolver->validate(), 512 );
+        exit;
+    }
+
 
     /**
      *

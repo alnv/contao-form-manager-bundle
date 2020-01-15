@@ -5,7 +5,16 @@ Vue.component( 'select-field', {
         }
     },
     methods: {
-        //
+        setCssClass: function() {
+            let objCssClass = {};
+            if ( this.eval['tl_class'] ) {
+                objCssClass[this.eval['tl_class']] = true;
+            }
+            if ( this.eval['mandatory'] ) {
+                objCssClass['mandatory'] = true;
+            }
+            return objCssClass;
+        }
     },
     watch: {
         value: function() {
@@ -30,15 +39,22 @@ Vue.component( 'select-field', {
             default: '',
             required: false,
             type: String|Array
+        },
+        idPrefix: {
+            default: '',
+            type: String ,
+            required: false
         }
     },
     template:
-    '<div class="field-component select">' +
+    '<div class="field-component select" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
-            '<label :for="\'id_\' + name">{{ eval.label }}</label>' +
-            '<select v-model="value" :id="\'id_\' + name" :multiple="eval.multiple">' +
-                '<option v-for="option in eval.options" v-bind:value="option.value">{{option.label}}</option>' +
-            '</select>' +
+            '<label class="label" :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
+            '<div class="select-container">' +
+                '<select v-model="value" :id="idPrefix + \'id_\' + name" :multiple="eval.multiple">' +
+                    '<option v-for="option in eval.options" v-bind:value="option.value">{{option.label}}</option>' +
+                '</select>' +
+            '</div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
         '</div>' +

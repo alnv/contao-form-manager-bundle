@@ -19,6 +19,16 @@ Vue.component( 'radio-field', {
                     }
                 }
             }
+        },
+        setCssClass: function() {
+            let objCssClass = {};
+            if ( this.eval['tl_class'] ) {
+                objCssClass[this.eval['tl_class']] = true;
+            }
+            if ( this.eval['mandatory'] ) {
+                objCssClass['mandatory'] = true;
+            }
+            return objCssClass;
         }
     },
     watch: {
@@ -43,18 +53,23 @@ Vue.component( 'radio-field', {
         value: {
             type: String,
             default: null
+        },
+        idPrefix: {
+            default: '',
+            type: String ,
+            required: false
         }
     },
     mounted: function () {
         this.setDefault();
     },
     template:
-    '<div class="field-component radio">' +
+    '<div class="field-component radio" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
             '<p class="label">{{eval.label}}</p>' +
             '<span v-for="(option, index) in eval.options" class="radio-container" v-bind:class="{ \'checked\': checked( option.value ) }">' +
-                '<input type="radio" v-model="value" :value="option.value" :id="\'id_\' + name + \'_\' + index">' +
-                '<label :for="\'id_\' + name + \'_\' + index">{{option.label}}</label>' +
+                '<input type="radio" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
+                '<label :for="idPrefix + \'id_\' + name + \'_\' + index">{{option.label}}</label>' +
             '</span>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +

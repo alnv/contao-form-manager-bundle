@@ -9,7 +9,7 @@ Vue.component( 'checkbox-field', {
             if ( Array.isArray(this.value) ) {
                 return this.value.indexOf( strValue ) !== -1;
             }
-            return this.value === strValue;
+            return strValue == this.value;
         },
         setSelectAll: function () {
             this.selectAll = !this.selectAll;
@@ -22,6 +22,17 @@ Vue.component( 'checkbox-field', {
             if ( !this.selectAll ) {
                 this.value = [];
             }
+        },
+        setCssClass: function() {
+            let objCssClass = {};
+            if ( this.eval['tl_class'] ) {
+                objCssClass[this.eval['tl_class']] = true;
+            }
+            if ( this.eval['mandatory'] ) {
+                objCssClass['mandatory'] = true;
+            }
+            objCssClass['single'] = !this.eval.multiple;
+            return objCssClass;
         }
     },
     watch: {
@@ -45,20 +56,26 @@ Vue.component( 'checkbox-field', {
         value: {
             default: null,
             type: String|Array
+        },
+        idPrefix: {
+            default: '',
+            type: String ,
+            required: false
         }
     },
     template:
-    '<div class="field-component checkbox">' +
+    '<div class="field-component checkbox" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
-            '<p class="label">{{eval.label}}</p>' +
+            '<p v-if="eval.multiple" class="label">{{eval.label}}</p>' +
             '<span v-if="eval.multiple" class="all" v-bind:class="{ \'checked\': selectAll }">' +
-                '<input type="checkbox" v-model="selectAll" id="selectAll" @click="setSelectAll()">' +
-                '<label for="selectAll">Alle</label>' +
+                '<input type="checkbox" v-model="selectAll" :id="idPrefix + \'selectAll\'" @click="setSelectAll()">' +
+                '<label :for="idPrefix + \'selectAll\'">Alle</label>' +
             '</span>'+
             '<span v-for="(option,index) in eval.options" class="checkbox-container" v-bind:class="{ \'checked\': checked( option.value ) }">' +
-                '<input v-if="eval.multiple" type="checkbox" v-model="value" :value="option.value" :id="\'id_\' + name + \'_\' + index">' +
-                '<input v-if="!eval.multiple" type="checkbox" v-model="value" true-value="1" false-value="" :id="\'id_\' + name + \'_\' + index">' +
-                '<label :for="\'id_\' + name + \'_\' + index">{{option.label}}</label>' +
+                '<input v-if="eval.multiple" type="checkbox" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
+                '<input v-if="!eval.multiple" type="checkbox" v-model="value" true-value="1" false-value="" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
+                '<label v-if="eval.multiple" :for="idPrefix + \'id_\' + name + \'_\' + index">{{option.label}}</label>' +
+                '<label v-if="!eval.multiple" :for="idPrefix + \'id_\' + name + \'_\' + index">{{eval.label}}</label>' +
             '</span>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +

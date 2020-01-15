@@ -30,221 +30,235 @@ function objectAssign(target, source) {
     return to;
 }
 var objInstances = {};
-const singleFormComponent = Vue.component( 'single-form', {
-    data: function () {
-        return {
-            initialized: false,
-            subpalettes: {},
-            palettes: [],
-            model: {},
-            type: ''
-        }
-    },
-    methods: {
-        fetch: function (strSource) {
-            this.$http.get( '/form-manager/' + strSource + '/' + this.identifier, {
-                params: {
-                    type: this.type,
-                    initialized: this.initialized,
-                    subpalettes: this.subpalettes
-                }
-            }).then(function ( objResponse ) {
-                if ( objResponse.body ) {
-                    this.initialized = true;
-                    this.model = this.setModel( objResponse.body );
-                    this.setPalette( objResponse.body );
-                }
-            });
+const singleFormComponent = Vue.component( 'single-form', function (resolve, reject) {
+    resolve({
+        data: function () {
+            return {
+                initialized: false,
+                subpalettes: {},
+                palettes: [],
+                model: {},
+                type: ''
+            }
         },
-        setModel: function( palettes ) {
-            var objModel = {};
-            for ( var i = 0; i < palettes.length; i++ ) {
-                for ( var intKey in palettes[i].fields ) {
-                    if ( palettes[i].fields.hasOwnProperty( intKey ) ) {
-                        var strFieldname = palettes[i].fields[ intKey ]['name'];
-                        if ( !strFieldname ) {
-                            continue;
-                        }
-                        if ( strFieldname === 'type' ) {
-                            this.type = palettes[i].fields[ intKey ]['value'];
-                        }
-                        objModel[ strFieldname ] = this.model[ strFieldname ] || palettes[i].fields[ intKey ]['value'];
+        methods: {
+            fetch: function (strSource) {
+                this.$http.get( '/form-manager/get' + strSource + '/' + this.identifier, {
+                    params: {
+                        type: this.type,
+                        initialized: this.initialized,
+                        subpalettes: this.subpalettes
                     }
-                }
-            }
-            return objModel;
-        },
-        fetchBySource: function () {
-            switch ( this.source ) {
-                case 'dc':
-                    this.fetch('getDcForm');
-                    break;
-                case 'form':
-                    this.fetch('getForm');
-                    break;
-            }
-        },
-        submitOnChange: function ( strValue, strName, blnIsSelector ) {
-            if ( strName === 'type' ) {
-                this.type = strValue;
-            }
-            if ( blnIsSelector === true ) {
-                this.subpalettes[ strName ] = strName + '::' + strValue;
-            }
-            this.fetchBySource();
-        },
-        onSubmit: function () {
-            var objParent = this.getParentSharedInstance(this.$parent);
-            this.getSubmitPromise().then( function ( objResponse ) {
-                if ( objResponse.body ) {
-                    this.setPalette( objResponse.body.form );
-                    if ( objResponse.body.success ) {
-                        this.setActiveStateInMultipleForm();
-                        objParent.onChange( this );
+                }).then(function ( objResponse ) {
+                    if ( objResponse.body ) {
+                        this.initialized = true;
+                        this.model = this.setModel( objResponse.body );
+                        this.setPalette( objResponse.body );
                     }
-                }
-            });
-        },
-        getSubmitPromise: function() {
-            return this.$http.post( '/form-manager/'+ ( this.validateOnly ? 'validate' : 'save' ) +'/form/' + this.identifier, this.model, {
-                emulateJSON: true,
-                'Content-Type': 'application/x-www-form-urlencoded'
-            });
-        },
-        setPalette: function ( palette ) {
-            this.palettes = palette;
-        },
-        setInput: function (field) {
-            var objParent = this.getParentSharedInstance(this.$parent);
-            for ( var strFieldname in this.model ) {
-                if ( this.model.hasOwnProperty( strFieldname ) ) {
-                    objParent.shared[ strFieldname ] = this.model[ strFieldname ];
-                }
-            }
-            if ( field['isReactive'] ) {
-                objParent.onChange( this );
-            }
-        },
-        setActiveStateInMultipleForm: function () {
-            if ( this.$parent.forms ) {
-                for ( var i = 0; i < this.$parent.forms.length; i++ ) {
-                    if ( this.identifier === this.$parent.forms[i]['identifier'] && this.source === this.$parent.forms[i]['source'] ) {
-                        this.$parent.forms[i]['valid'] = true;
-                        if ( !this.$parent.forms[i]['valid'] ) {
-                            continue;
-                        }
-                        if ( this.$parent.forms[i+1] ) { // has next?
-                            this.$parent.setActive( this.$parent.forms[i+1], i+1 );
-                        }
-                        else {
-                            this.$parent.setComplete();
+                });
+            },
+            setModel: function( palettes ) {
+                var objModel = {};
+                for ( var i = 0; i < palettes.length; i++ ) {
+                    for ( var intKey in palettes[i].fields ) {
+                        if ( palettes[i].fields.hasOwnProperty( intKey ) ) {
+                            var strFieldname = palettes[i].fields[ intKey ]['name'];
+                            if ( !strFieldname ) {
+                                continue;
+                            }
+                            if ( strFieldname === 'type' ) {
+                                this.type = palettes[i].fields[ intKey ]['value'];
+                            }
+                            objModel[ strFieldname ] = this.model[ strFieldname ] || palettes[i].fields[ intKey ]['value'];
                         }
                     }
                 }
-            }
-        },
-        getParentSharedInstance: function(parent) {
-            if ( typeof parent.shared === 'undefined' ) {
-                return this.getParentSharedInstance(parent.$parent);
-            }
-            return parent;
-        },
-        saveInstance: function () {
-            objInstances[ this.id ] = {
-                initialized: this.initialized,
-                palettes: this.palettes,
-                model: this.model,
-                type: this.type,
-                _source: this.source,
-                _formId: this.identifier
-            };
-        },
-        getInstance: function (id) {
-            if ( objInstances.hasOwnProperty(id)  ) {
-                objectAssign( this.$data, objInstances[id] );
-            }
-        },
-        checkConditions: function (field) { // @todo
-            function callCondition( conditions ) {
-                var blnReturn = true;
-                if ( !conditions.length ) {
-                    return blnReturn;
+                return objModel;
+            },
+            getSource: function() {
+                switch ( this.source ) {
+                    case 'dc':
+                        return 'DcForm';
+                    case 'form':
+                        return 'Form';
                 }
-                for ( var i = 0; i < conditions.length; i++ ) {
-                    if ( !eval( conditions[i] ) ) {
-                        blnReturn = false;
-                    }
+            },
+            fetchBySource: function () {
+                this.fetch( this.getSource() )
+            },
+            submitOnChange: function ( strValue, strName, blnIsSelector ) {
+                if ( strName === 'type' ) {
+                    this.type = strValue;
                 }
-                return blnReturn;
-            }
-            return callCondition.bind( this.model, field['conditions'] )();
-        }
-    },
-    watch: {
-        id: function (newId) {
-            this.getInstance(newId);
-            this.fetchBySource();
-        },
-        mode: {
-            handler: function () {
-                for ( var i = 0; i < this.palettes.length; i++ ) {
-                    for ( var intKey in this.palettes[i].fields ) {
-                        if ( this.palettes[i].fields.hasOwnProperty( intKey ) ) {
-                            this.checkConditions( this.palettes[i].fields[ intKey ] );
-                        }
+                if ( blnIsSelector === true ) {
+                    this.subpalettes[ strName ] = strName + '::' + strValue;
+                }
+                this.fetchBySource();
+                for ( var j = 0; j < this.$children.length; j++ ) {
+                    if ( this.$children[j].$vnode.tag && this.$children[j].$vnode.tag.indexOf('cart-summary') !== -1 ) {
+                        this.$children[j].reCalculate( strName, strValue );
                     }
                 }
             },
-            deep: true
-        }
-    },
-    mounted: function () {
-        this.getInstance(this.id);
-        this.fetchBySource();
-    },
-    props: {
-        id: {
-            type: String,
-            default: null
+            onSubmit: function () {
+                var objParent = this.getParentSharedInstance(this.$parent);
+                this.getSubmitPromise().then( function ( objResponse ) {
+                    if ( objResponse.body ) {
+                        this.setPalette( objResponse.body.form );
+                        if ( objResponse.body.success ) {
+                            this.setActiveStateInMultipleForm();
+                            objParent.onChange( this );
+                        }
+                    }
+                });
+            },
+            getSubmitPromise: function() {
+                return this.$http.post( '/form-manager/'+ ( this.validateOnly ? 'validate' : 'save' ) +'/' + this.source + '/' + this.identifier, this.model, {
+                    emulateJSON: true,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                });
+            },
+            setPalette: function ( palette ) {
+                this.palettes = palette;
+            },
+            setInput: function (field) {
+                var objParent = this.getParentSharedInstance(this.$parent);
+                for ( var strFieldname in this.model ) {
+                    if ( this.model.hasOwnProperty( strFieldname ) ) {
+                        objParent.shared[ strFieldname ] = this.model[ strFieldname ];
+                    }
+                }
+                if ( field['isReactive'] ) {
+                    objParent.onChange( this );
+                }
+            },
+            setActiveStateInMultipleForm: function () {
+                if ( this.$parent.forms ) {
+                    for ( var i = 0; i < this.$parent.forms.length; i++ ) {
+                        if ( this.identifier === this.$parent.forms[i]['identifier'] && this.source === this.$parent.forms[i]['source'] ) {
+                            this.$parent.forms[i]['valid'] = true;
+                            if ( !this.$parent.forms[i]['valid'] ) {
+                                continue;
+                            }
+                            if ( this.$parent.forms[i+1] ) { // has next?
+                                this.$parent.setActive( this.$parent.forms[i+1], i+1 );
+                            }
+                            else {
+                                this.$parent.setComplete();
+                            }
+                        }
+                    }
+                } else {
+                    if ( this.successRedirect ) {
+                        window.location.href = this.successRedirect;
+                    }
+                }
+            },
+            getParentSharedInstance: function(parent) {
+                if ( typeof parent.shared === 'undefined' ) {
+                    return this.getParentSharedInstance(parent.$parent);
+                }
+                return parent;
+            },
+            saveInstance: function () {
+                objInstances[ this.id ] = {
+                    initialized: this.initialized,
+                    palettes: this.palettes,
+                    model: this.model,
+                    type: this.type,
+                    _source: this.source,
+                    _formId: this.identifier
+                };
+            },
+            getInstance: function (id) {
+                if ( objInstances.hasOwnProperty(id)  ) {
+                    objectAssign( this.$data, objInstances[id] );
+                }
+            }
         },
-        identifier: {
-            type: String,
-            default: null,
-            required: true
+        watch: {
+            id: function (newId) {
+                this.getInstance(newId);
+                this.fetchBySource();
+            },
+            mode: {
+                handler: function () {
+                    for ( var i = 0; i < this.palettes.length; i++ ) {
+                        for ( var intKey in this.palettes[i].fields ) {
+                            if ( this.palettes[i].fields.hasOwnProperty( intKey ) ) {
+                                //
+                            }
+                        }
+                    }
+                },
+                deep: true
+            }
         },
-        source: {
-            type: String,
-            default: null,
-            required: true
+        mounted: function () {
+            this.getInstance(this.id);
+            this.fetchBySource();
         },
-        validateOnly: {
-            type: Boolean,
-            default: false
+        props: {
+            id: {
+                type: String,
+                default: null
+            },
+            identifier: {
+                type: String,
+                default: null,
+                required: true
+            },
+            source: {
+                type: String,
+                default: null,
+                required: true
+            },
+            validateOnly: {
+                type: Boolean,
+                default: false
+            },
+            disableSubmit: {
+                type: Boolean,
+                default: false
+            },
+            model: {
+                default: {},
+                type: Object,
+                required: false
+            },
+            submitLabel: {
+                type: String,
+                default: 'Senden',
+                required: false
+            },
+            successRedirect: {
+                type: String,
+                default: '',
+                required: false
+            }
         },
-        disableSubmit: {
-            type: Boolean,
-            default: false
-        }
-    },
-    template:
-    '<div class="form-component">' +
-        '<div class="form-component-container">' +
-            '<form v-on:submit.prevent="onSubmit">' +
-                '<template v-for="palette in palettes">' +
-                    '<div class="palette" v-bind:class="palette.name">' +
-                        '<div class="palette-container">' +
-                            '<template v-for="field in palette.fields" v-if="field.component">' +
-                                '<component v-if="checkConditions(field)" :is="field.component" :eval="field" :name="field.name" v-model="model[field.name]" v-on:input="setInput(field)"></component>' +
-                            '</template>' +
+        template:
+            '<div class="form-component">' +
+                '<div class="form-component-container">' +
+                    '<form v-on:submit.prevent="onSubmit">' +
+                        '<template v-for="palette in palettes">' +
+                            '<div class="palette" v-bind:class="palette.name">' +
+                                '<p v-if="palette.label" class=palette-name>{{ palette.label }}</p>' +
+                                '<div class="palette-container">' +
+                                    '<template v-for="field in palette.fields" v-if="field.component">' +
+                                        '<component :is="field.component" :eval="field" :name="field.name" v-model="model[field.name]" v-on:input="setInput(field)"></component>' +
+                                    '</template>' +
+                                '</div>' +
+                            '</div>' +
+                        '</template>' +
+                        '<slot></slot>' +
+                        '<div v-if="!disableSubmit" class="form-buttons-container">' +
+                            '<div class="form-submit">' +
+                                '<button type="submit" class="submit">{{ submitLabel }}</button>' +
+                            '</div>' +
                         '</div>' +
-                    '</div>' +
-                '</template>' +
-                '<div v-if="!disableSubmit" class="form-buttons-container">' +
-                    '<div class="form-submit">' +
-                        '<button type="submit" class="submit">Senden</button>' +
-                    '</div>' +
+                    '</form>' +
                 '</div>' +
-            '</form>' +
-        '</div>' +
-    '</div>'
+            '</div>'
+    });
 });

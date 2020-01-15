@@ -20,12 +20,12 @@ class Toolkit {
             return null;
         }
 
-        if ( $strRgxp ) {
+        if ( $strRgxp && isset( $arrTypes[ $strRgxp ] ) ) {
 
-            return isset( $arrTypes[ $strRgxp ] ) ? $arrTypes[ $strRgxp ] : null;
+            return $arrTypes[ $strRgxp ];
         }
 
-        return isset( $arrTypes[ 'default' ] ) ? $arrTypes[ 'default' ] : null;
+        return $arrTypes[ 'default' ];
     }
 
 
@@ -181,11 +181,5 @@ class Toolkit {
         // @todo translate
 
         return $strValue;
-    }
-
-
-    public static function pluckConditions( $strConditions ) {
-
-        return array_filter( explode(';', \Controller::replaceInsertTags( $strConditions ) ) );
     }
 }

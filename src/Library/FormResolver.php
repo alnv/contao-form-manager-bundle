@@ -32,6 +32,12 @@ class FormResolver extends \System {
         ];
 
         $objFormFields = \FormFieldModel::findPublishedByPid( $this->strId );
+
+        if ( $objFormFields === null ) {
+
+            return $arrForm;
+        }
+
         $this->objForm = $objFormFields->getRelated('pid');
         $objFormFields->reset();
 
@@ -111,7 +117,6 @@ class FormResolver extends \System {
         $arrReturn['multiple'] = Toolkit::convertMultiple( $arrReturn['multiple'], $arrReturn );
         $arrReturn['value'] = Toolkit::convertValue( $arrReturn['value'], $arrReturn );
         $arrReturn['labelValue'] = Toolkit::getLabelValue( $arrReturn['value'], $arrReturn );
-        $arrReturn['conditions'] = Toolkit::pluckConditions( $arrReturn['conditions'] );
 
         if ( isset( $GLOBALS['TL_HOOKS']['compileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['compileFormField'] ) ) {
 
@@ -136,39 +141,6 @@ class FormResolver extends \System {
         return $arrField['isReactive'] ? true : false;
     }
 
-    /*
-    protected function checkConditions( $arrField ) {
-
-        $blnReturn = true;
-        $objContext = new \stdClass();
-        $arrConditions = Toolkit::pluckConditions( $arrField['conditions'] );
-
-        if ( !count( $arrConditions ) ) {
-
-            return $blnReturn;
-        }
-
-        foreach ( array_keys( $_POST ) as $strFieldname ) {
-
-            $objContext->{$strFieldname} = \Input::post( $strFieldname );
-        }
-
-        $objContext->checkConditions = function ( $strCondition ) {
-
-            return eval( $strCondition );
-        };
-
-        foreach ( $arrConditions as $strCondition ) {
-
-            if ( !$objContext->checkConditions( $strCondition ) ) {
-
-                $blnReturn = false;
-            }
-        }
-
-        return $blnReturn;
-    }
-    */
 
     public function save( $blnValidateOnly = false ) {
 
@@ -325,7 +297,6 @@ class FormResolver extends \System {
         }
 
         // @todo store values
-
         foreach ( array_keys( $_POST ) as $strKey ) {
 
             $_SESSION['FORM_DATA'][ $strKey ] = $this->objForm->allowTags ? \Input::postHtml( $strKey, true ) : \Input::post( $strKey, true );
@@ -333,7 +304,7 @@ class FormResolver extends \System {
 
         $_SESSION['FORM_DATA']['SUBMITTED_AT'] = time();
 
-        if ( isset( $GLOBALS['TL_HOOKS']['processFormData']) && is_array($GLOBALS['TL_HOOKS']['processFormData'] ) ) {
+        if ( isset( $GLOBALS['TL_HOOKS']['processFormData'] ) && is_array($GLOBALS['TL_HOOKS']['processFormData'] ) ) {
 
             foreach ( $GLOBALS['TL_HOOKS']['processFormData'] as $arrCallback ) {
 
