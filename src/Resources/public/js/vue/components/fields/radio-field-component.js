@@ -9,7 +9,7 @@ Vue.component( 'radio-field', {
             if ( Array.isArray( this.value ) ) {
                 return this.value.indexOf( strValue ) !== -1;
             }
-            return this.value === strValue;
+            return this.value == strValue;
         },
         setDefault: function () {
             if ( this.eval.options ) {
