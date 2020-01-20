@@ -11,7 +11,7 @@ Vue.component( 'text-field', {
             }
             this.timeout = setTimeout(function () {
                 this.$emit( 'input', this.value );
-            }.bind(this), 800);
+            }.bind(this), 400);
         }
     },
     methods: {

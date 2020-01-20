@@ -38,10 +38,10 @@ Vue.component( 'form-wizard', {
             if ( blnEmpty ) {
                 return null;
             }
-            if (!this.eval.maxEntities) {
+            if (!this.eval['maxEntities']) {
                 this.values.push(objValue);
             }
-            if ( this.eval.maxEntities > 0 && this.values.length < this.eval.maxEntities ) {
+            if ( this.eval['maxEntities'] > 0 && this.values.length < this.eval['maxEntities'] ) {
                 this.values.push(objValue);
             }
             if ( !this.hasDefaultValues ) {
@@ -76,6 +76,9 @@ Vue.component( 'form-wizard', {
                         if ( !this.eval['useValuesAsDefault'] ) {
                             this.addValue(true);
                         }
+                    }
+                    if ( Array.isArray( this.eval.values ) && !this.eval.values.length && this.eval['showFormIsEmpty'] ) {
+                        this.addValue(false);
                     }
                 }
             }
@@ -171,8 +174,8 @@ Vue.component( 'form-wizard', {
                 '<div class="operations" v-if="values && values.length < eval.maxEntities">' +
                     '<button type="button" @click="addValue(false)" class="button add">{{ addButtonLabel }}</button>' +
                 '</div>' +
-                '<div class="entities">' +
-                    '<div v-if="values" class="entity" v-for="value in values">' +
+                '<div v-if="values" class="entities">' +
+                    '<div class="entity" v-for="value in values">' +
                         '<div class="rows">' +
                             '<template v-for="field in fields">' +
                                 '<div class="row" v-bind:class="setFieldCssClass(field,value)"><span class="name">{{ field.name }}: </span><span class="value">{{ getLabel( value[ field.name ], field ) }}</span></div>'+
