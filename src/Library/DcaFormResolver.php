@@ -11,6 +11,7 @@ class DcaFormResolver extends \System {
     protected $arrOptions = [];
     protected $strTable = null;
     protected $arrPalette = [];
+    protected $strRedirect = '';
     protected $blnSuccess = true;
     protected $blnValidate = false;
 
@@ -195,7 +196,6 @@ class DcaFormResolver extends \System {
         }
 
         $arrReturn['label'] = \Controller::replaceInsertTags( $arrReturn['label'] );
-        // $arrReturn['isReactive'] = in_array( $arrReturn['inputType'], [ 'select', 'radio', 'checkbox' ] );
         $arrReturn['component'] = Toolkit::convertTypeToComponent( $arrReturn['type'], $arrReturn['rgxp'] );
         $arrReturn['value'] = Toolkit::convertValue( $arrReturn['value'], $arrReturn );
         $arrReturn['labelValue'] = Toolkit::getLabelValue( $arrReturn['value'], $arrReturn );
@@ -216,9 +216,11 @@ class DcaFormResolver extends \System {
         }
 
         return [
-            'success' => $this->blnSuccess,
+
+            'form' => $arrForm,
             'saved' => !$blnValidateOnly,
-            'form' => $arrForm
+            'success' => $this->blnSuccess,
+            'redirect' => $this->strRedirect
         ];
     }
 
@@ -248,7 +250,7 @@ class DcaFormResolver extends \System {
             foreach ( $GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] as $arrCallback ) {
 
                 $this->import( $arrCallback[0] );
-                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $arrForm, $this );
+                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $arrForm, $this->arrOptions, $this );
             }
         }
 
@@ -257,7 +259,7 @@ class DcaFormResolver extends \System {
             foreach ( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] as $arrCallback ) {
 
                 $this->import( $arrCallback[0] );
-                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $arrForm, $this );
+                $this->strRedirect = $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, false, $this->arrOptions, $this );
             }
 
             return null;

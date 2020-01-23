@@ -77,7 +77,7 @@ class FormController extends Controller {
      */
     public function validateForm($id) {
         $this->container->get( 'contao.framework' )->initialize();
-        $arrOptions = [];
+        $arrOptions = \Input::get('attributes') ?: [];
         $objFormResolver = new FormResolver( $id, $arrOptions );
         header('Content-Type: application/json');
         echo json_encode( $objFormResolver->validate(), 512 );
@@ -91,7 +91,7 @@ class FormController extends Controller {
      */
     public function validateAndSaveForm($id) {
         $this->container->get( 'contao.framework' )->initialize();
-        $arrOptions = [];
+        $arrOptions = \Input::get('attributes') ?: [];
         $objFormResolver = new FormResolver( $id, $arrOptions );
         header('Content-Type: application/json');
         echo json_encode( $objFormResolver->save(), 512 );
@@ -106,7 +106,7 @@ class FormController extends Controller {
      */
     public function validateAndSaveDc($table) {
         $this->container->get( 'contao.framework' )->initialize();
-        $arrOptions = [];
+        $arrOptions = \Input::get('attributes') ?: [];
         $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
         header('Content-Type: application/json');
         echo json_encode( $objDcaFormResolver->save(), 512 );
@@ -120,7 +120,7 @@ class FormController extends Controller {
      */
     public function validateDc($table) {
         $this->container->get( 'contao.framework' )->initialize();
-        $arrOptions = [];
+        $arrOptions = \Input::get('attributes') ?: [];
         $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
         header('Content-Type: application/json');
         echo json_encode( $objDcaFormResolver->validate(), 512 );

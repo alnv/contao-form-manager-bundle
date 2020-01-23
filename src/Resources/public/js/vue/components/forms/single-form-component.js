@@ -46,6 +46,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 this.$http.get( '/form-manager/get' + strSource + '/' + this.identifier, {
                     params: {
                         type: this.type,
+                        attributes: this.attributes,
                         initialized: this.initialized,
                         subpalettes: this.subpalettes
                     }
@@ -95,8 +96,10 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 }
                 this.fetchBySource();
                 for ( var j = 0; j < this.$children.length; j++ ) {
-                    if ( this.$children[j].$vnode.tag && this.$children[j].$vnode.tag.indexOf('cart-summary') !== -1 ) {
-                        this.$children[j].reCalculate( strName, strValue );
+                    if ( this.$children[j].$vnode.tag && typeof this.$children[j].onChange !== 'undefined' ) {
+                        var objShare = {};
+                        objShare[ strName ] = strValue;
+                        this.$children[j].onChange( objShare );
                     }
                 }
             },
@@ -106,14 +109,30 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                     if ( objResponse.body ) {
                         this.setPalette( objResponse.body.form );
                         if ( objResponse.body.success ) {
-                            this.setActiveStateInMultipleForm();
+                            if ( this.$parent.forms ) {
+                                this.setActiveStateInMultipleForm();
+                            } else {
+                                var strRedirect = this.successRedirect;
+                                if ( typeof objResponse.body['redirect'] !== 'undefined' && objResponse.body['redirect'] ) {
+                                    strRedirect = objResponse.body['redirect'];
+                                }
+                                window.location.href = strRedirect;
+                            }
                             objParent.onChange( this );
                         }
                     }
                 });
             },
             getSubmitPromise: function() {
-                return this.$http.post( '/form-manager/'+ ( this.validateOnly ? 'validate' : 'save' ) +'/' + this.source + '/' + this.identifier, this.model, {
+                var parameters = [];
+                if ( typeof this.attributes !== 'undefined' && this.attributes ) {
+                    for (var strName in this.attributes) {
+                        if (this.attributes.hasOwnProperty(strName)) {
+                            parameters.push('attributes[' + strName + ']' + '=' + encodeURIComponent(this.attributes[strName]));
+                        }
+                    }
+                }
+                return this.$http.post( '/form-manager/'+ ( this.validateOnly ? 'validate' : 'save' ) +'/' + this.source + '/' + this.identifier + '?' + parameters.join('&'), this.model, {
                     emulateJSON: true,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 });
@@ -133,24 +152,18 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 }
             },
             setActiveStateInMultipleForm: function () {
-                if ( this.$parent.forms ) {
-                    for ( var i = 0; i < this.$parent.forms.length; i++ ) {
-                        if ( this.identifier === this.$parent.forms[i]['identifier'] && this.source === this.$parent.forms[i]['source'] ) {
-                            this.$parent.forms[i]['valid'] = true;
-                            if ( !this.$parent.forms[i]['valid'] ) {
-                                continue;
-                            }
-                            if ( this.$parent.forms[i+1] ) { // has next?
-                                this.$parent.setActive( this.$parent.forms[i+1], i+1 );
-                            }
-                            else {
-                                this.$parent.setComplete();
-                            }
+                for ( var i = 0; i < this.$parent.forms.length; i++ ) {
+                    if ( this.identifier === this.$parent.forms[i]['identifier'] && this.source === this.$parent.forms[i]['source'] ) {
+                        this.$parent.forms[i]['valid'] = true;
+                        if ( !this.$parent.forms[i]['valid'] ) {
+                            continue;
                         }
-                    }
-                } else {
-                    if ( this.successRedirect ) {
-                        window.location.href = this.successRedirect;
+                        if ( this.$parent.forms[i+1] ) { // has next?
+                            this.$parent.setActive( this.$parent.forms[i+1], i+1 );
+                        }
+                        else {
+                            this.$parent.setComplete();
+                        }
                     }
                 }
             },
@@ -234,6 +247,11 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             successRedirect: {
                 type: String,
                 default: '',
+                required: false
+            },
+            attributes: {
+                default: {},
+                type: Object,
                 required: false
             }
         },
