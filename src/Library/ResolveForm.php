@@ -2,46 +2,39 @@
 
 namespace Alnv\ContaoFormManagerBundle\Library;
 
-use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
+
+class ResolveForm extends Resolver {
 
 
-class FormResolver extends \System {
-
-
-    protected $strId = [];
+    protected $strId = null;
     protected $objForm = null;
-    protected $blnSuccess = true;
-    protected $blnValidate = false;
-    protected $arrFormFields = null;
+    protected $arrFields = [];
 
 
     public function __construct( $strId, $arrOptions = [] ) {
 
+        $this->strId = $strId;
         \System::loadLanguageFile('default');
         \Controller::loadDataContainer('tl_form_field');
 
-        $this->strId = $strId;
+        parent::__construct();
     }
 
 
     public function getForm() {
 
-        $arrForm = [
+        $arrForm = [ 'palettes' => [] ];
+        $objFields = \FormFieldModel::findPublishedByPid( $this->strId );
 
-            'palettes' => []
-        ];
-
-        $objFormFields = \FormFieldModel::findPublishedByPid( $this->strId );
-
-        if ( $objFormFields === null ) {
+        if ( $objFields === null ) {
 
             return $arrForm;
         }
 
-        $this->objForm = $objFormFields->getRelated('pid');
-        $objFormFields->reset();
+        $this->objForm = $objFields->getRelated('pid');
+        $objFields->reset();
 
-        if ( $objFormFields == null ) {
+        if ( $objFields === null ) {
 
             return $arrForm;
         }
@@ -52,23 +45,22 @@ class FormResolver extends \System {
         $objPalette->hide = false;
         $objPalette->name = 'default';
 
-        while ( $objFormFields->next() ) {
+        while ( $objFields->next() ) {
 
-            $arrField = $objFormFields->row();
+            $arrField = $objFields->row();
 
-            if ( $objFormFields->name != '' && isset( $GLOBALS['TL_DCA']['tl_form_field']['palettes'][ $objFormFields->type] ) && preg_match('/[,;]name[,;]/', $GLOBALS['TL_DCA']['tl_form_field']['palettes'][ $objFormFields->type ] ) ) {
+            if ( $arrField['name'] != '' && isset( $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$arrField['type']] ) && preg_match('/[,;]name[,;]/', $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$arrField['type']] ) ) {
 
-                $this->arrFormFields[ $objFormFields->name ] = $arrField;
+                $this->arrFields[ $arrField['name'] ] = $arrField;
             }
-
             else {
 
-                $this->arrFormFields[] = $arrField;
+                $this->arrFields[] = $arrField;
             }
 
             $arrAttributes = $this->parseAttributes( $arrField );
 
-            if ( !$arrAttributes ) {
+            if ( $arrAttributes === null ) {
 
                 continue;
             }
@@ -80,93 +72,7 @@ class FormResolver extends \System {
     }
 
 
-    protected function parseAttributes( $arrField ) {
-
-        $arrReturn = [];
-        $arrReturn['messages'] = [];
-        $arrReturn['validate'] = true;
-        $strClass = $GLOBALS['TL_FFL'][ $arrField['type'] ];
-
-        if ( !class_exists( $strClass ) ) {
-
-            return null;
-        }
-
-        $objField = new $strClass( $arrField );
-
-        if ( $this->blnValidate ) {
-
-            $objField->validate();
-
-            if ( $objField->hasErrors() ) {
-
-                $this->blnSuccess = false;
-                $arrReturn['validate'] = false;
-                $arrReturn['messages'] = $objField->getErrors();
-            }
-        }
-
-        foreach ( $arrField as $strFieldname => $strValue ) {
-
-            $arrReturn[ $strFieldname ] = $objField->{$strFieldname};
-        }
-
-        $arrReturn['isReactive'] = $this->isReactive( $arrReturn );
-        $arrReturn['label'] = \Controller::replaceInsertTags( $arrReturn['label'] );
-        $arrReturn['component'] = Toolkit::convertTypeToComponent( $arrReturn['type'], $arrReturn['rgxp'] );
-        $arrReturn['multiple'] = Toolkit::convertMultiple( $arrReturn['multiple'], $arrReturn );
-        $arrReturn['value'] = Toolkit::convertValue( $arrReturn['value'], $arrReturn );
-        $arrReturn['labelValue'] = Toolkit::getLabelValue( $arrReturn['value'], $arrReturn );
-
-        if ( isset( $GLOBALS['TL_HOOKS']['compileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['compileFormField'] ) ) {
-
-            foreach ( $GLOBALS['TL_HOOKS']['compileFormField'] as $arrCallback ) {
-
-                $this->import( $arrCallback[0] );
-                $arrReturn = $this->{$arrCallback[0]}->{$arrCallback[1]}( $arrReturn, $this );
-            }
-        }
-
-        return $arrReturn;
-    }
-
-
-    protected function isReactive( $arrField ) {
-
-        if ( in_array( $arrField['type'], [ 'select', 'radio', 'checkbox' ] ) ) {
-
-            return true;
-        }
-
-        return $arrField['isReactive'] ? true : false;
-    }
-
-
-    public function save( $blnValidateOnly = false ) {
-
-        $this->blnValidate = true;
-        $arrForm = $this->getForm();
-
-        if ( $this->blnSuccess && !$blnValidateOnly ) {
-
-            $this->saveSingleForm( $arrForm );
-        }
-
-        return [
-            'success' => $this->blnSuccess,
-            'saved' => !$blnValidateOnly,
-            'form' => $arrForm
-        ];
-    }
-
-
-    public function validate() {
-
-        return $this->save( true );
-    }
-
-
-    protected function saveSingleForm( &$arrForm ) {
+    public function saveRecord( $arrForm ) {
 
         $arrSubmittedAndLabels = $this->getSubmittedAndLabelsFromForm( $arrForm );
         $this->processFormData( $arrSubmittedAndLabels['submitted'], $arrSubmittedAndLabels['labels'] );
@@ -180,7 +86,7 @@ class FormResolver extends \System {
             foreach ($GLOBALS['TL_HOOKS']['prepareFormData'] as $arrCallback) {
 
                 $this->import( $arrCallback[0] );
-                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $arrLabels, $this->arrFormFields, null );
+                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $arrLabels, $this->arrFields, null );
             }
         }
 
@@ -302,6 +208,7 @@ class FormResolver extends \System {
             $_SESSION['FORM_DATA'][ $strKey ] = $this->objForm->allowTags ? \Input::postHtml( $strKey, true ) : \Input::post( $strKey, true );
         }
 
+        $arrFiles = []; //
         $_SESSION['FORM_DATA']['SUBMITTED_AT'] = time();
 
         if ( isset( $GLOBALS['TL_HOOKS']['processFormData'] ) && is_array($GLOBALS['TL_HOOKS']['processFormData'] ) ) {
@@ -309,7 +216,7 @@ class FormResolver extends \System {
             foreach ( $GLOBALS['TL_HOOKS']['processFormData'] as $arrCallback ) {
 
                 $this->import( $arrCallback[0] );
-                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $this->objForm->row(), [], $arrLabels, null );
+                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $this->objForm->row(), $arrFiles, $arrLabels, $this );
             }
         }
 

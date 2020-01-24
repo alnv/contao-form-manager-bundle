@@ -124,29 +124,30 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 });
             },
             getSubmitPromise: function() {
-                //todo improve parameters handler!
-                var parameters = [];
-                if ( typeof this.attributes !== 'undefined' && this.attributes ) {
-                    for (var strName in this.attributes) {
-                        if (this.attributes.hasOwnProperty(strName)) {
-                            parameters.push('attributes[' + strName + ']' + '=' + encodeURIComponent(this.attributes[strName]));
-                        }
-                    }
-                }
-                parameters.push( 'type=' + encodeURIComponent( this.type ) );
-                parameters.push( 'initialized=' + encodeURIComponent( this.initialized ) );
-                if ( typeof this.subpalettes !== 'undefined' && this.subpalettes ) {
-                    for (var strSubPalette in this.subpalettes) {
-                        if (this.subpalettes.hasOwnProperty(strSubPalette)) {
-                            parameters.push('subpalettes[]' + '=' + encodeURIComponent(this.subpalettes[strSubPalette]));
-                        }
-                    }
-                }
-
-                return this.$http.post( '/form-manager/'+ ( this.validateOnly ? 'validate' : 'save' ) +'/' + this.source + '/' + this.identifier + '?' + parameters.join('&'), this.model, {
+                return this.$http.post( '/form-manager/'+ ( this.validateOnly ? 'validate' : 'save' ) +'/' + this.source + '/' + this.identifier + this.getParameters(), this.model, {
                     emulateJSON: true,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 });
+            },
+            getParameters: function() {
+                var arrParameters = [];
+                if ( typeof this.attributes !== 'undefined' && this.attributes ) {
+                    for (var strName in this.attributes) {
+                        if (this.attributes.hasOwnProperty(strName)) {
+                            arrParameters.push('attributes[' + strName + ']' + '=' + encodeURIComponent(this.attributes[strName]));
+                        }
+                    }
+                }
+                if ( typeof this.subpalettes !== 'undefined' && this.subpalettes ) {
+                    for (var strSubPalette in this.subpalettes) {
+                        if (this.subpalettes.hasOwnProperty(strSubPalette)) {
+                            arrParameters.push('subpalettes[]' + '=' + encodeURIComponent(this.subpalettes[strSubPalette]));
+                        }
+                    }
+                }
+                arrParameters.push( 'type=' + encodeURIComponent( this.type ) );
+                arrParameters.push( 'initialized=' + encodeURIComponent( this.initialized ) );
+                return '?' + arrParameters.join('&');
             },
             setPalette: function ( palette ) {
                 this.palettes = palette;

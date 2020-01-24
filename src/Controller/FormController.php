@@ -2,9 +2,9 @@
 
 namespace Alnv\ContaoFormManagerBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
-use Alnv\ContaoFormManagerBundle\Library\FormResolver;
-use Alnv\ContaoFormManagerBundle\Library\DcaFormResolver;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Alnv\ContaoFormManagerBundle\Library\ResolveDca;
+use Alnv\ContaoFormManagerBundle\Library\ResolveForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Alnv\ContaoFormManagerBundle\Library\MultiFormResolver;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -17,7 +17,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
  */
 class FormController extends Controller {
 
-
     /**
      *
      * @Route("/getDcForm/{table}", name="getDcFormByTable")
@@ -25,19 +24,13 @@ class FormController extends Controller {
      */
     public function getDcFormByTable( $table ) {
         $this->container->get( 'contao.framework' )->initialize();
-        $arrOptions = [
-            'type' => \Input::get('type') ?: '',
-            'initialized' => \Input::get('initialized') === 'true'
-        ];
-        if ( \Input::get('subpalettes') !== null && is_array( \Input::get('subpalettes') ) ) {
-            $arrOptions['subpalettes'] = \Input::get('subpalettes');
-        }
-        $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
-        header('Content-Type: application/json');
-        echo json_encode( $objDcaFormResolver->getForm(), 512 );
-        exit;
+        $arrOptions = \Input::get('attributes') ?: [];
+        $arrOptions['type'] = \Input::get('type') ?: '';
+        $arrOptions['initialized'] = \Input::get('initialized') ?: '';
+        $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
+        $objForm = new ResolveDca( $table, $arrOptions );
+        return new JsonResponse($objForm->getForm());
     }
-
 
     /**
      *
@@ -49,65 +42,9 @@ class FormController extends Controller {
         $arrOptions = [
             'wizard' => \Input::get('wizard') ?: null
         ];
-        $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
-        header('Content-Type: application/json');
-        echo json_encode(  $objDcaFormResolver->getWizard(), 512 );
-        exit;
+        $objForm = new ResolveDca( $table, $arrOptions );
+        return new JsonResponse($objForm->getWizard());
     }
-
-
-    /**
-     *
-     * @Route("/getForm/{id}", name="getFormById")
-     * @Method({"GET"})
-     */
-    public function getFormByTable( $id ) {
-        $this->container->get( 'contao.framework' )->initialize();
-        $arrOptions = [];
-        $objFormResolver = new FormResolver( $id, $arrOptions );
-        header('Content-Type: application/json');
-        echo json_encode( $objFormResolver->getForm(), 512 );
-        exit;
-    }
-
-    /**
-     *
-     * @Route("/validate/form/{id}", name="validateForm")
-     * @Method({"POST"})
-     */
-    public function validateForm($id) {
-        $this->container->get( 'contao.framework' )->initialize();
-
-        $arrOptions = \Input::get('attributes') ?: [];
-        $arrOptions['type'] = \Input::get('type') ?: '';
-        $arrOptions['initialized'] = \Input::get('initialized') ?: '';
-        $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
-
-        $objFormResolver = new FormResolver( $id, $arrOptions );
-        header('Content-Type: application/json');
-        echo json_encode( $objFormResolver->validate(), 512 );
-        exit;
-    }
-
-    /**
-     *
-     * @Route("/save/form/{id}", name="validateAndSaveForm")
-     * @Method({"POST"})
-     */
-    public function validateAndSaveForm($id) {
-        $this->container->get( 'contao.framework' )->initialize();
-
-        $arrOptions = \Input::get('attributes') ?: [];
-        $arrOptions['type'] = \Input::get('type') ?: '';
-        $arrOptions['initialized'] = \Input::get('initialized') ?: '';
-        $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
-
-        $objFormResolver = new FormResolver( $id, $arrOptions );
-        header('Content-Type: application/json');
-        echo json_encode( $objFormResolver->save(), 512 );
-        exit;
-    }
-
 
     /**
      *
@@ -116,16 +53,12 @@ class FormController extends Controller {
      */
     public function validateAndSaveDc($table) {
         $this->container->get( 'contao.framework' )->initialize();
-
         $arrOptions = \Input::get('attributes') ?: [];
         $arrOptions['type'] = \Input::get('type') ?: '';
         $arrOptions['initialized'] = \Input::get('initialized') ?: '';
         $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
-
-        $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
-        header('Content-Type: application/json');
-        echo json_encode( $objDcaFormResolver->save(), 512 );
-        exit;
+        $objForm = new ResolveDca( $table, $arrOptions );
+        return new JsonResponse($objForm->save());
     }
 
     /**
@@ -135,18 +68,49 @@ class FormController extends Controller {
      */
     public function validateDc($table) {
         $this->container->get( 'contao.framework' )->initialize();
-
         $arrOptions = \Input::get('attributes') ?: [];
         $arrOptions['type'] = \Input::get('type') ?: '';
         $arrOptions['initialized'] = \Input::get('initialized') ?: '';
         $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
-
-        $objDcaFormResolver = new DcaFormResolver( $table, $arrOptions );
-        header('Content-Type: application/json');
-        echo json_encode( $objDcaFormResolver->validate(), 512 );
-        exit;
+        $objForm = new ResolveDca( $table, $arrOptions );
+        return new JsonResponse($objForm->validate());
     }
 
+    /**
+     *
+     * @Route("/getForm/{id}", name="getFormById")
+     * @Method({"GET"})
+     */
+    public function getFormByTable( $id ) {
+        $this->container->get( 'contao.framework' )->initialize();
+        $arrOptions = [];
+        $objForm = new ResolveForm( $id, $arrOptions );
+        return new JsonResponse($objForm->getForm());
+    }
+
+    /**
+     *
+     * @Route("/validate/form/{id}", name="validateForm")
+     * @Method({"POST"})
+     */
+    public function validateForm($id) {
+        $this->container->get( 'contao.framework' )->initialize();
+        $arrOptions = [];
+        $objForm = new ResolveForm( $id, $arrOptions );
+        return new JsonResponse($objForm->validate());
+    }
+
+    /**
+     *
+     * @Route("/save/form/{id}", name="validateAndSaveForm")
+     * @Method({"POST"})
+     */
+    public function validateAndSaveForm($id) {
+        $this->container->get( 'contao.framework' )->initialize();
+        $arrOptions = [];
+        $objForm = new ResolveForm( $id, $arrOptions );
+        return new JsonResponse($objForm->save());
+    }
 
     /**
      *
@@ -156,8 +120,6 @@ class FormController extends Controller {
     public function saveMultiForm() {
         $this->container->get( 'contao.framework' )->initialize();
         $objMultiFormResolver = new MultiFormResolver();
-        header('Content-Type: application/json');
-        echo json_encode( $objMultiFormResolver->save(), 512 );
-        exit;
+        return new JsonResponse( $objMultiFormResolver->save() );
     }
 }
