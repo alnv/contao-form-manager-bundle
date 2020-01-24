@@ -46,10 +46,6 @@ class MultiFormResolver extends \System {
                         $this->blnSuccess = false;
                     }
 
-                    // $arrDebug['s'] = $this->blnSuccess;
-                    // $arrDebug['state'][] = $arrState;
-                    // return $arrDebug;
-
                     break;
 
                 case 'dc':
@@ -63,7 +59,6 @@ class MultiFormResolver extends \System {
         // @todo bind notification center
         // @todo hook
         // @todo generate redirect
-
         return $this->getState();
     }
 
