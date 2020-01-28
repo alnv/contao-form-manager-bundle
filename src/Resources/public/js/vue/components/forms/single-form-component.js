@@ -51,10 +51,14 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         subpalettes: this.subpalettes
                     }
                 }).then(function ( objResponse ) {
-                    if ( objResponse.body ) {
+                    if ( objResponse.body && objResponse.ok ) {
                         this.initialized = true;
                         this.model = this.setModel( objResponse.body );
                         this.setPalette( objResponse.body );
+                        this.$parent.clearAlert();
+                    }
+                    if ( !objResponse.ok ) {
+                        this.$parent.setErrorAlert('',this);
                     }
                 });
             },
@@ -94,6 +98,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 if ( blnIsSelector === true ) {
                     this.subpalettes[ strName ] = strName + '::' + strValue;
                 }
+                this.$parent.setLoadingAlert('', this);
                 this.fetchBySource();
                 for ( var j = 0; j < this.$children.length; j++ ) {
                     if ( this.$children[j].$vnode.tag && typeof this.$children[j].onChange !== 'undefined' ) {
@@ -105,6 +110,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             },
             onSubmit: function () {
                 var objParent = this.getParentSharedInstance(this.$parent);
+                this.$parent.setLoadingAlert('', this);
                 this.getSubmitPromise().then( function ( objResponse ) {
                     if ( objResponse.body ) {
                         this.setPalette( objResponse.body.form );
@@ -119,6 +125,9 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                                 window.location.href = strRedirect;
                             }
                             objParent.onChange( this );
+                            this.$parent.clearAlert();
+                        } else {
+                            this.$parent.setErrorAlert('', this);
                         }
                     }
                 });
