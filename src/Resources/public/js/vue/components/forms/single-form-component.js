@@ -122,7 +122,9 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                                 if ( typeof objResponse.body['redirect'] !== 'undefined' && objResponse.body['redirect'] ) {
                                     strRedirect = objResponse.body['redirect'];
                                 }
-                                window.location.href = strRedirect;
+                                if ( strRedirect ) {
+                                    window.location.href = strRedirect;
+                                }
                             }
                             objParent.onChange( this );
                             this.$parent.clearAlert();

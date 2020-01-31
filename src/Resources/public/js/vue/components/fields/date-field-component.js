@@ -47,7 +47,7 @@ Vue.component( 'date-field', {
     '<div class="field-component date" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
             '<label :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
-            '<input type="date" v-model="value" :id="idPrefix + \'id_\' + name">' +
+            '<input type="text" v-model="value" :id="idPrefix + \'id_\' + name" v-pikaday>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
         '</div>' +
