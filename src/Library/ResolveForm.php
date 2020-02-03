@@ -216,7 +216,7 @@ class ResolveForm extends Resolver {
             foreach ( $GLOBALS['TL_HOOKS']['processFormData'] as $arrCallback ) {
 
                 $this->import( $arrCallback[0] );
-                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $this->objForm->row(), $arrFiles, $arrLabels, $this );
+                // $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $this->objForm->row(), $arrFiles, $arrLabels, $this );
             }
         }
 
