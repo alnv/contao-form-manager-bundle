@@ -31,6 +31,9 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
     'formWizard' => [
         'default' => 'form-wizard'
     ],
+    'nouislider' => [
+        'default' => 'number-field'
+    ],
     'fieldsetStart' => [
         'default' => 'fieldset-start'
     ]
@@ -50,6 +53,7 @@ $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/comp
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/select-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/hidden-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/upload-field-component.js' );
+$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/number-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/checkbox-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/textarea-field-component.js' );
 $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/fieldset-start-component.js' );
