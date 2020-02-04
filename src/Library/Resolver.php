@@ -71,7 +71,7 @@ abstract class Resolver extends \System {
 
     protected function isReactive( $arrField ) {
 
-        if ( in_array( $arrField['type'], [ 'select', 'radio', 'checkbox' ] ) ) {
+        if ( in_array( $arrField['type'], [ 'select', 'radio', 'checkbox', 'nouislider' ] ) ) {
 
             return true;
         }

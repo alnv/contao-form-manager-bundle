@@ -24,6 +24,9 @@ Vue.component( 'select-field', {
             }
         }
     },
+    mounted: function() {
+        this.value = {};
+    },
     props: {
         eval: {
             default: {},
@@ -36,7 +39,7 @@ Vue.component( 'select-field', {
             required: true
         },
         value: {
-            default: '',
+            default: {},
             required: false,
             type: String|Array
         },
@@ -49,10 +52,10 @@ Vue.component( 'select-field', {
     template:
     '<div class="field-component select" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
-            '<label class="label" :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
+            '<label v-if="eval.label" class="label" :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
             '<div class="select-container">' +
                 '<select v-model="value" :id="idPrefix + \'id_\' + name" :multiple="eval.multiple">' +
-                    '<option v-for="option in eval.options" v-bind:value="option.value">{{option.label}}</option>' +
+                    '<option v-for="option in eval.options" :value="option.value">{{option.label}}</option>' +
                 '</select>' +
             '</div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +

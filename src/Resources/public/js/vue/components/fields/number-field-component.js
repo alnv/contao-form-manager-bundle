@@ -1,13 +1,13 @@
 Vue.component( 'number-field', {
     data: function () {
         return {
-            timeout: null
+            value: null,
+            active: false
         }
     },
     watch: {
         value: function() {
             this.$emit( 'input', this.value );
-            this.$parent.submitOnChange( this.value, this.name, false )
         }
     },
     methods: {
@@ -19,6 +19,7 @@ Vue.component( 'number-field', {
             if ( this.eval['mandatory'] ) {
                 objCssClass['mandatory'] = true;
             }
+            objCssClass['active'] = this.active;
             return objCssClass;
         },
         getRange: function () {
@@ -50,7 +51,7 @@ Vue.component( 'number-field', {
         },
         getOptions: function () {
             return {
-                start: [0],
+                start: this.value.length ? this.value : [0],
                 snap: true,
                 connect: true,
                 range: this.getRange()
@@ -65,8 +66,22 @@ Vue.component( 'number-field', {
             }
             return length
         },
-        onChange: function ($event) {
+        onNoUiSliderChange: function ($event) {
             this.value = $event.target.value;
+        },
+        getValue: function () {
+            return typeof this.value === 'object' ? this.value.join('') : this.value;
+        },
+        clearValue: function () {
+            this.value = [];
+        },
+        setActiveMode: function () {
+            for ( var i = 0; i < this.$parent.$children.length; i++ ) {
+                if ( this.$parent.$children[i].$vnode !== this.$vnode && this.$parent.$children[i].$vnode.componentOptions.tag === 'number-field') {
+                    this.$parent.$children[i].active = false;
+                }
+            }
+            this.active = !this.active;
         }
     },
     props: {
@@ -93,8 +108,22 @@ Vue.component( 'number-field', {
     template:
         '<div class="field-component number" v-bind:class="setCssClass()">' +
             '<div class="field-component-container">' +
-                '<p>{{ eval.label }}</p>' +
-                '<div v-nouislider="getOptions()" @change="onChange($event)"></div>' +
+                '<input type="hidden" v-model="value">'+
+                '<div class="range-menu" @click="setActiveMode()">' +
+                    '<div class="range-menu-container">' +
+                        '<span>{{ eval.label }}</span>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="range-input">' +
+                    '<div class="range-input-container">' +
+                        '<div v-nouislider="getOptions()" @change="onNoUiSliderChange($event)"></div>' +
+                        '<div class="range-input-detail">' +
+                            '<div class="range-current-value"><span>{{ getValue() ? getValue() : getOptions()[\'range\'][\'min\'] }}</span></div>' +
+                            '<div class="range-reset"><button @click="clearValue()">Alle</button></div>' +
+                            '<div class="range-max-value"><span>{{ getOptions()[\'range\'][\'max\'] }}</span></div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
                 '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
                 '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
             '</div>' +

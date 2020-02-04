@@ -100,9 +100,9 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 }
                 this.$parent.setLoadingAlert('', this);
                 this.fetchBySource();
+                var objShare = {};
                 for ( var j = 0; j < this.$children.length; j++ ) {
                     if ( this.$children[j].$vnode.tag && typeof this.$children[j].onChange !== 'undefined' ) {
-                        var objShare = {};
                         objShare[ strName ] = strValue;
                         this.$children[j].onChange( objShare );
                     }
