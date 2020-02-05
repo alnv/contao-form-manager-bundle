@@ -20,9 +20,8 @@ Vue.component( 'text-field', {
             if ( this.eval['tl_class'] ) {
                 objCssClass[this.eval['tl_class']] = true;
             }
-            if ( this.eval['mandatory'] ) {
-                objCssClass['mandatory'] = true;
-            }
+            objCssClass['mandatory'] = !!this.eval['mandatory'];
+            objCssClass['multiple'] = !!this.eval['multiple'];
             return objCssClass;
         }
     },
@@ -46,12 +45,15 @@ Vue.component( 'text-field', {
             type: String ,
             required: false
         }
-     },
+    },
     template:
     '<div class="field-component text" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
             '<label class="label" :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
-            '<input type="text" v-model="value" :id="idPrefix + \'id_\' + name" :placeholder="eval.placeholder">' +
+            '<input type="text" v-model="value" :id="idPrefix + \'id_\' + name" :placeholder="eval.placeholder" v-if="!eval.multiple">' +
+            '<div v-if="eval.multiple" class="field-multiple">' +
+                '<input v-for="n in eval.size" type="text" v-model="value[n-1]" :id="idPrefix + \'id_\' + name + (n === 1 ? \'\' : n )" :placeholder="eval.placeholder">' +
+            '</div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
         '</div>' +

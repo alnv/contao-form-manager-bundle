@@ -5,7 +5,7 @@ Vue.component( 'form-wizard', {
             values: [],
             editMode: false,
             selectedValue: {},
-            switchButtonLabel: '',
+            // switchButtonLabel: '',
             hasDefaultValues: false
         }
     },
@@ -49,9 +49,10 @@ Vue.component( 'form-wizard', {
             }
         },
         editValue: function(value) {
-            this.editMode = !this.editMode;
-            this.switchButtonLabel = this.editMode ? this.closeButtonLabel : this.editButtonLabel;
-            this.selectedValue = this.editMode ? value : {};
+            // this.editMode = !this.editMode;
+            // this.switchButtonLabel = this.editMode ? this.closeButtonLabel : this.editButtonLabel;
+            this.editMode = true;
+            this.selectedValue = value;
         },
         deleteValue: function(value) {
             this.editMode = false;
@@ -167,25 +168,25 @@ Vue.component( 'form-wizard', {
         }
     },
     mounted: function () {
-        this.switchButtonLabel = this.editButtonLabel;
+        // this.switchButtonLabel = this.editButtonLabel;
         this.fetch();
     },
     template:
         '<div class="field-component form-wizard" v-bind:class="setCssClass()">' +
             '<div class="field-component-container">' +
-                '<p class="label">{{ eval.label }}</p>' +
-                '<div class="operations" v-if="values && values.length < eval.maxEntities">' +
+                '<p v-if="eval.label" class="label">{{ eval.label }}</p>' +
+                '<div class="operations" v-if="values && values.length < eval.maxEntities || !eval.maxEntities">' +
                     '<button type="button" @click="addValue(false)" class="button add">{{ addButtonLabel }}</button>' +
                 '</div>' +
                 '<div v-if="values" class="entities">' +
                     '<div class="entity" v-for="value in values">' +
                         '<div class="rows">' +
                             '<template v-for="field in fields">' +
-                                '<div class="row" v-bind:class="setFieldCssClass(field,value)"><span class="name">{{ field.name }}: </span><span class="value">{{ getLabel( value[ field.name ], field ) }}</span></div>'+
+                                '<div class="row" v-bind:class="setFieldCssClass(field,value)"><span class="name">{{ field.label }}: </span><span class="value">{{ getLabel( value[ field.name ], field ) }}</span></div>'+
                             '</template>' +
                         '</div>'+
                         '<div class="operations">' +
-                            '<button type="button" @click="editValue(value)" class="button edit">{{ switchButtonLabel }}</button>' +
+                            '<button type="button" @click="editValue(value)" class="button edit">{{ editButtonLabel }}</button>' +
                             '<button v-if="eval.allowToDelete" type="button" @click="deleteValue(value)" class="button delete">{{ deleteButtonLabel }}</button>' +
                         '</div>' +
                     '</div>' +

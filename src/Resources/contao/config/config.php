@@ -7,6 +7,9 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
         'time' => 'date-field',
         'date' => 'date-field'
     ],
+    'url' => [
+        'default' => 'text-field',
+    ],
     'email' => [
         'default' => 'email-field',
     ],
