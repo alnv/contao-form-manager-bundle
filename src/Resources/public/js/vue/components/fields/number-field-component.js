@@ -2,7 +2,8 @@ Vue.component( 'number-field', {
     data: function () {
         return {
             value: null,
-            active: false
+            range: null,
+            active: false,
         }
     },
     watch: {
@@ -22,39 +23,48 @@ Vue.component( 'number-field', {
             objCssClass['active'] = this.active;
             return objCssClass;
         },
-        getRange: function () {
+        setRange: function () {
+            if ( this.range ) {
+                return null;
+            }
+            this.range = {};
             if ( !this.eval.options ) {
-                return {
+                this.range = {
                     'min': 0,
                     'max': 100
                 };
+                return  null;
             }
-            var current = 1, objOptions = {}, total = this.getObjectLength();
+            var current = 1, total = this.getObjectLength();
             for ( var name in this.eval.options ) {
                 if ( this.eval.options.hasOwnProperty(name) ) {
                     if ( current === 1 ) {
-                        objOptions['min'] = parseFloat( this.eval.options[name]['value'] );
+                        this.range['min'] = parseFloat( this.eval.options[name]['value'] );
                         ++current;
                         continue;
                     }
                     if ( current === total ) {
-                        objOptions['max'] = parseFloat( this.eval.options[name]['value'] );
+                        this.range['max'] = parseFloat( this.eval.options[name]['value'] );
                         ++current;
                         continue;
                     }
                     var step = Math.ceil( ( 100 / total ) * current ) + '%';
-                    objOptions[step] = parseFloat( this.eval.options[name]['value'] );
+                    this.range[step] = parseFloat( this.eval.options[name]['value'] );
                     ++current;
                 }
             }
-            return objOptions;
         },
         getOptions: function () {
+            this.setRange();
+            var arrStart = this.value.length ? this.value : [0];
+            if (arrStart.length === 1 && this.eval['useBetweenRange']) {
+                arrStart.push(this.range['max']);
+            }
             return {
-                start: this.value.length ? this.value : [0],
                 snap: true,
                 connect: true,
-                range: this.getRange()
+                start: arrStart,
+                range: this.range
             }
         },
         getObjectLength: function () {
@@ -69,8 +79,16 @@ Vue.component( 'number-field', {
         onNoUiSliderChange: function ($event) {
             this.value = $event.target.value;
         },
-        getValue: function () {
-            return typeof this.value === 'object' ? this.value.join('') : this.value;
+        getValue: function (type) {
+            if ( typeof this.value === 'object' && this.value.length ) {
+                if (type === 'min') {
+                    return this.value[0];
+                }
+                if (type === 'max' && this.eval['useBetweenRange']) {
+                    return this.value[1];
+                }
+            }
+            return this.range[type];
         },
         clearValue: function () {
             this.value = [];
@@ -105,6 +123,14 @@ Vue.component( 'number-field', {
             required: false
         }
     },
+    mounted: function() {
+        window.addEventListener('mousedown', function() {
+            this.active = false;
+        }.bind(this));
+        this.$el.addEventListener('mousedown',function(e){
+            e.stopPropagation();
+        });
+    },
     template:
         '<div class="field-component number" v-bind:class="setCssClass()">' +
             '<div class="field-component-container">' +
@@ -118,9 +144,9 @@ Vue.component( 'number-field', {
                     '<div class="range-input-container">' +
                         '<div v-nouislider="getOptions()" @change="onNoUiSliderChange($event)"></div>' +
                         '<div class="range-input-detail">' +
-                            '<div class="range-current-value"><span>{{ getValue() ? getValue() : getOptions()[\'range\'][\'min\'] }}</span></div>' +
+                            '<div class="range-current-value"><span>{{ getValue(\'min\') }}</span></div>' +
                             '<div class="range-reset"><button @click="clearValue()">Alle</button></div>' +
-                            '<div class="range-max-value"><span>{{ getOptions()[\'range\'][\'max\'] }}</span></div>' +
+                            '<div class="range-max-value"><span>{{ getValue(\'max\') }}</span></div>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +

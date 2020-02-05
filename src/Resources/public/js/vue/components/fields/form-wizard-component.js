@@ -112,6 +112,9 @@ Vue.component( 'form-wizard', {
                     }
                 }
             }
+            if ( typeof value === 'object' && JSON.stringify( value ) === '{}' || JSON.stringify( value ) === '[]' ) {
+                return  '';
+            }
             return value;
         },
         setInput: function (field) {
