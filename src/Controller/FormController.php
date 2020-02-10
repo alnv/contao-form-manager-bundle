@@ -2,6 +2,7 @@
 
 namespace Alnv\ContaoFormManagerBundle\Controller;
 
+use Alnv\ContaoFormManagerBundle\Library\Upload;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Alnv\ContaoFormManagerBundle\Library\ResolveDca;
 use Alnv\ContaoFormManagerBundle\Library\ResolveForm;
@@ -16,6 +17,26 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
  * @Route("/form-manager", defaults={"_scope" = "frontend", "_token_check" = false})
  */
 class FormController extends Controller {
+
+    /**
+     *
+     * @Route("/upload", name="upload")
+     * @Method({"POST"})
+     */
+    public function upload() {
+        $this->container->get( 'contao.framework' )->initialize();
+        $objUpload = new Upload([
+            'identifier' => \Input::post('identifier'),
+            'source' => \Input::post('source'),
+            'table' => \Input::post('table')
+        ]);
+        $intStatus = 200;
+        $arrUpload = $objUpload->send();
+        if ( !$arrUpload['success'] ) {
+            $intStatus = 400;
+        }
+        return new JsonResponse($arrUpload,$intStatus);
+    }
 
     /**
      *

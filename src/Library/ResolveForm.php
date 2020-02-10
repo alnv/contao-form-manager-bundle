@@ -59,6 +59,9 @@ class ResolveForm extends Resolver {
             }
 
             $arrAttributes = $this->parseAttributes( $arrField );
+            $arrAttributes['_source'] = 'form';
+            $arrAttributes['_table'] = 'tl_form_field';
+            $arrAttributes['_identifier'] = $arrField['name'];
 
             if ( $arrAttributes === null ) {
 

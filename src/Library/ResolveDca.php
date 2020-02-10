@@ -60,7 +60,7 @@ class ResolveDca extends Resolver {
             foreach ( $arrPalette['arrFields'] as $strFieldname ) {
 
                 $arrField = $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $strFieldname ];
-                $strClass = $GLOBALS['TL_FFL'][ $arrField['inputType'] ];
+                $strClass = Toolkit::convertBackendFieldToFrontendField( $arrField['inputType'] );
 
                 if ( !class_exists( $strClass ) ) {
 
@@ -74,6 +74,10 @@ class ResolveDca extends Resolver {
 
                 $arrAttributes = $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
                 $arrAttributes = $this->parseAttributes( $arrAttributes );
+                $arrAttributes['_source'] = 'dc';
+                $arrAttributes['_table'] = $this->strTable;
+                $arrAttributes['_identifier'] = $strFieldname;
+
 
                 if ( $arrAttributes === null ) {
 

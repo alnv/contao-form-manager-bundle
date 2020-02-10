@@ -22,7 +22,7 @@ abstract class Resolver extends \System {
         $arrField = [];
         $arrField['messages'] = [];
         $arrField['validate'] = true;
-        $strClass = $GLOBALS['TL_FFL'][ $arrFieldAttributes['type'] ];
+        $strClass = Toolkit::convertBackendFieldToFrontendField( $arrFieldAttributes['type'] );
 
         if ( !class_exists( $strClass ) ) {
 
