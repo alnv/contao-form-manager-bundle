@@ -25,7 +25,7 @@ Vue.component( 'select-field', {
         }
     },
     mounted: function() {
-        this.value = {};
+        // this.value = [];
     },
     props: {
         eval: {
@@ -53,10 +53,13 @@ Vue.component( 'select-field', {
     '<div class="field-component select" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
             '<label v-if="eval.label" class="label" :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
-            '<div class="select-container">' +
-                '<select v-model="value" :id="idPrefix + \'id_\' + name" :multiple="eval.multiple">' +
+            '<div v-if="!eval.multiple" class="select-container">' +
+                '<select v-model="value" :id="idPrefix + \'id_\' + name">' +
                     '<option v-for="option in eval.options" :value="option.value">{{option.label}}</option>' +
                 '</select>' +
+            '</div>' +
+            '<div v-if="eval.multiple">' +
+                '<v-select v-model="value" :placeholder="eval.label" :options="eval.options" :multiple="true" :id="idPrefix + \'id_\' + name" :reduce="value => value.value" label="label"></v-select>' +
             '</div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
