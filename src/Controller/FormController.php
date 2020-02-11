@@ -25,17 +25,47 @@ class FormController extends Controller {
      */
     public function upload() {
         $this->container->get( 'contao.framework' )->initialize();
-        $objUpload = new Upload([
+        $objUpload = new Upload();
+        $intStatus = 200;
+        $arrUpload = $objUpload->upload([
             'identifier' => \Input::post('identifier'),
             'source' => \Input::post('source'),
             'table' => \Input::post('table')
         ]);
-        $intStatus = 200;
-        $arrUpload = $objUpload->send();
         if ( !$arrUpload['success'] ) {
             $intStatus = 400;
         }
         return new JsonResponse($arrUpload,$intStatus);
+    }
+
+    /**
+     *
+     * @Route("/getFiles", name="getFiles")
+     * @Method({"POST"})
+     */
+    public function getFiles() {
+        $this->container->get( 'contao.framework' )->initialize();
+        $objUpload = new Upload();
+        return new JsonResponse($objUpload->getFiles([
+            'files' => \Input::post('files'),
+            'table' => \Input::post('table'),
+            'fieldname' => \Input::post('fieldname')
+        ]));
+    }
+
+    /**
+     *
+     * @Route("/deleteFile", name="deleteFile")
+     * @Method({"POST"})
+     */
+    public function deleteFile() {
+        $this->container->get( 'contao.framework' )->initialize();
+        $objUpload = new Upload();
+        return new JsonResponse($objUpload->delete([
+            'file' => \Input::post('file'),
+            'table' => \Input::post('table'),
+            'fieldname' => \Input::post('fieldname')
+        ]));
     }
 
     /**

@@ -6,10 +6,13 @@ use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
 class Upload {
 
-    protected $arrMessages = '';
-    protected $blnSuccess = true;
+    public function upload( $arrOptions ) {
 
-    public function __construct( $arrOptions ) {
+        $arrResponse = [
+            'error' => '',
+            'file' => null,
+            'success' => true
+        ];
 
         switch ( $arrOptions['source'] ) {
 
@@ -38,20 +41,73 @@ class Upload {
 
                 if ( $objField->hasErrors() ) {
 
-                    $this->blnSuccess = false;
-                    $this->arrMessages = $objField->getErrors();
+                    $arrResponse['success'] = false;
+                    $arrResponse['error'] = implode(',', $objField->getErrors());
                 }
+
+                $arrResponse['file'] = $_SESSION['FILES'][ $arrOptions['identifier'] ];
 
                 break;
         }
+
+        return $arrResponse;
     }
 
-    public function send() {
 
-        return [
+    public function delete( $arrOptions ) {
 
-            'error' => implode(',', $this->arrMessages ),
-            'success' => $this->blnSuccess
+        $arrResponse = [];
+
+        $objFile = \FilesModel::findByUuid( $arrOptions['file'] );
+
+        if ( $objFile == null ) {
+
+            return $arrResponse;
+        }
+
+        \Files::getInstance()->delete( $objFile->path );
+        $objFile->delete();
+
+        return $arrResponse;
+    }
+
+
+    public function getFiles( $arrOptions ) {
+
+        $arrResponse = [
+            'files' => []
         ];
+
+        if ( empty( $arrOptions['files'] ) ) {
+
+            return $arrResponse;
+        }
+
+        foreach ( $arrOptions['files'] as $strUuid ) {
+
+            if ( !\Validator::isUuid( $strUuid ) ) {
+
+                continue;
+            }
+
+            $objFile = \FilesModel::findByUuid( $strUuid );
+
+            if ( $objFile == null ) {
+
+                continue;
+            }
+
+            $arrResponse['files'][] = [
+                'id' => $objFile->id,
+                'name' => $objFile->name,
+                'path' => $objFile->path,
+                'type' => $objFile->type,
+                'extension' => $objFile->extension,
+                'uuid' => \StringUtil::binToUuid( $objFile->uuid ),
+                'size' => \System::getReadableSize((new \File($objFile->path))->filesize)
+            ];
+        }
+
+        return $arrResponse;
     }
 }
