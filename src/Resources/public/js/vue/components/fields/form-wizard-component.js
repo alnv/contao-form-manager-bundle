@@ -5,7 +5,6 @@ Vue.component( 'form-wizard', {
             values: [],
             editMode: false,
             selectedValue: {},
-            // switchButtonLabel: '',
             hasDefaultValues: false
         }
     },
@@ -55,8 +54,6 @@ Vue.component( 'form-wizard', {
             }
         },
         editValue: function(value) {
-            // this.editMode = !this.editMode;
-            // this.switchButtonLabel = this.editMode ? this.closeButtonLabel : this.editButtonLabel;
             this.editMode = true;
             this.selectedValue = value;
         },
@@ -174,7 +171,6 @@ Vue.component( 'form-wizard', {
         }
     },
     mounted: function () {
-        // this.switchButtonLabel = this.editButtonLabel;
         this.fetch();
     },
     template:
@@ -182,7 +178,7 @@ Vue.component( 'form-wizard', {
             '<div class="field-component-container">' +
                 '<p v-if="eval.label" class="label">{{ eval.label }}</p>' +
                 '<div class="operations" v-if="values && values.length < eval.maxEntities || !eval.maxEntities">' +
-                    '<button type="button" @click="addValue(false)" class="button add">{{ addButtonLabel }}</button>' +
+                    '<button type="button" v-on:click.prevent="addValue(false)" class="button add">{{ addButtonLabel }}</button>' +
                 '</div>' +
                 '<div v-if="values && values.length" class="entities">' +
                     '<div class="entity" v-for="value in values">' +
@@ -192,8 +188,8 @@ Vue.component( 'form-wizard', {
                             '</template>' +
                         '</div>'+
                         '<div class="operations">' +
-                            '<button type="button" @click="editValue(value)" class="button edit">{{ editButtonLabel }}</button>' +
-                            '<button v-if="eval.allowToDelete" type="button" @click="deleteValue(value)" class="button delete">{{ deleteButtonLabel }}</button>' +
+                            '<button type="button" v-on:click.prevent="editValue(value)" class="button edit">{{ editButtonLabel }}</button>' +
+                            '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(value)" class="button delete">{{ deleteButtonLabel }}</button>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
