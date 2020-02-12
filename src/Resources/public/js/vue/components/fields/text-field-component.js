@@ -6,12 +6,24 @@ Vue.component( 'text-field', {
     },
     watch: {
         value: function() {
-            if ( this.timeout !== null ) {
-                clearTimeout( this.timeout );
+            if (this.eval.multiple && this.value.length) {
+                for (var i = 0; i < this.eval.size; i++ ) {
+                    if (typeof this.value[i] === 'undefined') {
+                        this.value[i] = '';
+                    }
+                }
             }
-            this.timeout = setTimeout(function () {
+            if ( this.eval['isReactive'] ) {
+                if ( this.timeout !== null ) {
+                    clearTimeout( this.timeout );
+                }
+                this.timeout = setTimeout(function () {
+                    this.$emit( 'input', this.value );
+                }.bind(this),800);
+            }
+            else {
                 this.$emit( 'input', this.value );
-            }.bind(this), 400);
+            }
         }
     },
     methods: {

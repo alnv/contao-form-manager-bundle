@@ -49,6 +49,7 @@ abstract class Resolver extends \System {
         }
 
         $arrField['isReactive'] = $this->isReactive( $arrField );
+        $arrField['postValue'] = \Input::post( $arrField['name'] );
         $arrField['label'] = \Controller::replaceInsertTags( $arrField['label'] );
         $arrField['component'] = Toolkit::convertTypeToComponent( $arrField['type'], $arrField['rgxp'] );
         $arrField['multiple'] = Toolkit::convertMultiple( $arrField['multiple'], $arrField );

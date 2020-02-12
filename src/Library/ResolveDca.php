@@ -135,7 +135,7 @@ class ResolveDca extends Resolver {
 
             foreach ( $objPalette->fields as $arrField ) {
 
-                $arrSubmitted[ $arrField['name'] ] = $arrField['value'];
+                $arrSubmitted[ $arrField['name'] ] = Toolkit::getDbValue( $arrField['postValue'], $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $arrField['name'] ] );
             }
         }
 
