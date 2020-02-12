@@ -12,7 +12,7 @@ Vue.component( 'form-wizard', {
     methods: {
         fetch: function () {
             this.values = [];
-            this.$http.get( '/form-manager/getFormWizard/' + this.$parent.identifier, {
+            this.$http.get( '/form-manager/getFormWizard/' + this.getIdentifier(), {
                 params: {
                     wizard: this.name
                 }
@@ -25,6 +25,12 @@ Vue.component( 'form-wizard', {
                     this.setValues();
                 }
             });
+        },
+        getIdentifier: function() {
+            if ( this.$parent.identifier ) {
+                return this.$parent.identifier;
+            }
+            return this.eval.identifier;
         },
         addValue: function(blnEmpty) {
             let objValue = {};
@@ -178,7 +184,7 @@ Vue.component( 'form-wizard', {
                 '<div class="operations" v-if="values && values.length < eval.maxEntities || !eval.maxEntities">' +
                     '<button type="button" @click="addValue(false)" class="button add">{{ addButtonLabel }}</button>' +
                 '</div>' +
-                '<div v-if="values" class="entities">' +
+                '<div v-if="values && values.length" class="entities">' +
                     '<div class="entity" v-for="value in values">' +
                         '<div class="rows">' +
                             '<template v-for="field in fields">' +

@@ -14,7 +14,23 @@ class FormWizard extends \Widget {
 
     public function generate() {
 
-        // @todo widget
+        if ( $this->readOnly ) {
+
+            return $this->readOnly();
+        }
+
+        $arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->name];
+        $arrAttributes = $this->getAttributesFromDca( $arrField, $this->name, $this->default, $this->name, $this->strTable );
+        $strEval = htmlspecialchars(json_encode($arrAttributes),ENT_QUOTES,'UTF-8');
+
+        return
+            '<div class="v-component">
+                <form-wizard :values="[]" :eval="'. $strEval .'" name="'. $this->name .'"></form-wizard>
+            </div>';
+    }
+
+
+    protected function readOnly() {
 
         if ( !$this->varValue ) {
 

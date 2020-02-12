@@ -19,7 +19,7 @@ class ResolveDca extends Resolver {
         $this->arrOptions = $arrOptions;
         \System::loadLanguageFile('default');
         \Controller::loadDataContainer( $this->strTable );
-        \System::loadLanguageFile( $this->strTable, $arrOptions['language'] );
+        \System::loadLanguageFile( $this->strTable, $arrOptions['language'] ?: null );
 
         parent::__construct();
     }

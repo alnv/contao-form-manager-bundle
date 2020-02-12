@@ -41,7 +41,6 @@ Vue.component( 'upload-field', {
                     return this;
                 }
                 */
-
             };
             if ( !this.eval.multiple ) {
                 objDropzoneOptions.maxFiles = 1;
