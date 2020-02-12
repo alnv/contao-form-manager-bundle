@@ -281,7 +281,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
         template:
             '<div class="form-component">' +
                 '<div class="form-component-container">' +
-                    '<form v-on:submit.prevent="onSubmit">' +
+                    '<form v-if="palettes.length" v-on:submit.prevent="onSubmit">' +
                         '<template v-for="palette in palettes">' +
                             '<div class="palette" v-bind:class="palette.name">' +
                                 '<p v-if="palette.label" class=palette-name>{{ palette.label }}</p>' +
@@ -299,6 +299,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                             '</div>' +
                         '</div>' +
                     '</form>' +
+                    '<loading v-if="!palettes.length"></loading>' +
                 '</div>' +
             '</div>'
     });

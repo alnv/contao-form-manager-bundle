@@ -10,7 +10,6 @@ Vue.component( 'form-wizard', {
     },
     methods: {
         fetch: function () {
-            this.values = [];
             this.$http.get( '/form-manager/getFormWizard/' + this.getIdentifier(), {
                 params: {
                     wizard: this.name

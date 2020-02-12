@@ -22,10 +22,11 @@ class FormWizard extends \Widget {
         $arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->name];
         $arrAttributes = $this->getAttributesFromDca( $arrField, $this->name, $this->default, $this->name, $this->strTable );
         $strEval = htmlspecialchars(json_encode($arrAttributes),ENT_QUOTES,'UTF-8');
+        $strValue = htmlspecialchars(json_encode(\StringUtil::deserialize($this->varValue,true)),ENT_QUOTES,'UTF-8');
 
         return
             '<div class="v-component">
-                <form-wizard :values="[]" :eval="'. $strEval .'" name="'. $this->name .'"></form-wizard>
+                <form-wizard :values="'. $strValue .'" :eval="'. $strEval .'" name="'. $this->name .'"></form-wizard>
             </div>';
     }
 
