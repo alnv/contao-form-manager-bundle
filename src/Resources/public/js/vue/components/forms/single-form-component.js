@@ -272,6 +272,11 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 default: '',
                 required: false
             },
+            disableLoader: {
+                type: Boolean,
+                default: false,
+                required: false
+            },
             attributes: {
                 default: {},
                 type: Object,
@@ -299,7 +304,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                             '</div>' +
                         '</div>' +
                     '</form>' +
-                    '<loading v-if="!palettes.length"></loading>' +
+                    '<loading v-if="!palettes.length && !disableLoader"></loading>' +
                 '</div>' +
             '</div>'
     });
