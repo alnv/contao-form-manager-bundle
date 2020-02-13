@@ -10,6 +10,7 @@ Vue.component( 'form-wizard', {
     },
     methods: {
         fetch: function () {
+            this.values = []; // improve
             this.$http.get( '/form-manager/getFormWizard/' + this.getIdentifier(), {
                 params: {
                     wizard: this.name
@@ -176,9 +177,6 @@ Vue.component( 'form-wizard', {
         '<div class="field-component form-wizard" v-bind:class="setCssClass()">' +
             '<div class="field-component-container">' +
                 '<p v-if="eval.label" class="label">{{ eval.label }}</p>' +
-                '<div class="operations" v-if="values && values.length < eval.maxEntities || !eval.maxEntities">' +
-                    '<button type="button" v-on:click.prevent="addValue(false)" class="button add">{{ addButtonLabel }}</button>' +
-                '</div>' +
                 '<div v-if="values && values.length" class="entities">' +
                     '<div class="entity" v-for="value in values">' +
                         '<div class="rows">' +
@@ -198,6 +196,9 @@ Vue.component( 'form-wizard', {
                             '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name" v-model="value[field.name]" v-on:input="setInput(field)"></component>' +
                         '</template>' +
                     '</div>' +
+                '</div>' +
+                '<div class="operations" v-if="values && values.length < eval.maxEntities || !eval.maxEntities">' +
+                    '<button type="button" v-on:click.prevent="addValue(false)" class="button add">{{ addButtonLabel }}</button>' +
                 '</div>' +
                 '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
                 '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +

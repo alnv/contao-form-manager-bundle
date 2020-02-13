@@ -24,7 +24,7 @@ Vue.component( 'select-field', {
             }
         }
     },
-    mounted: function() {
+    created: function() {
         this.value = this.multiple ? [] : '';
     },
     props: {
