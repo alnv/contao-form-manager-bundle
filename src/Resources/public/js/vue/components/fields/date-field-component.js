@@ -1,7 +1,11 @@
+Vue.component('flat-pickr', VueFlatpickr);
 Vue.component( 'date-field', {
     data: function () {
         return {
-            //
+            config: {
+                enableTime: this.eval['rgxp'] !== 'date',
+                dateFormat: this.eval['dateFormat']
+            }
         }
     },
     methods: {
@@ -47,7 +51,7 @@ Vue.component( 'date-field', {
     '<div class="field-component date" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
             '<label :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
-            '<input type="text" v-model="value" :id="idPrefix + \'id_\' + name" v-pikaday>' +
+            '<flat-pickr v-model="value" :config="config" class="tl_text"></flat-pickr>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
         '</div>' +

@@ -231,4 +231,15 @@ class Toolkit {
 
         return $strValue;
     }
+
+
+    public static function shouldLoadVueScripts() {
+
+        if ( \Input::get('popup') ) {
+
+            return false;
+        }
+
+        return true;
+    }
 }

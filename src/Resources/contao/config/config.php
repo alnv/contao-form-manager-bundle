@@ -45,34 +45,35 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
 $GLOBALS['BE_FFL']['formWizard'] = 'Alnv\ContaoFormManagerBundle\Widgets\FormWizard';
 $GLOBALS['TL_FFL']['formWizard'] = 'Alnv\ContaoFormManagerBundle\Forms\FormWizard';
 
-$objFormAssetsManager = \Alnv\ContaoAssetsManagerBundle\Library\AssetsManager::getInstance();
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/dropzone/js/dropzone.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/single-form-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/multi-form-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/text-field-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/date-field-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/radio-field-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/form-wizard-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/email-field-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/select-field-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/hidden-field-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/upload-field-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/number-field-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/checkbox-field-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/textarea-field-component.js' );
-$objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/fieldset-start-component.js' );
+if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() ) {
 
-if ( TL_MODE == 'FE' ) {
+    $objFormAssetsManager = \Alnv\ContaoAssetsManagerBundle\Library\AssetsManager::getInstance();
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/dropzone/js/dropzone.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/flatpickr.min.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/vue-flatpickr-component.min.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/single-form-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/multi-form-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/text-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/date-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/radio-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/form-wizard-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/email-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/select-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/hidden-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/upload-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/number-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/checkbox-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/textarea-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/fieldset-start-component.js' );
+}
 
-    $objFormCssCombiner = new \Combiner();
+$objFormCssCombiner = new \Combiner();
+$objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/styles/flatpickr.min.scss' );
+if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() && TL_MODE == 'FE' ) {
     $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/basic.scss' );
     $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/dropzone.scss' );
-    $GLOBALS['TL_CSS']['form-manager-bundle'] = $objFormCssCombiner->getCombinedFile();
 }
-
-if ( TL_MODE == 'BE' ) {
-
-    $objFormCssCombiner = new \Combiner();
+if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() && TL_MODE == 'BE' ) {
     $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/css/form-wizard-component.scss' );
-    $GLOBALS['TL_CSS']['form-manager-bundle'] = $objFormCssCombiner->getCombinedFile();
 }
+$GLOBALS['TL_CSS']['form-manager-bundle'] = $objFormCssCombiner->getCombinedFile();

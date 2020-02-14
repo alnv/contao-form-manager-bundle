@@ -1,9 +1,7 @@
 .form-wizard {
 
   margin: .5em 0;
-  border:1px solid #f3f3f5;
   box-sizing: border-box;
-  padding: 1em;
 
   p.label {
 
@@ -49,8 +47,6 @@
 
   .entities {
 
-    margin-top: 1em;
-
     @media only screen and (min-width: 768px) {
 
       display: flex;
@@ -59,7 +55,16 @@
 
     .entity {
 
+      padding: .5em;
       margin-bottom: 1em;
+      border-radius: 3px;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+
+      &.active {
+
+        border: 1px solid #f47c00;
+      }
 
       @media only screen and (min-width: 768px) {
 
@@ -126,38 +131,17 @@
       font-weight: 500;
     }
 
-    select {
-
-      width: 100%;
-      margin: 2px 0;
-      outline: none;
-      box-sizing: border-box;
-      border: 1px solid #aaa;
-      padding: 5px 22px 6px 6px;
-      border-radius: 2px;
-      background: #fff url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zd…Y5LjYgMjc3LjQ1N2MtMy4wMDUgNC45MTctNS45NiA2Ljc1LTcuMTE0IDYuNzV6Ii8+PC9zdmc+) right -16px center no-repeat;
-      background-origin: content-box;
-      cursor: pointer;
-    }
-
-    input[type="text"],
-    input[type="email"] {
-
-      width: 100%;
-      margin: 2px 0;
-      outline: none;
-      box-sizing: border-box;
-      padding: 5px 6px 6px;
-      border: 1px solid #aaa;
-      border-radius: 2px;
-      background-color: #fff;
-      -moz-appearance: none;
-      -webkit-appearance: none;
-    }
-
     &.single {
 
       width: 100%;
+    }
+
+    p.description {
+
+      font-size: .75rem;
+      margin-bottom: 0;
+      line-height: 1.25;
+      color: gray;
     }
 
     .checkbox-container {

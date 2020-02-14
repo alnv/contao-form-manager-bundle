@@ -5,12 +5,10 @@ namespace Alnv\ContaoFormManagerBundle\Widgets;
 use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
 
-class FormWizard extends \Widget {
-
+class FormWizard extends \Alnv\ContaoFormManagerBundle\Hybrids\FormWidget {
 
     protected $blnSubmitInput = true;
     protected $strTemplate = 'be_widget';
-
 
     public function generate() {
 
@@ -24,23 +22,19 @@ class FormWizard extends \Widget {
         $strEval = htmlspecialchars(json_encode($arrAttributes),ENT_QUOTES,'UTF-8');
         $strValue = htmlspecialchars(json_encode(\StringUtil::deserialize($this->varValue,true)),ENT_QUOTES,'UTF-8');
 
-        return
-            '<div class="v-component">
-                <form-wizard :values="'. $strValue .'" :eval="'. $strEval .'" name="'. $this->name .'"></form-wizard>
-            </div>';
+        return '<div class="v-component"><form-wizard :values="'. $strValue .'" :eval="'. $strEval .'" name="'. $this->name .'"></form-wizard></div>';
     }
-
 
     protected function readOnly() {
 
         if ( !$this->varValue ) {
 
-            return '<p>-</p>';
+            return '';
         }
 
         if ( !is_array( $this->varValue ) || empty( $this->varValue ) ) {
 
-            return '<p>-</p>';
+            return '';
         }
 
         $strTemplate = '<p>';

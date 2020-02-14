@@ -10,7 +10,6 @@ Vue.component( 'form-wizard', {
     },
     methods: {
         fetch: function () {
-            this.values = []; // improve
             this.$http.get( '/form-manager/getFormWizard/' + this.getIdentifier(), {
                 params: {
                     wizard: this.name
@@ -32,9 +31,9 @@ Vue.component( 'form-wizard', {
             return this.eval.identifier;
         },
         addValue: function(blnEmpty) {
-            let objValue = {};
-            for ( let i = 0; i < this.fields.length; i++ ) {
-                let objField = this.fields[i];
+            var objValue = {};
+            for ( var i = 0; i < this.fields.length; i++ ) {
+                var objField = this.fields[i];
                 objValue[ objField.name ] = objField.value;
                 if ( objField.value ) {
                     blnEmpty = false;
@@ -60,7 +59,7 @@ Vue.component( 'form-wizard', {
         deleteValue: function(value) {
             this.editMode = false;
             this.selectedValue = {};
-            for ( let i = 0; i < this.values.length; i++ ) {
+            for ( var i = 0; i < this.values.length; i++ ) {
                 if ( this.values[i] === value ) {
                     this.values.splice(i, 1);
                 }
@@ -70,9 +69,9 @@ Vue.component( 'form-wizard', {
             if ( typeof this.eval.values !== 'undefined' ) {
                 if ( Array.isArray( this.eval.values ) ) {
                     this.hasDefaultValues = !!this.eval.values.length;
-                    for ( let i = 0; i < this.eval.values.length; i++ ) {
-                        let objValue = this.eval.values[i];
-                        for ( let j = 0; j < this.fields.length; j++ ) {
+                    for ( var i = 0; i < this.eval.values.length; i++ ) {
+                        var objValue = this.eval.values[i];
+                        for ( var j = 0; j < this.fields.length; j++ ) {
                             if ( objValue.hasOwnProperty( this.fields[j]['name'] ) ) {
                                 this.fields[j]['value'] = objValue[ this.fields[j]['name'] ];
                             }
@@ -88,7 +87,7 @@ Vue.component( 'form-wizard', {
             }
         },
         setFieldCssClass: function(field,value) {
-            let objCssClass = {};
+            var objCssClass = {};
             objCssClass[field.name] = true;
             objCssClass['empty-value'] = !value[field.name];
             if ( this.eval['tl_class'] ) {
@@ -98,7 +97,7 @@ Vue.component( 'form-wizard', {
             return objCssClass;
         },
         setCssClass: function() {
-            let objCssClass = {};
+            var objCssClass = {};
             if ( this.eval['tl_class'] ) {
                 objCssClass[this.eval['tl_class']] = true;
             }
@@ -108,11 +107,11 @@ Vue.component( 'form-wizard', {
             return objCssClass;
         },
         getLabel: function(value,field) {
-            if ( field.options ) {
-                for ( let i = 0; i < field.options.length; i++ ) {
-                    let objOption = field.options[i];
+            if ( field.options && field.options.length ) {
+                for ( var i = 0; i < field.options.length; i++ ) {
+                    var objOption = field.options[i];
                     if ( objOption['value'] === value ) {
-                        return  objOption['label'];
+                        return objOption['label'];
                     }
                 }
             }
@@ -121,8 +120,8 @@ Vue.component( 'form-wizard', {
             }
             return value;
         },
-        setInput: function (field) {
-            //
+        getStringifyValue: function() {
+            return JSON.stringify(this.values);
         }
     },
     watch: {
@@ -170,15 +169,21 @@ Vue.component( 'form-wizard', {
             required: false
         }
     },
+    created: function() {
+        if ( this.eval.values && !this.eval.values.length ) {
+            this.values = [];
+        }
+    },
     mounted: function () {
         this.fetch();
     },
     template:
         '<div class="field-component form-wizard" v-bind:class="setCssClass()">' +
             '<div class="field-component-container">' +
+                '<input type="hidden" :value="getStringifyValue()" :name="name">' +
                 '<p v-if="eval.label" class="label">{{ eval.label }}</p>' +
                 '<div v-if="values && values.length" class="entities">' +
-                    '<div class="entity" v-for="value in values">' +
+                    '<div class="entity" v-bind:class="{\'active\': value === selectedValue}" v-for="value in values">' +
                         '<div class="rows">' +
                             '<template v-for="field in fields">' +
                                 '<div class="row" v-bind:class="setFieldCssClass(field,value)"><span class="name">{{ field.label }}: </span><span class="value">{{ getLabel( value[ field.name ], field ) }}</span></div>'+
@@ -193,7 +198,7 @@ Vue.component( 'form-wizard', {
                 '<div class="forms" v-if="editMode">' +
                     '<div class="form" v-for="(value,index) in values" v-if="values && value === selectedValue">' +
                         '<template v-for="field in fields"  v-if="field.component">' +
-                            '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name" v-model="value[field.name]" v-on:input="setInput(field)"></component>' +
+                            '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name" v-model="value[field.name]"></component>' +
                         '</template>' +
                     '</div>' +
                 '</div>' +

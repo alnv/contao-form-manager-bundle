@@ -25,6 +25,9 @@ Vue.component( 'select-field', {
         }
     },
     created: function() {
+        if ( this.value !== null ) {
+            return null;
+        }
         this.value = this.multiple ? [] : '';
     },
     props: {
@@ -54,7 +57,7 @@ Vue.component( 'select-field', {
         '<div class="field-component-container">' +
             '<label v-if="eval.label" class="label" :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
             '<div v-if="!eval.multiple" class="select-container">' +
-                '<select v-model="value" :id="idPrefix + \'id_\' + name">' +
+                '<select v-model="value" :id="idPrefix + \'id_\' + name" class="tl_select">' +
                     '<option v-for="option in eval.options" :value="option.value">{{option.label}}</option>' +
                 '</select>' +
             '</div>' +
