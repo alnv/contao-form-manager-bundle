@@ -57,6 +57,11 @@ abstract class Resolver extends \System {
         $arrField['labelValue'] = Toolkit::getLabelValue( $arrField['value'], $arrField );
         $arrField['default'] = $arrFieldAttributes['default'];
 
+        if ( in_array( $arrField['rgxp'], [ 'date', 'time', 'datim' ] ) ) {
+
+            $arrField['dateFormat'] = \Date::getFormatFromRgxp( $arrField['rgxp'] );
+        }
+
         if ( isset( $GLOBALS['TL_HOOKS']['compileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['compileFormField'] ) ) {
 
             foreach ( $GLOBALS['TL_HOOKS']['compileFormField'] as $arrCallback ) {

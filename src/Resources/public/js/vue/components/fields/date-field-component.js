@@ -3,6 +3,8 @@ Vue.component( 'date-field', {
     data: function () {
         return {
             config: {
+                time_24hr: true,
+                noCalendar: this.eval['rgxp'] === 'time',
                 enableTime: this.eval['rgxp'] !== 'date',
                 dateFormat: this.eval['dateFormat']
             }

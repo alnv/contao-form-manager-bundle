@@ -71,6 +71,9 @@ Vue.component( 'upload-field', {
                 });
             }
         },
+        getStringifyValue: function() {
+            return JSON.stringify(this.value);
+        },
         setDropzone: function (setValue) {
             if ( typeof Dropzone === 'undefined' ) {
                 return null;
@@ -145,7 +148,7 @@ Vue.component( 'upload-field', {
                     '</ul>' +
                 '</div>' +
             '</div>' +
-            '<input type="hidden" v-model="value">' +
+            '<input type="hidden" :name="name" :value="getStringifyValue()">' +
             '<label class="label">{{ eval.label }}</label>' +
             '<div class="dropzone"></div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +

@@ -74,10 +74,7 @@ class ResolveDca extends Resolver {
 
                 $arrAttributes = $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
                 $arrAttributes = $this->parseAttributes( $arrAttributes );
-                $arrAttributes['_source'] = 'dc';
-                $arrAttributes['_table'] = $this->strTable;
-                $arrAttributes['_identifier'] = $strFieldname;
-
+                $this->addParentData( $strFieldname, $arrAttributes );
 
                 if ( $arrAttributes === null ) {
 
@@ -165,6 +162,12 @@ class ResolveDca extends Resolver {
         $objDatabase->prepare('INSERT INTO '. $this->strTable .' %s')->set( $arrSubmitted )->execute();
     }
 
+    protected function addParentData($strFieldname, &$arrAttributes) {
+
+        $arrAttributes['_source'] = 'dc';
+        $arrAttributes['_table'] = $this->strTable;
+        $arrAttributes['_identifier'] = $strFieldname;
+    }
 
     public function getWizard() {
 
@@ -180,12 +183,11 @@ class ResolveDca extends Resolver {
         $objPalette->fields = [];
         $objPalette->hide = false;
         $objPalette->name = $this->arrOptions['wizard'];
-
         $arrFields = $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $this->arrOptions['wizard'] ]['eval']['form'] ?: [];
 
         foreach ( $arrFields as $strFieldname => $arrField ) {
 
-            $strClass = $GLOBALS['TL_FFL'][ $arrField['inputType'] ];
+            $strClass = Toolkit::convertBackendFieldToFrontendField( $arrField['inputType'] );
 
             if ( !class_exists( $strClass ) ) {
 
@@ -194,6 +196,7 @@ class ResolveDca extends Resolver {
 
             $arrAttributes = $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
             $arrAttributes = $this->parseAttributes( $arrAttributes );
+            $this->addParentData( $strFieldname, $arrAttributes );
 
             if ( $arrAttributes === null ) {
 
