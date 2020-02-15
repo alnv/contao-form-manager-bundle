@@ -68,9 +68,6 @@ Vue.component( 'form-wizard', {
             if ( typeof this.value === 'undefined' || this.value === null) {
                 this.value = [];
             }
-            if (!this.eval['useValuesAsDefault']) {
-                this.addValue(true);
-            }
             if ( Array.isArray(this.value) && !this.value.length && this.eval['showFormIsEmpty'] ) {
                 this.addValue(false);
             }
