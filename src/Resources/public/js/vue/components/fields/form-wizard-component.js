@@ -2,10 +2,8 @@ Vue.component( 'form-wizard', {
     data: function () {
         return {
             fields: [],
-            values: [],
             editMode: false,
-            selectedValue: {},
-            hasDefaultValues: false
+            selectedValue: {}
         }
     },
     methods: {
@@ -43,14 +41,12 @@ Vue.component( 'form-wizard', {
                 return null;
             }
             if (!this.eval['maxEntities']) {
-                this.values.push(objValue);
+                this.value.push(objValue);
             }
-            if ( this.eval['maxEntities'] > 0 && this.values.length < this.eval['maxEntities'] ) {
-                this.values.push(objValue);
+            if ( this.eval['maxEntities'] > 0 && this.value.length < this.eval['maxEntities'] ) {
+                this.value.push(objValue);
             }
-            if ( !this.hasDefaultValues ) {
-                this.editValue(objValue);
-            }
+            this.editValue(objValue);
         },
         editValue: function(value) {
             this.editMode = true;
@@ -59,31 +55,24 @@ Vue.component( 'form-wizard', {
         deleteValue: function(value) {
             this.editMode = false;
             this.selectedValue = {};
-            for ( var i = 0; i < this.values.length; i++ ) {
-                if ( this.values[i] === value ) {
-                    this.values.splice(i, 1);
+            for ( var i = 0; i < this.value.length; i++ ) {
+                if ( this.value[i] === value ) {
+                    this.value.splice(i, 1);
                 }
             }
         },
         setValues: function() {
             if ( typeof this.eval.values !== 'undefined' ) {
-                if ( Array.isArray( this.eval.values ) ) {
-                    this.hasDefaultValues = !!this.eval.values.length;
-                    for ( var i = 0; i < this.eval.values.length; i++ ) {
-                        var objValue = this.eval.values[i];
-                        for ( var j = 0; j < this.fields.length; j++ ) {
-                            if ( objValue.hasOwnProperty( this.fields[j]['name'] ) ) {
-                                this.fields[j]['value'] = objValue[ this.fields[j]['name'] ];
-                            }
-                        }
-                        if ( !this.eval['useValuesAsDefault'] ) {
-                            this.addValue(true);
-                        }
-                    }
-                    if ( Array.isArray( this.eval.values ) && !this.eval.values.length && this.eval['showFormIsEmpty'] ) {
-                        this.addValue(false);
-                    }
-                }
+                this.value = this.eval.values;
+            }
+            if ( typeof this.value === 'undefined' || this.value === null) {
+                this.value = [];
+            }
+            if (!this.eval['useValuesAsDefault']) {
+                this.addValue(true);
+            }
+            if ( Array.isArray(this.value) && !this.value.length && this.eval['showFormIsEmpty'] ) {
+                this.addValue(false);
             }
         },
         setFieldCssClass: function(field,value) {
@@ -121,13 +110,13 @@ Vue.component( 'form-wizard', {
             return value;
         },
         getStringifyValue: function() {
-            return JSON.stringify(this.values);
+            return JSON.stringify(this.value);
         }
     },
     watch: {
-        values: {
+        value: {
             handler: function () {
-                this.$emit( 'input', this.values );
+                this.$emit('input',this.value);
             },
             deep: true
         }
@@ -143,35 +132,30 @@ Vue.component( 'form-wizard', {
             type: Object,
             required: true
         },
-        values: {
-            default: [],
+        value: {
             type: Array,
+            default: [],
             required: false
         },
         editButtonLabel: {
             default: 'Ändern',
-            type: String,
-            required: false
+            required: false,
+            type: String
         },
         closeButtonLabel: {
             default: 'Schließen',
-            type: String,
-            required: false
+            required: false,
+            type: String
         },
         addButtonLabel: {
             default: 'Hinzufügen',
-            type: String,
-            required: false
+            required: false,
+            type: String
         },
         deleteButtonLabel: {
             default: 'Entfernen',
-            type: String,
-            required: false
-        }
-    },
-    created: function() {
-        if ( this.eval.values && !this.eval.values.length ) {
-            this.values = [];
+            required: false,
+            type: String
         }
     },
     mounted: function () {
@@ -182,27 +166,27 @@ Vue.component( 'form-wizard', {
             '<div class="field-component-container">' +
                 '<input type="hidden" :value="getStringifyValue()" :name="name">' +
                 '<p v-if="eval.label" class="label">{{ eval.label }}</p>' +
-                '<div v-if="values && values.length" class="entities">' +
-                    '<div class="entity" v-bind:class="{\'active\': value === selectedValue}" v-for="value in values">' +
+                '<div v-if="value && value.length" class="entities">' +
+                    '<div v-for="val in value" class="entity" v-bind:class="{\'active\': val === selectedValue}">' +
                         '<div class="rows">' +
                             '<template v-for="field in fields">' +
-                                '<div class="row" v-bind:class="setFieldCssClass(field,value)"><span class="name">{{ field.label }}: </span><span class="value">{{ getLabel( value[ field.name ], field ) }}</span></div>'+
+                                '<div class="row" v-bind:class="setFieldCssClass(field,val)"><span class="name">{{ field.label }}: </span><span class="value">{{ getLabel(val[field.name],field) }}</span></div>'+
                             '</template>' +
                         '</div>'+
                         '<div class="operations">' +
-                            '<button type="button" v-on:click.prevent="editValue(value)" class="button edit">{{ editButtonLabel }}</button>' +
-                            '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(value)" class="button delete">{{ deleteButtonLabel }}</button>' +
+                            '<button type="button" v-on:click.prevent="editValue(val)" class="button edit">{{ editButtonLabel }}</button>' +
+                            '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete">{{ deleteButtonLabel }}</button>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
                 '<div class="forms" v-if="editMode">' +
-                    '<div class="form" v-for="(value,index) in values" v-if="values && value === selectedValue">' +
+                    '<div class="form" v-for="(val,index) in value" v-if="val && val === selectedValue">' +
                         '<template v-for="field in fields"  v-if="field.component">' +
-                            '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name" v-model="value[field.name]"></component>' +
+                            '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name" v-model="val[field.name]"></component>' +
                         '</template>' +
                     '</div>' +
                 '</div>' +
-                '<div class="operations" v-if="values && values.length < eval.maxEntities || !eval.maxEntities">' +
+                '<div class="operations" v-if="value && value.length < eval.maxEntities || !eval.maxEntities">' +
                     '<button type="button" v-on:click.prevent="addValue(false)" class="button add">{{ addButtonLabel }}</button>' +
                 '</div>' +
                 '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
