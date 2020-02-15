@@ -93,7 +93,7 @@ Vue.component( 'form-wizard', {
             return objCssClass;
         },
         getLabel: function(value,field) {
-            if ( field.options && field.options.length ) {
+            if (field.options && field.options.length) {
                 for ( var i = 0; i < field.options.length; i++ ) {
                     var objOption = field.options[i];
                     if ( objOption['value'] === value ) {
@@ -101,8 +101,11 @@ Vue.component( 'form-wizard', {
                     }
                 }
             }
-            if ( typeof value === 'object' && JSON.stringify( value ) === '{}' || JSON.stringify( value ) === '[]' ) {
-                return  '';
+            if (typeof value === 'object' && JSON.stringify( value ) === '{}' || JSON.stringify( value ) === '[]') {
+                return '';
+            }
+            if (value && typeof value === 'object' && typeof value.length !== 'undefined') {
+                return value.join(', ');
             }
             return value;
         },
@@ -177,9 +180,9 @@ Vue.component( 'form-wizard', {
                     '</div>' +
                 '</div>' +
                 '<div class="forms" v-if="editMode">' +
-                    '<div class="form" v-for="(val,index) in value" v-if="val && val === selectedValue">' +
+                    '<div class="form" v-for="(val,index) in value" v-show="val === selectedValue">' + // v-if="val === selectedValue"
                         '<template v-for="field in fields"  v-if="field.component">' +
-                            '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name" v-model="val[field.name]"></component>' +
+                            '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name + \'_\' + index" v-model="value[index][field.name]"></component>' +
                         '</template>' +
                     '</div>' +
                 '</div>' +
