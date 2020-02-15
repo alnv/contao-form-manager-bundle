@@ -144,6 +144,39 @@
       color: gray;
     }
 
+    &.upload {
+
+      .files {
+
+        figure {
+
+          margin: 0;
+          line-height: 0;
+
+          img {
+
+            height: 70px;
+          }
+        }
+
+        ul {
+
+          display: flex;
+          flex-wrap: wrap;
+
+          li {
+
+            margin-right: .5em;
+
+            &:last-child {
+
+              margin-right: 0;
+            }
+          }
+        }
+      }
+    }
+
     .checkbox-container {
 
       display: flex;
