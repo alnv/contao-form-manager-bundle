@@ -104,7 +104,8 @@ class Upload {
                 'type' => $objFile->type,
                 'extension' => $objFile->extension,
                 'uuid' => \StringUtil::binToUuid( $objFile->uuid ),
-                'size' => \System::getReadableSize((new \File($objFile->path))->filesize)
+                'size' => \System::getReadableSize((new \File($objFile->path))->filesize),
+                'imagesize' => getimagesize( \System::getContainer()->getParameter('kernel.project_dir') . '/' . $objFile->path )
             ];
         }
 
