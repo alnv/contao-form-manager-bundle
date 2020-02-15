@@ -235,7 +235,7 @@ class Toolkit {
 
     public static function shouldLoadVueScripts() {
 
-        if ( \Input::get('popup') ) {
+        if ( \Input::get('popup') || in_array( \Input::get('do'), ['files']) ) {
 
             return false;
         }
