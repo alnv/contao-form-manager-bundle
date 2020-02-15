@@ -11,6 +11,7 @@ abstract class Resolver extends \System {
     protected $blnValidate = false;
     protected $strRedirect = null;
     protected $blnSuccess = true;
+    protected $activeRecord = [];
 
 
     abstract public function getForm();
@@ -72,6 +73,17 @@ abstract class Resolver extends \System {
         }
 
         return $arrField;
+    }
+
+
+    protected function getActiveRecord($strTable) {
+
+        if ( \Input::post('alias') ) {
+            $this->activeRecord = (new \Alnv\ContaoCatalogManagerBundle\Views\Master( $strTable, [
+                'alias' => \Input::post('alias'),
+                'id' => uniqid()
+            ]))->parse()[0];
+        }
     }
 
 
