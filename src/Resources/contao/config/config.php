@@ -65,15 +65,15 @@ if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() ) {
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/checkbox-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/textarea-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/fieldset-start-component.js' );
-}
 
-$objFormCssCombiner = new \Combiner();
-$objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/styles/flatpickr.min.scss' );
-if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() && TL_MODE == 'FE' ) {
+    $objFormCssCombiner = new \Combiner();
+    $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/styles/flatpickr.min.scss' );
     $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/basic.scss' );
     $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/dropzone.scss' );
+
+    if ( TL_MODE == 'BE' ) {
+        $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/css/form-wizard-component.scss' );
+    }
+
+    $GLOBALS['TL_CSS']['form-manager-bundle'] = $objFormCssCombiner->getCombinedFile();
 }
-if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() && TL_MODE == 'BE' ) {
-    $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/css/form-wizard-component.scss' );
-}
-$GLOBALS['TL_CSS']['form-manager-bundle'] = $objFormCssCombiner->getCombinedFile();
