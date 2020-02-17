@@ -17,12 +17,13 @@ class FormWizard extends \Alnv\ContaoFormManagerBundle\Hybrids\FormWidget {
             return $this->readOnly();
         }
 
+        $arrParams = $this->getParams();
         $arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->name];
         $arrAttributes = $this->getAttributesFromDca( $arrField, $this->name, $this->default, $this->name, $this->strTable );
         $strEval = htmlspecialchars(json_encode($arrAttributes),ENT_QUOTES,'UTF-8');
-        $strValue = htmlspecialchars(json_encode(\StringUtil::deserialize($this->varValue,true)),ENT_QUOTES,'UTF-8');
-
-        return '<div class="v-component"><form-wizard :value="'. $strValue .'" :eval="'. $strEval .'" name="'. $this->name .'"></form-wizard></div>';
+        $strValue = htmlspecialchars(json_encode($this->getValues()),ENT_QUOTES,'UTF-8');
+        $strParams = htmlspecialchars(json_encode($arrParams),ENT_QUOTES,'UTF-8');
+        return '<div class="v-component"><form-wizard  :value="'. $strValue .'" :eval="'. $strEval .'" :params="'. $strParams .'" name="'. $this->name .'"></form-wizard></div>';
     }
 
     protected function readOnly() {

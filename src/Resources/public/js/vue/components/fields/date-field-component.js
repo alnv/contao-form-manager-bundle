@@ -39,7 +39,7 @@ Vue.component( 'date-field', {
             required: true
         },
         value: {
-            type: Object,
+            type: String,
             default: null,
             required: false
         },

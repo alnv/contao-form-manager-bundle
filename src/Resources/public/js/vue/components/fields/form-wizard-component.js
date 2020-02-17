@@ -10,7 +10,8 @@ Vue.component( 'form-wizard', {
         fetch: function () {
             this.$http.get( '/form-manager/getFormWizard/' + this.getIdentifier(), {
                 params: {
-                    wizard: this.name
+                    wizard: this.name,
+                    params: this.params
                 }
             }).then(function ( objResponse ) {
                 if ( objResponse.body ) {
@@ -53,6 +54,10 @@ Vue.component( 'form-wizard', {
             this.selectedValue = value;
         },
         deleteValue: function(value) {
+            var blnConfirm = confirm("Soll der Datensatz wirklich gelöscht werden?");
+            if (!blnConfirm) {
+                return null;
+            }
             this.editMode = false;
             this.selectedValue = {};
             for ( var i = 0; i < this.value.length; i++ ) {
@@ -137,6 +142,11 @@ Vue.component( 'form-wizard', {
             default: [],
             required: false
         },
+        params: {
+            default: {},
+            type: Object,
+            required: false
+        },
         editButtonLabel: {
             default: 'Ändern',
             required: false,
@@ -180,7 +190,7 @@ Vue.component( 'form-wizard', {
                     '</div>' +
                 '</div>' +
                 '<div class="forms" v-if="editMode">' +
-                    '<div class="form" v-for="(val,index) in value" v-show="val === selectedValue">' + // v-if="val === selectedValue"
+                    '<div class="form" v-for="(val,index) in value" v-show="val === selectedValue">' +
                         '<template v-for="field in fields"  v-if="field.component">' +
                             '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name + \'_\' + index" v-model="value[index][field.name]"></component>' +
                         '</template>' +

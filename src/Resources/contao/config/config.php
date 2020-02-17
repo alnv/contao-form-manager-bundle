@@ -7,11 +7,14 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
         'time' => 'date-field',
         'date' => 'date-field'
     ],
+    'number' => [
+        'default' => 'text-field'
+    ],
     'url' => [
-        'default' => 'text-field',
+        'default' => 'text-field'
     ],
     'email' => [
-        'default' => 'email-field',
+        'default' => 'email-field'
     ],
     'hidden' => [
         'default' => 'hidden-field'

@@ -91,7 +91,8 @@ class FormController extends Controller {
     public function getFormWizard( $table ) {
         $this->container->get( 'contao.framework' )->initialize();
         $arrOptions = [
-            'wizard' => \Input::get('wizard') ?: null
+            'wizard' => \Input::get('wizard') ?: null,
+            'params' => \Input::get('params') ?: []
         ];
         $objForm = new ResolveDca( $table, $arrOptions );
         return new JsonResponse($objForm->getWizard());
