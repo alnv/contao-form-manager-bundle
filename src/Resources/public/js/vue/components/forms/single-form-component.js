@@ -300,7 +300,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         '<slot></slot>' +
                         '<div v-if="!disableSubmit" class="form-buttons-container">' +
                             '<div class="form-submit">' +
-                                '<button type="submit" class="submit">{{ submitLabel }}</button>' +
+                                '<button type="submit" class="submit" v-html="submitLabel"></button>' +
                             '</div>' +
                         '</div>' +
                     '</form>' +
