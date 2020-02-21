@@ -32,6 +32,7 @@ Vue.component( 'checkbox-field', {
                 objCssClass['mandatory'] = true;
             }
             objCssClass['single'] = !this.eval.multiple;
+            objCssClass[this.name] = true;
             return objCssClass;
         }
     },
@@ -78,7 +79,7 @@ Vue.component( 'checkbox-field', {
                 '<label v-if="!eval.multiple" :for="idPrefix + \'id_\' + name + \'_\' + index">{{eval.label}}</label>' +
             '</span>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
-            '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
+            '<div v-if="eval.description" v-html="eval.description"></div>' +
         '</div>' +
     '</div>'
 });

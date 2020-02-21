@@ -21,6 +21,7 @@ Vue.component( 'number-field', {
                 objCssClass['mandatory'] = true;
             }
             objCssClass['active'] = this.active;
+            objCssClass[this.name] = true;
             return objCssClass;
         },
         setRange: function () {
@@ -151,7 +152,7 @@ Vue.component( 'number-field', {
                     '</div>' +
                 '</div>' +
                 '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
-                '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
+                '<div v-if="eval.description" v-html="eval.description"></div>' +
             '</div>' +
         '</div>'
 });

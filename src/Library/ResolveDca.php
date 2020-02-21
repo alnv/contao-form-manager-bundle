@@ -21,7 +21,6 @@ class ResolveDca extends Resolver {
         \Controller::loadDataContainer( $this->strTable );
         \System::loadLanguageFile( $this->strTable, $arrOptions['language'] ?: null );
         $this->getActiveRecord( $this->strTable );
-
         parent::__construct();
     }
 
@@ -30,7 +29,7 @@ class ResolveDca extends Resolver {
 
         if ( !$GLOBALS['TL_DCA'][ $this->strTable ] ) {
 
-            return null;
+            return [];
         }
 
         if ( !$this->arrOptions['initialized'] ) {

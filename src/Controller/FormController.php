@@ -14,7 +14,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 /**
  *
- * @Route("/form-manager", defaults={"_token_check" = false})
+ * @Route("/form-manager", defaults={"_scope" = "frontend", "_token_check" = false})
  */
 class FormController extends Controller {
 

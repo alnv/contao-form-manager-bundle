@@ -36,6 +36,12 @@ class Upload {
                 }
 
                 $arrAttribute = $strClass::getAttributesFromDca( $arrField, $arrOptions['identifier'], null, $arrOptions['identifier'], $arrOptions['table'] );
+                if ( $arrAttribute['imageWidth'] ) {
+                    \Config::set('imageWidth',$arrAttribute['imageWidth']);
+                }
+                if ( $arrAttribute['imageHeight'] ) {
+                    \Config::set('imageHeight',$arrAttribute['imageHeight']);
+                }
                 $objField = new $strClass( $arrAttribute );
                 $objField->validate();
 

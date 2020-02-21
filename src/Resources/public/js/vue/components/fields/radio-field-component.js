@@ -28,6 +28,7 @@ Vue.component( 'radio-field', {
             if ( this.eval['mandatory'] ) {
                 objCssClass['mandatory'] = true;
             }
+            objCssClass[this.name] = true;
             return objCssClass;
         }
     },
@@ -72,7 +73,7 @@ Vue.component( 'radio-field', {
                 '<label :for="idPrefix + \'id_\' + name + \'_\' + index">{{option.label}}</label>' +
             '</span>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
-            '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
+            '<div v-if="eval.description" v-html="eval.description"></div>' +
         '</div>' +
     '</div>'
 });

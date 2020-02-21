@@ -30,6 +30,7 @@ Vue.component( 'upload-field', {
             }
             objCssClass['mandatory'] = !!this.eval['mandatory'];
             objCssClass['multiple'] = !!this.eval['multiple'];
+            objCssClass[this.name] = true;
             return objCssClass;
         },
         setValue: function(uuid) {
@@ -152,7 +153,7 @@ Vue.component( 'upload-field', {
             '<label class="label">{{ eval.label }}</label>' +
             '<div class="dropzone"></div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
-            '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
+            '<div v-if="eval.description" v-html="eval.description"></div>' +
         '</div>' +
     '</div>'
 });

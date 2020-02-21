@@ -13,6 +13,7 @@ Vue.component( 'select-field', {
             if ( this.eval['mandatory'] ) {
                 objCssClass['mandatory'] = true;
             }
+            objCssClass[this.name] = true;
             return objCssClass;
         }
     },
@@ -65,7 +66,7 @@ Vue.component( 'select-field', {
                 '<v-select v-model="value" :placeholder="eval.label" :options="eval.options" :multiple="true" :id="idPrefix + \'id_\' + name" :reduce="value => value.value" label="label"></v-select>' +
             '</div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
-            '<template v-if="eval.description"><p class="description">{{ eval.description }}</p></template>' +
+            '<div v-if="eval.description" v-html="eval.description"></div>' +
         '</div>' +
     '</div>'
 });
