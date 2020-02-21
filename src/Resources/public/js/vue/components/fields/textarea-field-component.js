@@ -47,7 +47,7 @@ Vue.component( 'textarea-field', {
     template:
     '<div class="field-component textarea" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
-            '<label class="label" :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
+            '<label class="label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
             '<textarea v-model="value" :id="idPrefix + \'id_\' + name"></textarea>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description"></div>' +

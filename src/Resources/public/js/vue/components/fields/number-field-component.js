@@ -138,7 +138,7 @@ Vue.component( 'number-field', {
                 '<input type="hidden" v-model="value">'+
                 '<div class="range-menu" @click="setActiveMode()">' +
                     '<div class="range-menu-container">' +
-                        '<span>{{ eval.label }}</span>' +
+                        '<span v-html="eval.label"></span>' +
                     '</div>' +
                 '</div>' +
                 '<div class="range-input">' +

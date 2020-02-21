@@ -59,6 +59,11 @@ Vue.component( 'radio-field', {
             default: '',
             type: String ,
             required: false
+        },
+        noLabel: {
+            type: Boolean,
+            default: false,
+            required: false
         }
     },
     mounted: function () {
@@ -67,10 +72,10 @@ Vue.component( 'radio-field', {
     template:
     '<div class="field-component radio" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
-            '<p class="label">{{eval.label}}</p>' +
+            '<p v-if="eval.label && !noLabel" class="label" v-html="eval.label"></p>' +
             '<span v-for="(option, index) in eval.options" class="radio-container" v-bind:class="{ \'checked\': checked( option.value ) }">' +
                 '<input type="radio" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
-                '<label :for="idPrefix + \'id_\' + name + \'_\' + index">{{option.label}}</label>' +
+                '<slot name="label" v-bind:label="option.label" v-bind:id="idPrefix + \'id_\' + name + \'_\' + index"><label :for="idPrefix + \'id_\' + name + \'_\' + index" v-html="option.label"></label></slot>' +
             '</span>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description"></div>' +

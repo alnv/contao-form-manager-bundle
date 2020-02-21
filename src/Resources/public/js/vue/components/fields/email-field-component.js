@@ -51,7 +51,7 @@ Vue.component( 'email-field', {
     template:
         '<div class="field-component text" v-bind:class="setCssClass()">' +
             '<div class="field-component-container">' +
-                '<label class="label" :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
+                '<label v-if="eval.label" class="label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
                 '<input type="email" v-model="value" :id="idPrefix + \'id_\' + name" :placeholder="eval.placeholder" class="tl_text">' +
                 '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
                 '<div v-if="eval.description" v-html="eval.description"></div>' +

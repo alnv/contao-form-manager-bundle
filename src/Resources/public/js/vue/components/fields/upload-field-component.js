@@ -150,7 +150,7 @@ Vue.component( 'upload-field', {
                 '</ul>' +
             '</div>' +
             '<input type="hidden" :name="name" :value="getStringifyValue()">' +
-            '<label class="label">{{ eval.label }}</label>' +
+            '<label v-if="eval.label" class="label" v-html="eval.label"></label>' +
             '<div class="dropzone"></div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description"></div>' +

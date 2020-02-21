@@ -51,19 +51,26 @@ Vue.component( 'select-field', {
             default: '',
             type: String ,
             required: false
+        },
+        noLabel: {
+            type: Boolean,
+            default: false,
+            required: false
         }
     },
     template:
     '<div class="field-component select" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
-            '<label v-if="eval.label" class="label" :for="idPrefix + \'id_\' + name">{{ eval.label }}</label>' +
-            '<div v-if="!eval.multiple" class="select-container">' +
-                '<select v-model="value" :id="idPrefix + \'id_\' + name" class="tl_select">' +
-                    '<option v-for="option in eval.options" :value="option.value">{{option.label}}</option>' +
-                '</select>' +
-            '</div>' +
-            '<div v-if="eval.multiple">' +
-                '<v-select v-model="value" :placeholder="eval.label" :options="eval.options" :multiple="true" :id="idPrefix + \'id_\' + name" :reduce="value => value.value" label="label"></v-select>' +
+            '<label v-if="eval.label && !noLabel" class="label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
+            '<div class="select-container">' +
+                '<v-select v-model="value" :placeholder="eval.label" :multiple="eval.multiple" :options="eval.options" :id="idPrefix + \'id_\' + name" :reduce="value => value.value" label="label" class="tl_select">' +
+                    '<template v-slot:selected-option="option">' +
+                        '<slot name="label" v-bind:label="option.label" v-html="option.label"></slot>' +
+                    '</template>' +
+                    '<template v-slot:option="option">' +
+                        '<slot name="label" v-bind:label="option.label" v-html="option.label"></slot>' +
+                    '</template>' +
+                '</v-select>' +
             '</div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description"></div>' +
