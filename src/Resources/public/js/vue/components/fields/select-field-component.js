@@ -29,7 +29,7 @@ Vue.component( 'select-field', {
         if ( this.value !== null ) {
             return null;
         }
-        this.value = this.multiple ? [] : '';
+        // this.value = this.multiple ? [] : '';
     },
     props: {
         eval: {
