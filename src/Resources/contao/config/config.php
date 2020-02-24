@@ -1,5 +1,11 @@
 <?php
 
+array_insert( $GLOBALS['FE_MOD'], 2, [
+    'form-manager-bundle' => [
+        'form-manager' => 'Alnv\ContaoFormManagerBundle\Modules\FormManagerModule',
+    ]
+]);
+
 $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
     'text' => [
         'default' => 'text-field',
