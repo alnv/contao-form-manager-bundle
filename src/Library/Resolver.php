@@ -7,16 +7,12 @@ use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
 abstract class Resolver extends \System {
 
-
     protected $blnValidate = false;
     protected $strRedirect = null;
     protected $blnSuccess = true;
-    protected $activeRecord = [];
-
 
     abstract public function getForm();
     abstract protected function saveRecord( $arrForm );
-
 
     public function parseAttributes( $arrFieldAttributes ) {
 
@@ -75,18 +71,6 @@ abstract class Resolver extends \System {
         return $arrField;
     }
 
-
-    protected function getActiveRecord($strTable) {
-
-        if ( \Input::post('alias') ) {
-            $this->activeRecord = (new \Alnv\ContaoCatalogManagerBundle\Views\Master( $strTable, [
-                'alias' => \Input::post('alias'),
-                'id' => uniqid()
-            ]))->parse()[0];
-        }
-    }
-
-
     protected function isReactive( $arrField ) {
 
         if ( in_array( $arrField['type'], [ 'select', 'radio', 'checkbox', 'nouislider' ] ) ) {
@@ -97,14 +81,19 @@ abstract class Resolver extends \System {
         return $arrField['isReactive'] ? true : false;
     }
 
-
     public function save( $blnValidateOnly = false ) {
 
         $this->blnValidate = true;
         $arrForm = $this->getForm();
+        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable,[]);
+        if ( $strMemberField = $objRoleResolver->getFieldByRole('member') ) {
+            $objMember = \FrontendUser::getInstance();
+            if (!$objMember->id) {
+                $this->blnSuccess = false;
+            }
+        }
 
         if ( $this->blnSuccess && !$blnValidateOnly ) {
-
             $this->saveRecord( $arrForm );
         }
 
@@ -117,9 +106,8 @@ abstract class Resolver extends \System {
         ];
     }
 
-
     public function validate() {
 
-        return $this->save( true );
+        return $this->save(true);
     }
 }

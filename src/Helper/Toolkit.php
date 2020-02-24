@@ -5,7 +5,6 @@ namespace Alnv\ContaoFormManagerBundle\Helper;
 
 class Toolkit {
 
-
     public static function getDbValue( $varValue, $arrField ) {
 
         if ( $varValue === null || $varValue === '' ) {
@@ -16,6 +15,11 @@ class Toolkit {
         if ( $arrField['eval']['multiple'] && isset( $arrField['eval']['csv'] ) ) {
 
             $varValue = implode( $arrField['eval']['csv'], \StringUtil::deserialize( $varValue, true ) );
+        }
+
+        if ( is_array( $varValue ) && $arrField['eval']['multiple'] === false ) {
+
+            $varValue = implode('', $varValue);
         }
 
         if ( is_array( $varValue ) ) {
@@ -31,7 +35,6 @@ class Toolkit {
 
         return $varValue;
     }
-
 
     public static function convertTypeToComponent( $strType, $strRgxp = null ) {
 
@@ -55,7 +58,6 @@ class Toolkit {
         return $arrTypes[ 'default' ];
     }
 
-
     public static function convertValue( $strValue, $arrField ) {
 
         if ( $arrField['multiple'] ) {
@@ -71,7 +73,6 @@ class Toolkit {
         return $strValue;
     }
 
-
     public static function convertMultiple( $varMultiple, $arrField ) {
 
         $varMultiple = ( $varMultiple || $arrField['type'] == 'checkbox' ) ? true : false;
@@ -83,7 +84,6 @@ class Toolkit {
 
         return $varMultiple;
     }
-
 
     public static function extractPaletteToArray( $strPalette, $arrSubPalettes = [] ) {
 
@@ -127,7 +127,6 @@ class Toolkit {
         return $arrPalette;
     }
 
-
     protected static function pluckSubPalettes( $arrFields, $arrSubPalettes ) {
 
         $arrReturn = [];
@@ -147,7 +146,6 @@ class Toolkit {
         return $arrReturn;
     }
 
-
     protected static function findSubPaletteMatch( $strFieldname, &$arrSubPalettes ) {
 
         if ( $arrMatches = preg_grep( '/'. $strFieldname .'/', array_keys( $arrSubPalettes ) ) ) {
@@ -165,7 +163,6 @@ class Toolkit {
 
         return [];
     }
-
 
     protected static function getSelectedOptions( $varValue, $arrOptions ) {
 
@@ -189,7 +186,6 @@ class Toolkit {
         return $arrReturn;
     }
 
-
     public static function getLabelValue( $varValue, $arrField ) {
 
         if ( is_array( $arrField['options'] ) && !empty( $arrField['options'] ) ) {
@@ -199,7 +195,6 @@ class Toolkit {
 
         return $varValue;
     }
-
 
     public static function convertBackendFieldToFrontendField( $strBackendFieldType ) {
 
@@ -222,16 +217,12 @@ class Toolkit {
         }
     }
 
-
     protected static function parseLabelValue( $strValue ) {
 
         $strValue = \Controller::replaceInsertTags( $strValue );
-
         // @todo translate
-
         return $strValue;
     }
-
 
     public static function shouldLoadVueScripts() {
 

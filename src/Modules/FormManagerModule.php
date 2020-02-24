@@ -40,6 +40,7 @@ class FormManagerModule extends \Module {
         $this->Template->formHint = $this->cmFormHint;
         $this->Template->identifier = $this->cmIdentifier;
         $this->Template->successRedirect = $this->getFrontendUrl($this->cmSuccessRedirect);
+        // var_dump($this->arrActiveRecord);exit;
         $this->Template->model = htmlspecialchars(json_encode($this->arrActiveRecord),ENT_QUOTES,'UTF-8');
     }
 
@@ -75,8 +76,22 @@ class FormManagerModule extends \Module {
             return $arrActiveRecord;
         }
         foreach ($arrFields as $strField) {
-            $arrActiveRecord[$strField] = $arrMaster[0][$strField];
+            $arrActiveRecord[$strField] = $this->parseModelValue($arrMaster[0][$strField],$GLOBALS['TL_DCA'][$this->cmIdentifier]['fields'][$strField],$arrMaster[0],$strField);
         }
         return $arrActiveRecord;
+    }
+
+    protected function parseModelValue($varValue,$arrField,$arrMaster,$strField) {
+
+        if ( $arrField['inputType'] == 'fileTree' ) {
+            $arrFiles = \StringUtil::deserialize($arrMaster['origin'][$strField],true);
+            foreach ($arrFiles as $index => $strUuid) {
+                if ( \Validator::isBinaryUuid($strUuid) ) {
+                    $arrFiles[$index] = \StringUtil::binToUuid($strUuid);
+                }
+            }
+            return $arrFiles;
+        }
+        return $varValue;
     }
 }

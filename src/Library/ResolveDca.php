@@ -4,14 +4,11 @@ namespace Alnv\ContaoFormManagerBundle\Library;
 
 use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
-
 class ResolveDca extends Resolver {
-
 
     protected $strTable = null;
     protected $arrOptions = [];
     protected $arrPalette = [];
-
 
     public function __construct( $strTable, $arrOptions = [] ) {
 
@@ -20,10 +17,8 @@ class ResolveDca extends Resolver {
         \System::loadLanguageFile('default');
         \Controller::loadDataContainer( $this->strTable );
         \System::loadLanguageFile( $this->strTable, $arrOptions['language'] ?: null );
-        $this->getActiveRecord( $this->strTable );
         parent::__construct();
     }
-
 
     public function getForm() {
 
@@ -95,7 +90,6 @@ class ResolveDca extends Resolver {
         return $arrPalettes;
     }
 
-
     protected function getActiveSelector() {
 
         $arrSubpalettes = [];
@@ -123,46 +117,71 @@ class ResolveDca extends Resolver {
         return $arrSubpalettes;
     }
 
-
     public function saveRecord( $arrForm ) {
 
         $arrSubmitted = [];
-
+        $arrSubmitted['tstamp'] = time();
         foreach ( $arrForm as $objPalette ) {
-
             foreach ( $objPalette->fields as $arrField ) {
-
                 $arrSubmitted[ $arrField['name'] ] = Toolkit::getDbValue( $arrField['postValue'], $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $arrField['name'] ] );
             }
         }
 
-        $arrSubmitted['tstamp'] = time();
+        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable,$arrSubmitted);
+        if ( $strMemberField = $objRoleResolver->getFieldByRole('member') ) {
+            $objMember = \FrontendUser::getInstance();
+            if ($objMember->id) {
+                $arrSubmitted[$strMemberField] = $objMember->id;
+            }
+        }
 
         if ( isset( $GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] ) && is_array($GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] ) ) {
-
             foreach ( $GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] as $arrCallback ) {
-
-                $this->import( $arrCallback[0] );
-                $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $arrForm, $this->arrOptions, $this );
+                if (is_array($arrCallback)) {
+                    $this->import($arrCallback[0]);
+                    $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, $arrForm, $this->arrOptions, $this);
+                }
+                elseif (\is_callable($arrCallback)) {
+                    $arrCallback($arrSubmitted, $arrForm, $this->arrOptions, $this);
+                }
             }
         }
 
         if ( isset( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] ) && is_array( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] ) ) {
-
             foreach ( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] as $arrCallback ) {
-
-                $this->import( $arrCallback[0] );
-                $this->strRedirect = $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, false, $this->arrOptions, $this );
+                if (is_array($arrCallback)) {
+                    $this->import($arrCallback[0]);
+                    $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, false, $this->arrOptions, $this);
+                }
+                elseif (\is_callable($arrCallback)) {
+                    $arrCallback($arrSubmitted, false, $this->arrOptions, $this);
+                }
             }
 
             return null;
         }
 
-        $objDatabase = \Database::getInstance();
         if ( \Input::post('id') ) {
-            $objDatabase->prepare('UPDATE '. $this->strTable .' %s WHERE id=?')->set($arrSubmitted)->execute(\Input::post('id'));
+            \Database::getInstance()->prepare('UPDATE '. $this->strTable .' %s WHERE id=?')->set($arrSubmitted)->execute(\Input::post('id'));
         } else {
-            $objDatabase->prepare('INSERT INTO '. $this->strTable .' %s')->set($arrSubmitted)->execute();
+            $objInsert = \Database::getInstance()->prepare('INSERT INTO '. $this->strTable .' %s')->set($arrSubmitted)->execute();
+            \Input::setPost('id', $objInsert->insertId);
+        }
+
+        $objDataContainer = new \Alnv\ContaoFormManagerBundle\Helper\VirtualDataContainer($this->strTable);
+        $objDataContainer->ptable = $GLOBALS['TL_DCA'][$this->strTable]['config']['ptable'];
+        $objDataContainer->ctable = $GLOBALS['TL_DCA'][$this->strTable]['config']['ctable'];
+
+        if (is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback'])) {
+            foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['onsubmit_callback'] as $arrCallback) {
+                if (is_array($arrCallback)) {
+                    $this->import($arrCallback[0]);
+                    $this->{$arrCallback[0]}->{$arrCallback[1]}($objDataContainer);
+                }
+                elseif (\is_callable($arrCallback)) {
+                    $arrCallback($objDataContainer);
+                }
+            }
         }
     }
 
@@ -210,6 +229,6 @@ class ResolveDca extends Resolver {
             $objPalette->fields[] = $arrAttributes;
         }
 
-        return [ $objPalette ];
+        return [$objPalette];
     }
 }

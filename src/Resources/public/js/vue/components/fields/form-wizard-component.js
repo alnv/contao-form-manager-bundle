@@ -177,7 +177,7 @@ Vue.component( 'form-wizard', {
             '<div class="field-component-container">' +
                 '<input type="hidden" :value="getStringifyValue()" :name="name">' +
                 '<p v-if="eval.label" class="label">{{ eval.label }}</p>' +
-                '<div v-if="value && value.length" class="entities">' +
+                '<div v-if="value && value.length && !eval.showAllForms" class="entities">' +
                     '<div v-for="val in value" class="entity" v-bind:class="{\'active\': val === selectedValue}">' +
                         '<div class="rows">' +
                             '<template v-for="field in fields">' +
@@ -190,8 +190,11 @@ Vue.component( 'form-wizard', {
                         '</div>' +
                     '</div>' +
                 '</div>' +
-                '<div class="forms" v-if="editMode">' +
-                    '<div class="form" v-for="(val,index) in value" v-show="val === selectedValue">' +
+                '<div class="forms" v-if="editMode || eval.showFormIsEmpty">' +
+                    '<div class="form" v-for="(val,index) in value" v-show="val === selectedValue || eval.showAllForms">' +
+                        '<div v-if="eval.showAllForms" class="operations">' +
+                            '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete">{{ deleteButtonLabel }}</button>' +
+                        '</div>' +
                         '<template v-for="field in fields"  v-if="field.component">' +
                             '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name + \'_\' + index" v-model="value[index][field.name]"></component>' +
                         '</template>' +

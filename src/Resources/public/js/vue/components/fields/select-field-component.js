@@ -32,13 +32,13 @@ Vue.component( 'select-field', {
         if ( this.value === '' || this.value === null ) {
             return null;
         }
-        var reduceValues = [];
         if ( typeof this.value === 'object' && typeof this.value.length !== 'undefined') {
+            var reduceValues = [];
             for (var i = 0; i < this.value.length; i++) {
                 reduceValues[i] = this.reduceOption(this.value[i]);
             }
+            this.value = reduceValues;
         }
-        this.value = reduceValues;
     },
     props: {
         eval: {
@@ -52,7 +52,7 @@ Vue.component( 'select-field', {
             required: true
         },
         value: {
-            default: {},
+            default: null,
             required: false,
             type: String|Array
         },
