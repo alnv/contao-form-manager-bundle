@@ -185,12 +185,12 @@ Vue.component( 'form-wizard', {
                             '</template>' +
                         '</div>'+
                         '<div class="operations">' +
-                            '<button type="button" v-on:click.prevent="editValue(val)" class="button edit">{{ editButtonLabel }}</button>' +
+                            '<button v-if="val !== selectedValue" type="button" v-on:click.prevent="editValue(val)" class="button edit">{{ editButtonLabel }}</button>' +
                             '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete">{{ deleteButtonLabel }}</button>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
-                '<div class="forms" v-if="editMode || eval.showFormIsEmpty">' +
+                '<div class="forms" v-bind:class="{\'show-all\':eval.showAllForms}" v-if="editMode || eval.showFormIsEmpty">' +
                     '<div class="form" v-for="(val,index) in value" v-show="val === selectedValue || eval.showAllForms">' +
                         '<div v-if="eval.showAllForms" class="operations">' +
                             '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete">{{ deleteButtonLabel }}</button>' +

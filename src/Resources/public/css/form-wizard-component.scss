@@ -120,7 +120,7 @@
         width: 49%;
         margin-right: 2%;
 
-        &:nth-of-type(2n +1) {
+        &:nth-of-type(2n) {
 
           margin-right: 0;
         }
@@ -148,6 +148,14 @@
       margin-bottom: 0;
       line-height: 1.25;
       color: gray;
+    }
+
+    &.select {
+
+      .select-container {
+
+        margin: 3px 0;
+      }
     }
 
     &.upload {

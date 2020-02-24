@@ -72,7 +72,7 @@ Vue.component( 'select-field', {
         '<div class="field-component-container">' +
             '<label v-if="eval.label && !noLabel" class="label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
             '<div class="select-container">' +
-                '<v-select v-model="value" class="tl_select" :id="idPrefix + \'id_\' + name" :clearable="false" :placeholder="eval.label" :multiple="eval.multiple" :options="eval.options" label="label" :reduce="reduceOption">' +
+                '<v-select v-model="value" :id="idPrefix + \'id_\' + name" :clearable="false" :placeholder="eval.label" :multiple="eval.multiple" :options="eval.options" label="label" :reduce="reduceOption">' +
                     '<template v-slot:selected-option="option">' +
                         '<slot name="label" v-bind:label="option.label" v-html="option.label"></slot>' +
                     '</template>' +
