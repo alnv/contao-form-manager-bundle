@@ -159,7 +159,11 @@ class ResolveDca extends Resolver {
         }
 
         $objDatabase = \Database::getInstance();
-        $objDatabase->prepare('INSERT INTO '. $this->strTable .' %s')->set( $arrSubmitted )->execute();
+        if ( \Input::post('id') ) {
+            $objDatabase->prepare('UPDATE '. $this->strTable .' %s WHERE id=?')->set($arrSubmitted)->execute(\Input::post('id'));
+        } else {
+            $objDatabase->prepare('INSERT INTO '. $this->strTable .' %s')->set($arrSubmitted)->execute();
+        }
     }
 
     protected function addParentData($strFieldname, &$arrAttributes) {

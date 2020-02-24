@@ -53,7 +53,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 }).then(function ( objResponse ) {
                     if ( objResponse.body && objResponse.ok ) {
                         this.initialized = true;
-                        this.model = this.setModel( objResponse.body );
+                        this.model = this.setModel(objResponse.body);
                         this.setPalette( objResponse.body );
                         this.$parent.clearAlert();
                     }
@@ -64,6 +64,9 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             },
             setModel: function( palettes ) {
                 var objModel = {};
+                if (this.model.hasOwnProperty('id')) {
+                    objModel['id'] = this.model['id'];
+                }
                 for ( var i = 0; i < palettes.length; i++ ) {
                     for ( var intKey in palettes[i].fields ) {
                         if ( palettes[i].fields.hasOwnProperty( intKey ) ) {
@@ -74,7 +77,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                             if ( strFieldname === 'type' ) {
                                 this.type = palettes[i].fields[ intKey ]['value'];
                             }
-                            objModel[ strFieldname ] = this.model[ strFieldname ] || palettes[i].fields[ intKey ]['value'];
+                            objModel[strFieldname] = this.model[strFieldname] || palettes[i].fields[ intKey ]['value'];
                         }
                     }
                 }
