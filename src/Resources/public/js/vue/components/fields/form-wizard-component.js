@@ -192,12 +192,12 @@ Vue.component( 'form-wizard', {
                 '</div>' +
                 '<div class="forms" v-bind:class="{\'show-all\':eval.showAllForms}" v-if="editMode || eval.showFormIsEmpty">' +
                     '<div class="form" v-for="(val,index) in value" v-show="val === selectedValue || eval.showAllForms">' +
-                        '<div v-if="eval.showAllForms" class="operations">' +
-                            '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete">{{ deleteButtonLabel }}</button>' +
-                        '</div>' +
                         '<template v-for="field in fields"  v-if="field.component">' +
                             '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name + \'_\' + index" v-model="value[index][field.name]"></component>' +
                         '</template>' +
+                        '<div v-if="eval.showAllForms" class="operations">' +
+                            '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete">{{ deleteButtonLabel }}</button>' +
+                        '</div>' +
                     '</div>' +
                 '</div>' +
                 '<div class="operations" v-if="value && value.length < eval.maxEntities || !eval.maxEntities">' +
