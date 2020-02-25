@@ -122,22 +122,28 @@ const tableListComponent = Vue.component( 'table-list', {
         '<div class="table-list-component">' +
             '<div class="table-list-component-container">' +
                 '<div v-if="addUrl" class="operator add">' +
-                    '<a :href="addUrl" :title="addUrlLabel" v-html="addUrlLabel"></a>' +
+                    '<slot name="add" v-bind:addUrLabel="addUrlLabel" v-bind:addUrl="addUrl">' +
+                        '<a :href="addUrl" :title="addUrlLabel" v-html="addUrlLabel"></a>' +
+                    '</slot>' +
                 '</div>' +
                 '<div v-if="list.length" class="table">' +
                     '<div class="thead">' +
                         '<div class="tr">' +
-                            '<div class="th" v-bind:class="setFieldCssClass(field)" v-for="field in fields" v-html="labels[field]"></div>' +
+                            '<slot name="th" v-bind:fields="fields" v-bind:labels="labels">' +
+                                '<div class="th" v-bind:class="setFieldCssClass(field)" v-for="field in fields" v-html="labels[field]"></div>' +
+                            '</slot>' +
                         '</div>' +
                     '</div>'+
                     '<div class="tbody">' +
                         '<div class="tr" v-for="item in list">' +
-                            '<div v-if="field!==\'operations\'" class="td" v-bind:class="setFieldCssClass(field)" v-for="field in fields" v-html="item[field]"></div>' +
-                            '<div class="td" v-else class="td operations">' +
-                                '<div v-bind:class="setOperatorCssClass(operator)" v-for="operator in operations">' +
-                                    '<a v-on:click="callOperator($event,operator,item)" :href="item.operations[operator][\'href\']" :title="item.operations[operator][\'label\']" v-html="item.operations[operator][\'label\']"></a>' +
+                            '<slot name="td" v-bind:fields="fields" v-bind:item="item">' +
+                                '<div v-if="field!==\'operations\'" class="td" v-bind:class="setFieldCssClass(field)" v-for="field in fields" v-html="item[field]"></div>' +
+                                '<div v-else class="td" class="td operations">' +
+                                    '<div v-bind:class="setOperatorCssClass(operator)" v-for="operator in operations">' +
+                                        '<a v-on:click="callOperator($event,operator,item)" :href="item.operations[operator][\'href\']" :title="item.operations[operator][\'label\']" v-html="item.operations[operator][\'label\']"></a>' +
+                                    '</div>' +
                                 '</div>' +
-                            '</div>' +
+                            '</slot>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
