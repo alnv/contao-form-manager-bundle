@@ -40,7 +40,6 @@ class FormManagerModule extends \Module {
         $this->Template->formHint = $this->cmFormHint;
         $this->Template->identifier = $this->cmIdentifier;
         $this->Template->successRedirect = $this->getFrontendUrl($this->cmSuccessRedirect);
-        // var_dump($this->arrActiveRecord);exit;
         $this->Template->model = htmlspecialchars(json_encode($this->arrActiveRecord),ENT_QUOTES,'UTF-8');
     }
 

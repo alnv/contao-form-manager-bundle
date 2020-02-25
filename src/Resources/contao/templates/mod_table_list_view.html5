@@ -1,0 +1,3 @@
+<div class="v-component">
+    <table-list module="<?= $this->id ?>" add-url="<?= $this->addUrl ?>" add-url-label="Neuen Event eintragen"></table-list>
+</div>

@@ -11,7 +11,6 @@ use Alnv\ContaoFormManagerBundle\Library\MultiFormResolver;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
-
 /**
  *
  * @Route("/form-manager", defaults={"_scope" = "frontend", "_token_check" = false})
@@ -172,6 +171,28 @@ class FormController extends Controller {
     public function saveMultiForm() {
         $this->container->get( 'contao.framework' )->initialize();
         $objMultiFormResolver = new MultiFormResolver();
-        return new JsonResponse( $objMultiFormResolver->save() );
+        return new JsonResponse($objMultiFormResolver->save());
+    }
+
+    /**
+     *
+     * @Route("/list-view", name="getListView")
+     * @Method({"POST"})
+     */
+    public function getListView() {
+        $this->container->get( 'contao.framework' )->initialize();
+        $objListView = new \Alnv\ContaoFormManagerBundle\Modules\ListView(\Input::post('module'));
+        return new JsonResponse($objListView->parse());
+    }
+
+    /**
+     *
+     * @Route("/deleteItem/{id}", name="deleteItem")
+     * @Method({"POST"})
+     */
+    public function deleteItem($id) {
+        $this->container->get( 'contao.framework' )->initialize();
+        $objListView = new \Alnv\ContaoFormManagerBundle\Modules\ListView(\Input::post('module'));
+        return new JsonResponse($objListView->delete($id));
     }
 }

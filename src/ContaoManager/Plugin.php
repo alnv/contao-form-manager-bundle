@@ -17,7 +17,7 @@ class Plugin implements BundlePluginInterface, RoutingPluginInterface {
 
         return [
             BundleConfig::create('Alnv\ContaoFormManagerBundle\AlnvContaoFormManagerBundle')
-                ->setLoadAfter(['Contao\CoreBundle\ContaoCoreBundle', 'Alnv\ContaoAssetsManagerBundle\AlnvContaoAssetsManagerBundle'])
+                ->setLoadAfter(['Contao\CoreBundle\ContaoCoreBundle', 'Alnv\ContaoAssetsManagerBundle\AlnvContaoAssetsManagerBundle','Alnv\ContaoCatalogManagerBundle\AlnvContaoCatalogManagerBundle'])
                 ->setReplace(['contao-form-manager-bundle']),
         ];
     }

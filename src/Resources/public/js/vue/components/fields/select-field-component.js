@@ -1,8 +1,6 @@
 Vue.component( 'select-field', {
     data: function () {
-        return {
-            //
-        }
+        return {}
     },
     methods: {
         setCssClass: function() {
@@ -47,8 +45,8 @@ Vue.component( 'select-field', {
             required: true
         },
         name: {
-            default: '',
             type: String,
+            default: null,
             required: true
         },
         value: {

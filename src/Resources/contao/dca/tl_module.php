@@ -8,6 +8,9 @@ $GLOBALS['TL_DCA']['tl_module']['subpalettes']['cmSource_form'] = 'cmIdentifier'
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['cmForm'] = 'cmFormPage,cmFormModule';
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['form-manager'] = '{title_legend},name,headline,type;{form_setting},cmSource,cmSuccessRedirect,cmFormHint;{template_legend:hide},customTpl;{protected_legend:hide:hide},protected;{expert_legend:hide},guests,cssID,space';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['table-list-view'] = '{title_legend},name,headline,type;{form_setting},cmTable,cmFormPage,cmMasterPage;{template_legend:hide},customTpl;{protected_legend:hide:hide},protected;{expert_legend:hide},guests,cssID,space';
+
+\Contao\CoreBundle\DataContainer\PaletteManipulator::create()->addField('cmForm', 'cmMaster')->applyToPalette('listing', 'tl_module');
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cmForm'] = [
     'inputType' => 'checkbox',
