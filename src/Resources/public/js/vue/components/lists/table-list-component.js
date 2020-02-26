@@ -132,15 +132,16 @@ const tableListComponent = Vue.component( 'table-list', {
                     '<div class="thead">' +
                         '<div class="tr">' +
                             '<slot name="th" v-bind:fields="fields" v-bind:labels="labels">' +
-                                '<div class="th" v-bind:class="setFieldCssClass(field)" v-for="field in fields" v-html="labels[field]"></div>' +
+                                '<div v-for="field in fields" class="th" v-bind:class="setFieldCssClass(field)" v-html="labels[field]"></div>' +
+                                '<div v-if="operations.length" class="th operations" v-html="labels[\'operations\']"></div>' +
                             '</slot>' +
                         '</div>' +
                     '</div>'+
                     '<div class="tbody">' +
                         '<div class="tr" v-for="item in list">' +
                             '<slot name="td" v-bind:fields="fields" v-bind:callOperator="callOperator" v-bind:operations="operations" v-bind:item="item">' +
-                                '<div v-for="field in fields" v-if="field!==\'operations\'" class="td" v-bind:class="setFieldCssClass(field)" v-html="item[field]"></div>' +
-                                '<div v-else class="td operations">' +
+                                '<div v-for="field in fields" class="td" v-bind:class="setFieldCssClass(field)" v-html="item[field]"></div>' +
+                                '<div v-if="operations.length" class="td operations">' +
                                     '<div v-bind:class="setOperatorCssClass(operator)" v-for="operator in operations" v-if="item.operations[operator][\'href\']">' +
                                         '<a v-on:click="callOperator($event,operator,item)" :href="item.operations[operator][\'href\']" :title="item.operations[operator][\'label\']" v-html="item.operations[operator][\'label\']"></a>' +
                                     '</div>' +

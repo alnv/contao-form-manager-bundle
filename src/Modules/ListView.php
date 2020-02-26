@@ -98,6 +98,8 @@ class ListView {
         }
 
         $arLabels = [];
+        $arLabels['operations'] = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()
+            ->translate($this->strTable . '.field.title.operations', $GLOBALS['TL_DCA'][$this->strTable]['fields']['operations']['name']);
         foreach ($arrFields as $strField) {
             $arLabels[$strField] = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()
                 ->translate($this->strTable . '.field.title.' . $strField, $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strField]['name']);
