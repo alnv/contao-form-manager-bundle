@@ -43,6 +43,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
         },
         methods: {
             fetch: function (strSource) {
+                var objParent = this.getParentSharedInstance(this.$parent);
                 this.$http.get( '/form-manager/get' + strSource + '/' + this.identifier, {
                     params: {
                         type: this.type,
@@ -55,10 +56,10 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         this.initialized = true;
                         this.model = this.setModel(objResponse.body);
                         this.setPalette( objResponse.body );
-                        this.$parent.clearAlert();
+                        objParent.clearAlert();
                     }
                     if ( !objResponse.ok ) {
-                        this.$parent.setErrorAlert('',this);
+                        objParent.setErrorAlert('',this);
                     }
                 });
             },
@@ -101,7 +102,8 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 if ( blnIsSelector === true ) {
                     this.subpalettes[ strName ] = strName + '::' + strValue;
                 }
-                this.$parent.setLoadingAlert('', this);
+                var objParent = this.getParentSharedInstance(this.$parent);
+                objParent.setLoadingAlert('', this);
                 this.fetchBySource();
                 var objShare = {};
                 for ( var j = 0; j < this.$children.length; j++ ) {
@@ -113,7 +115,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             },
             onSubmit: function () {
                 var objParent = this.getParentSharedInstance(this.$parent);
-                this.$parent.setLoadingAlert('', this);
+                objParent.setLoadingAlert('', this);
                 this.getSubmitPromise().then( function ( objResponse ) {
                     if ( objResponse.body ) {
                         this.setPalette( objResponse.body.form );
@@ -130,9 +132,9 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                                 }
                             }
                             objParent.onChange( this );
-                            this.$parent.clearAlert();
+                            objParent.clearAlert();
                         } else {
-                            this.$parent.setErrorAlert('', this);
+                            objParent.setErrorAlert('', this);
                         }
                     }
                 });
