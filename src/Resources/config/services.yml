@@ -1,0 +1,4 @@
+services:
+  formmanager.datacontainer.catalog:
+    class: Alnv\ContaoFormManagerBundle\DataContainer\Module
+    public: true

@@ -38,6 +38,11 @@ Vue.component( 'select-field', {
             this.value = reduceValues;
         }
     },
+    mounted: function() {
+        if ( this.eval.useNativeSelect ) {
+            this.useNativeSelect = this.eval.useNativeSelect;
+        }
+    },
     props: {
         eval: {
             default: {},
@@ -63,6 +68,11 @@ Vue.component( 'select-field', {
             type: Boolean,
             default: false,
             required: false
+        },
+        useNativeSelect: {
+            type: Boolean,
+            default: false,
+            required: false
         }
     },
     template:
@@ -70,7 +80,7 @@ Vue.component( 'select-field', {
         '<div class="field-component-container">' +
             '<label v-if="eval.label && !noLabel" class="label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
             '<div class="select-container">' +
-                '<v-select v-model="value" :id="idPrefix + \'id_\' + name" :clearable="false" :placeholder="eval.label" :multiple="eval.multiple" :options="eval.options" label="label" :reduce="reduceOption">' +
+                '<v-select v-if="!useNativeSelect" v-model="value" :id="idPrefix + \'id_\' + name" :clearable="false" :placeholder="eval.label" :multiple="eval.multiple" :options="eval.options" label="label" :reduce="reduceOption">' +
                     '<template v-slot:selected-option="option">' +
                         '<slot name="label" v-bind:label="option.label" v-html="option.label"></slot>' +
                     '</template>' +
@@ -78,6 +88,9 @@ Vue.component( 'select-field', {
                         '<slot name="label" v-bind:label="option.label" v-html="option.label"></slot>' +
                     '</template>' +
                 '</v-select>' +
+                '<select v-else v-model="value" :id="idPrefix + \'id_\' + name" :placeholder="eval.label" :multiple="eval.multiple">' +
+                    '<option v-for="option in eval.options" v-bind:value="reduceOption(option)" v-html="option.label"></option>' +
+                '</select>' +
             '</div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description"></div>' +

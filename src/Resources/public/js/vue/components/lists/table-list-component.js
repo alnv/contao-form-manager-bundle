@@ -2,6 +2,7 @@ const tableListComponent = Vue.component( 'table-list', {
     data: function () {
         return {
             list: [],
+            fields: [],
             labels: {}
         }
     },
@@ -19,6 +20,7 @@ const tableListComponent = Vue.component( 'table-list', {
             ).then( function (objResponse) {
                 this.list = objResponse.body.list;
                 this.labels = objResponse.body.labels;
+                this.fields = objResponse.body.fields;
                 if (objResponse.body.success) {
                     this.$parent.clearAlert();
                 } else {
@@ -87,11 +89,6 @@ const tableListComponent = Vue.component( 'table-list', {
             default: null,
             required: true
         },
-        fields: {
-            type: Array,
-            required: false,
-            default: ['title','operations']
-        },
         addUrl: {
             type: String,
             required: false,
@@ -117,11 +114,16 @@ const tableListComponent = Vue.component( 'table-list', {
             default: false,
             required: false
         },
+        addButtonPosition: {
+            type: String,
+            required: false,
+            default: 'before'
+        }
     },
     template:
         '<div class="table-list-component">' +
             '<div class="table-list-component-container">' +
-                '<div v-if="addUrl" class="operator add">' +
+                '<div v-if="addUrl && addButtonPosition === \'before\'" class="operator add">' +
                     '<slot name="add" v-bind:addUrLabel="addUrlLabel" v-bind:addUrl="addUrl">' +
                         '<a :href="addUrl" :title="addUrlLabel" v-html="addUrlLabel"></a>' +
                     '</slot>' +
@@ -136,9 +138,9 @@ const tableListComponent = Vue.component( 'table-list', {
                     '</div>'+
                     '<div class="tbody">' +
                         '<div class="tr" v-for="item in list">' +
-                            '<slot name="td" v-bind:fields="fields" v-bind:item="item">' +
-                                '<div v-if="field!==\'operations\'" class="td" v-bind:class="setFieldCssClass(field)" v-for="field in fields" v-html="item[field]"></div>' +
-                                '<div v-else class="td" class="td operations">' +
+                            '<slot name="td" v-bind:fields="fields" v-bind:callOperator="callOperator" v-bind:operations="operations" v-bind:item="item">' +
+                                '<div v-for="field in fields" v-if="field!==\'operations\'" class="td" v-bind:class="setFieldCssClass(field)" v-html="item[field]"></div>' +
+                                '<div v-else class="td operations">' +
                                     '<div v-bind:class="setOperatorCssClass(operator)" v-for="operator in operations" v-if="item.operations[operator][\'href\']">' +
                                         '<a v-on:click="callOperator($event,operator,item)" :href="item.operations[operator][\'href\']" :title="item.operations[operator][\'label\']" v-html="item.operations[operator][\'label\']"></a>' +
                                     '</div>' +
@@ -146,6 +148,11 @@ const tableListComponent = Vue.component( 'table-list', {
                             '</slot>' +
                         '</div>' +
                     '</div>' +
+                '</div>' +
+                '<div v-if="addUrl && addButtonPosition === \'after\'" class="operator add">' +
+                    '<slot name="add" v-bind:addUrLabel="addUrlLabel" v-bind:addUrl="addUrl">' +
+                        '<a :href="addUrl" :title="addUrlLabel" v-html="addUrlLabel"></a>' +
+                    '</slot>' +
                 '</div>' +
             '</div>' +
         '</div>'

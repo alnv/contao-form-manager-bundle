@@ -5,8 +5,9 @@ namespace Alnv\ContaoFormManagerBundle\Modules;
 class ListView {
 
     protected $strTable = null;
-    protected $blnSuccess = true;
+    protected $objModule = null;
     protected $objListing = null;
+    protected $blnSuccess = true;
 
     public function __construct($strModule) {
 
@@ -14,16 +15,15 @@ class ListView {
             return null;
         }
 
-        $objModule = \ModuleModel::findByPk($strModule);
-        if ($objModule === null) {
+        $this->objModule = \ModuleModel::findByPk($strModule);
+        if ($this->objModule === null) {
             return null;
         }
         $arrOptions = [
-            'formPage' => $objModule->cmFormPage ?: '',
-            'masterPage' => $objModule->cmMasterPage ?: ''
+            'formPage' => $this->objModule->cmFormPage ?: '',
+            'masterPage' => $this->objModule->cmMasterPage ?: ''
         ];
-        $this->strTable = $objModule->cmTable;
-
+        $this->strTable = $this->objModule->cmTable;
         $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable,[]);
         if ( $strMemberField = $objRoleResolver->getFieldByRole('member') ) {
             $objMember = \FrontendUser::getInstance();
@@ -34,7 +34,6 @@ class ListView {
                 $arrOptions['value'] = [$objMember->id];
             }
         }
-
         if ( $this->blnSuccess ) {
             $this->objListing = new \Alnv\ContaoCatalogManagerBundle\Views\Listing($this->strTable, $arrOptions);
         }
@@ -69,7 +68,7 @@ class ListView {
         }
 
         $arrListView = [];
-        $arrFields = ['title', 'operations'];
+        $arrFields = \StringUtil::deserialize($this->objModule->cmFields, true);
         \System::loadLanguageFile('default', 'de');
         \System::loadLanguageFile($this->strTable, 'de');
         foreach ($this->objListing->parse() as $arrEntity) {
@@ -77,14 +76,9 @@ class ListView {
                 'id' => $arrEntity['id']
             ];
             foreach ($arrFields as $strField) {
-                switch ($strField) {
-                    case 'operations':
-                        $arrRow['operations'] = [];
-                        break;
-                    default:
-                        $arrRow[$strField] = $arrEntity[$strField];
-                }
+                $arrRow[$strField] = $arrEntity[$strField];
             }
+            $arrRow['operations'] = [];
             $arrRow['operations']['master'] = [
                 'label' => \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate($this->strTable . '.operator.master', $GLOBALS['TL_LANG']['MSC']['operator']['master'][0]),
                 'icon' => '',
@@ -112,6 +106,7 @@ class ListView {
         return [
             'success' => $this->blnSuccess,
             'list' => $arrListView,
+            'fields' => $arrFields,
             'labels' => $arLabels
         ];
     }

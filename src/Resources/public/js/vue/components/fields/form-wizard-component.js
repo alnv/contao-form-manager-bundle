@@ -185,8 +185,8 @@ Vue.component( 'form-wizard', {
                             '</template>' +
                         '</div>'+
                         '<div class="operations">' +
-                            '<button v-if="val !== selectedValue" type="button" v-on:click.prevent="editValue(val)" class="button edit">{{ editButtonLabel }}</button>' +
-                            '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete">{{ deleteButtonLabel }}</button>' +
+                            '<button v-if="val !== selectedValue" type="button" v-on:click.prevent="editValue(val)" class="button edit"><span v-html="editButtonLabel"></span></button>' +
+                            '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete"><span v-html="deleteButtonLabel"></span></button>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
@@ -196,7 +196,7 @@ Vue.component( 'form-wizard', {
                             '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name + \'_\' + index" v-model="value[index][field.name]"></component>' +
                         '</template>' +
                         '<div v-if="eval.showAllForms" class="operations">' +
-                            '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete">{{ deleteButtonLabel }}</button>' +
+                            '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete"><span v-html="deleteButtonLabel"></span></button>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
