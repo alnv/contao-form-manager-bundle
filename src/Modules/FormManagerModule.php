@@ -5,7 +5,6 @@ namespace Alnv\ContaoFormManagerBundle\Modules;
 class FormManagerModule extends \Module {
 
     protected $arrActiveRecord = [];
-    protected $strMemberField = null;
     protected $strTemplate = 'mod_form_manager';
 
     public function generate() {
@@ -22,13 +21,10 @@ class FormManagerModule extends \Module {
             return $objTemplate->parse();
         }
 
-        $objMember = \FrontendUser::getInstance();
-        $this->strMemberField = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->cmIdentifier, [])->getFieldByRole('member');
         $this->arrActiveRecord = $this->getActiveRecord();
-        if ( $this->strMemberField && !empty($this->arrActiveRecord) ) {
-            if ( !$objMember->id || ( $this->arrActiveRecord[$this->strMemberField] != $objMember->id ) ) {
-                throw new \CoreBundle\Exception\InsufficientAuthenticationException('Page access denied:  ' . \Environment::get('uri'));
-            }
+        $objPermission = new \Alnv\ContaoFormManagerBundle\Library\MemberPermissions();
+        if ( !empty($this->arrActiveRecord) && !$objPermission->hasPermission($this->cmIdentifier, $this->arrActiveRecord) ) {
+            throw new \CoreBundle\Exception\InsufficientAuthenticationException('Page access denied:  ' . \Environment::get('uri'));
         }
 
         return parent::generate();

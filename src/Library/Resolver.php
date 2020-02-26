@@ -4,7 +4,6 @@ namespace Alnv\ContaoFormManagerBundle\Library;
 
 use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
-
 abstract class Resolver extends \System {
 
     protected $blnValidate = false;
@@ -85,6 +84,12 @@ abstract class Resolver extends \System {
 
         $this->blnValidate = true;
         $arrForm = $this->getForm();
+        $objPermission = new \Alnv\ContaoFormManagerBundle\Library\MemberPermissions();
+        if (!$objPermission->hasCredentials($this->strTable)) {
+            $this->blnSuccess = false;
+        }
+
+        /*
         $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable,[]);
         if ( $strMemberField = $objRoleResolver->getFieldByRole('member') ) {
             $objMember = \FrontendUser::getInstance();
@@ -92,6 +97,7 @@ abstract class Resolver extends \System {
                 $this->blnSuccess = false;
             }
         }
+        */
 
         if ( $this->blnSuccess && !$blnValidateOnly ) {
             $this->saveRecord( $arrForm );

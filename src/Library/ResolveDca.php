@@ -157,7 +157,6 @@ class ResolveDca extends Resolver {
                     $arrCallback($arrSubmitted, false, $this->arrOptions, $this);
                 }
             }
-
             return null;
         }
 

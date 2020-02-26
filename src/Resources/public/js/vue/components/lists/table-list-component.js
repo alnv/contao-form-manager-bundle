@@ -43,7 +43,7 @@ const tableListComponent = Vue.component( 'table-list', {
                 return null;
             }
             this.$parent.setLoadingAlert('', this);
-            this.$http.post( '/form-manager/deleteItem/' + item.id,
+            this.$http.post( item.operations.delete.href,
                 {
                     module: this.module,
                 },
@@ -139,7 +139,7 @@ const tableListComponent = Vue.component( 'table-list', {
                             '<slot name="td" v-bind:fields="fields" v-bind:item="item">' +
                                 '<div v-if="field!==\'operations\'" class="td" v-bind:class="setFieldCssClass(field)" v-for="field in fields" v-html="item[field]"></div>' +
                                 '<div v-else class="td" class="td operations">' +
-                                    '<div v-bind:class="setOperatorCssClass(operator)" v-for="operator in operations">' +
+                                    '<div v-bind:class="setOperatorCssClass(operator)" v-for="operator in operations" v-if="item.operations[operator][\'href\']">' +
                                         '<a v-on:click="callOperator($event,operator,item)" :href="item.operations[operator][\'href\']" :title="item.operations[operator][\'label\']" v-html="item.operations[operator][\'label\']"></a>' +
                                     '</div>' +
                                 '</div>' +

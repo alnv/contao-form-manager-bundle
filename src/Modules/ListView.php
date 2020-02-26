@@ -30,7 +30,7 @@ class ListView {
             if ( !$objMember->id ) {
                 $this->blnSuccess = false;
             } else {
-                $arrOptions['column'] = [ $GLOBALS['TL_DCA'][$this->strTable]['config']['_table'] . '.' . $strMemberField .'=?' ];
+                $arrOptions['column'] = [$GLOBALS['TL_DCA'][$this->strTable]['config']['_table'] . '.' . $strMemberField .'=?'];
                 $arrOptions['value'] = [$objMember->id];
             }
         }
@@ -98,7 +98,7 @@ class ListView {
             $arrRow['operations']['delete'] = [
                 'label' => \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate($this->strTable . '.operator.delete', $GLOBALS['TL_LANG']['MSC']['operator']['delete'][0]),
                 'icon' => '',
-                'href' => ''
+                'href' => $arrEntity['deleteUrl']()
             ];
             $arrListView[] = $arrRow;
         }

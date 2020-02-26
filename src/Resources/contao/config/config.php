@@ -7,6 +7,8 @@ array_insert( $GLOBALS['FE_MOD'], 2, [
     ]
 ]);
 
+$GLOBALS['TL_HOOKS']['parseEntity'][] = ['Alnv\ContaoFormManagerBundle\Hooks\View','parseEntity'];
+
 $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
     'text' => [
         'default' => 'text-field',
