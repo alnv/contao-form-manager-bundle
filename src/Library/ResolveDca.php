@@ -168,6 +168,8 @@ class ResolveDca extends Resolver {
         }
 
         $objDataContainer = new \Alnv\ContaoFormManagerBundle\Helper\VirtualDataContainer($this->strTable);
+        $objDataContainer->table = $this->strTable;
+        $objDataContainer->activeRecord = \Input::post('id');
         $objDataContainer->ptable = $GLOBALS['TL_DCA'][$this->strTable]['config']['ptable'];
         $objDataContainer->ctable = $GLOBALS['TL_DCA'][$this->strTable]['config']['ctable'];
 

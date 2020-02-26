@@ -11,14 +11,9 @@ class VirtualDataContainer extends \DataContainer {
     }
 
     public function __set($strKey, $varValue) {
-
         switch ( $strKey ) {
             case 'activeRecord':
-                $objEntity = null;
-                if ( \Input::post('id') ) {
-                    $objEntity = \Database::getInstance()->prepare(sprintf( 'SELECT * FROM %s WHERE id=?', $this->table ))->limit(1)->execute(\Input::post('id'));
-                }
-                $this->objActiveRecord = $objEntity;
+                $this->objActiveRecord = \Database::getInstance()->prepare(sprintf( 'SELECT * FROM %s WHERE id=?', $this->table ))->limit(1)->execute($varValue);
                 break;
 
             default:
