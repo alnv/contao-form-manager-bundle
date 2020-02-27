@@ -53,6 +53,12 @@ abstract class Resolver extends \System {
         $arrField['labelValue'] = Toolkit::getLabelValue( $arrField['value'], $arrField );
         $arrField['default'] = $arrFieldAttributes['default'];
 
+
+        if ( in_array( $arrField['type'], ['checkbox'] ) && $arrField['multiple'] === false ) {
+
+            $arrField['options'][0]['label'] = $arrField['label'];
+        }
+
         if ( in_array( $arrField['rgxp'], [ 'date', 'time', 'datim' ] ) ) {
 
             $arrField['dateFormat'] = \Date::getFormatFromRgxp( $arrField['rgxp'] );
