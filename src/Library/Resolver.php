@@ -15,14 +15,22 @@ abstract class Resolver extends \System {
 
     public function parseAttributes( $arrFieldAttributes ) {
 
-        $arrField = [];
-        $arrField['messages'] = [];
-        $arrField['validate'] = true;
+        $arrFieldAttributes['messages'] = [];
+        $arrFieldAttributes['validate'] = true;
         $strClass = Toolkit::convertBackendFieldToFrontendField( $arrFieldAttributes['type'] );
 
         if ( !class_exists( $strClass ) ) {
 
             return null;
+        }
+
+        if ( isset( $GLOBALS['TL_HOOKS']['preCompileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['preCompileFormField'] ) ) {
+
+            foreach ( $GLOBALS['TL_HOOKS']['preCompileFormField'] as $arrCallback ) {
+
+                $this->import( $arrCallback[0] );
+                $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}( $arrFieldAttributes, $this );
+            }
         }
 
         $objField = new $strClass( $arrFieldAttributes );
@@ -34,34 +42,32 @@ abstract class Resolver extends \System {
             if ( $objField->hasErrors() ) {
 
                 $this->blnSuccess = false;
-                $arrField['validate'] = false;
-                $arrField['messages'] = $objField->getErrors();
+                $arrFieldAttributes['validate'] = false;
+                $arrFieldAttributes['messages'] = $objField->getErrors();
             }
         }
 
         foreach ( $arrFieldAttributes as $strFieldname => $strValue ) {
 
-            $arrField[ $strFieldname ] = $objField->{$strFieldname};
+            $arrFieldAttributes[ $strFieldname ] = $objField->{$strFieldname};
         }
 
-        $arrField['isReactive'] = $this->isReactive( $arrField );
-        $arrField['postValue'] = \Input::post( $arrField['name'] );
-        $arrField['label'] = \Controller::replaceInsertTags( $arrField['label'] );
-        $arrField['component'] = Toolkit::convertTypeToComponent( $arrField['type'], $arrField['rgxp'] );
-        $arrField['multiple'] = Toolkit::convertMultiple( $arrField['multiple'], $arrField );
-        $arrField['value'] = Toolkit::convertValue( $arrField['value'], $arrField );
-        $arrField['labelValue'] = Toolkit::getLabelValue( $arrField['value'], $arrField );
-        $arrField['default'] = $arrFieldAttributes['default'];
+        $arrFieldAttributes['isReactive'] = $this->isReactive( $arrFieldAttributes );
+        $arrFieldAttributes['postValue'] = \Input::post( $arrFieldAttributes['name'] );
+        $arrFieldAttributes['label'] = \Controller::replaceInsertTags( $arrFieldAttributes['label'] );
+        $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent( $arrFieldAttributes['type'], $arrFieldAttributes['rgxp'] );
+        $arrFieldAttributes['multiple'] = Toolkit::convertMultiple( $arrFieldAttributes['multiple'], $arrFieldAttributes );
+        $arrFieldAttributes['value'] = Toolkit::convertValue( $arrFieldAttributes['value'], $arrFieldAttributes );
+        $arrFieldAttributes['labelValue'] = Toolkit::getLabelValue( $arrFieldAttributes['value'], $arrFieldAttributes );
 
+        if ( in_array( $arrFieldAttributes['type'], ['checkbox'] ) && $arrFieldAttributes['multiple'] === false ) {
 
-        if ( in_array( $arrField['type'], ['checkbox'] ) && $arrField['multiple'] === false ) {
-
-            $arrField['options'][0]['label'] = $arrField['label'];
+            $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
         }
 
-        if ( in_array( $arrField['rgxp'], [ 'date', 'time', 'datim' ] ) ) {
+        if ( in_array( $arrFieldAttributes['rgxp'], [ 'date', 'time', 'datim' ] ) ) {
 
-            $arrField['dateFormat'] = \Date::getFormatFromRgxp( $arrField['rgxp'] );
+            $arrFieldAttributes['dateFormat'] = \Date::getFormatFromRgxp( $arrFieldAttributes['rgxp'] );
         }
 
         if ( isset( $GLOBALS['TL_HOOKS']['compileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['compileFormField'] ) ) {
@@ -69,11 +75,11 @@ abstract class Resolver extends \System {
             foreach ( $GLOBALS['TL_HOOKS']['compileFormField'] as $arrCallback ) {
 
                 $this->import( $arrCallback[0] );
-                $arrField = $this->{$arrCallback[0]}->{$arrCallback[1]}( $arrField, $this );
+                $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}( $arrFieldAttributes, $this );
             }
         }
 
-        return $arrField;
+        return $arrFieldAttributes;
     }
 
     protected function isReactive( $arrField ) {
@@ -94,16 +100,6 @@ abstract class Resolver extends \System {
         if (!$objPermission->hasCredentials($this->strTable)) {
             $this->blnSuccess = false;
         }
-
-        /*
-        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable,[]);
-        if ( $strMemberField = $objRoleResolver->getFieldByRole('member') ) {
-            $objMember = \FrontendUser::getInstance();
-            if (!$objMember->id) {
-                $this->blnSuccess = false;
-            }
-        }
-        */
 
         if ( $this->blnSuccess && !$blnValidateOnly ) {
             $this->saveRecord( $arrForm );
