@@ -79,6 +79,7 @@ Vue.component( 'upload-field', {
             if ( typeof Dropzone === 'undefined' ) {
                 return null;
             }
+            var vueInstance = this;
             var objDropzoneOptions = {
                 url: '/form-manager/upload',
                 paramName: this.name,
@@ -87,6 +88,17 @@ Vue.component( 'upload-field', {
                     identifier: this.eval['_identifier'],
                     source: this.eval['_source'],
                     table: this.eval['_table']
+                },
+                accept: function(file, done) {
+                    if (vueInstance.eval['allowedWidth'] && vueInstance.eval['allowedWidth'] !== file.width ) {
+                        done(vueInstance.eval['allowedWidthError']);
+                        return null;
+                    }
+                    if (vueInstance.eval['allowedHeight'] && vueInstance.eval['allowedHeight'] !== file.height ) {
+                        done(vueInstance.eval['allowedHeightError']);
+                        return null;
+                    }
+                    done();
                 },
                 complete: function () {
                     for (var i=0;i<this.files.length;i++) {
