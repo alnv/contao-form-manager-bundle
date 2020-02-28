@@ -43,9 +43,12 @@ abstract class Resolver extends \System {
             }
         }
 
-        // foreach ( $arrFieldAttributes as $strFieldname => $strValue ) {
-            // $arrFieldAttributes[ $strFieldname ] = $objField->{$strFieldname};
-        // }
+        foreach ( $arrFieldAttributes as $strFieldname => $strValue ) {
+            if (in_array($strFieldname, ['validate', 'messages'])) {
+                continue;
+            }
+            $arrFieldAttributes[ $strFieldname ] = $objField->{$strFieldname};
+        }
 
         $arrFieldAttributes['isReactive'] = $this->isReactive( $arrFieldAttributes );
         $arrFieldAttributes['postValue'] = \Input::post( $arrFieldAttributes['name'] );

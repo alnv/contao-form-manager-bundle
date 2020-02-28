@@ -77,7 +77,7 @@ Vue.component( 'checkbox-field', {
                 '<input type="checkbox" v-model="selectAll" :id="idPrefix + \'selectAll\'" @click="setSelectAll()">' +
                 '<label :for="idPrefix + \'selectAll\'">Alle</label>' +
             '</span>'+
-            '<span v-for="(option,index) in eval.options" class="checkbox-container" v-bind:class="{ \'checked\': checked( option.value ) }">' +
+            '<span v-for="(option,index) in eval.options" class="checkbox-container" v-bind:class="{\'checked\': checked(option.value)}">' +
                 '<input v-if="eval.multiple" type="checkbox" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
                 '<input v-if="!eval.multiple" type="checkbox" v-model="value" true-value="1" false-value="" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
                 '<slot name="label" v-bind:label="option.label" v-bind:id="idPrefix + \'id_\' + name + \'_\' + index"><label :for="idPrefix + \'id_\' + name + \'_\' + index" v-html="option.label"></label></slot>' +
