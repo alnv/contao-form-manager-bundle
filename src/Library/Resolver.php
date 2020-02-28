@@ -34,23 +34,18 @@ abstract class Resolver extends \System {
         }
 
         $objField = new $strClass( $arrFieldAttributes );
-
         if ( $this->blnValidate ) {
-
             $objField->validate();
-
             if ( $objField->hasErrors() ) {
-
                 $this->blnSuccess = false;
                 $arrFieldAttributes['validate'] = false;
-                $arrFieldAttributes['messages'] = $objField->getErrors();
+                $arrFieldAttributes['messages'] = $objField->getErrors();;
             }
         }
 
-        foreach ( $arrFieldAttributes as $strFieldname => $strValue ) {
-
-            $arrFieldAttributes[ $strFieldname ] = $objField->{$strFieldname};
-        }
+        // foreach ( $arrFieldAttributes as $strFieldname => $strValue ) {
+            // $arrFieldAttributes[ $strFieldname ] = $objField->{$strFieldname};
+        // }
 
         $arrFieldAttributes['isReactive'] = $this->isReactive( $arrFieldAttributes );
         $arrFieldAttributes['postValue'] = \Input::post( $arrFieldAttributes['name'] );
@@ -106,7 +101,6 @@ abstract class Resolver extends \System {
         }
 
         return [
-
             'form' => $arrForm,
             'saved' => !$blnValidateOnly,
             'success' => $this->blnSuccess,
