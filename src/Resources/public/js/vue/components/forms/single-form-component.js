@@ -46,6 +46,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 var objParent = this.getParentSharedInstance(this.$parent);
                 this.$http.get( '/form-manager/get' + strSource + '/' + this.identifier, {
                     params: {
+                        id: this.id,
                         type: this.type,
                         attributes: this.attributes,
                         initialized: this.initialized,
@@ -161,6 +162,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         }
                     }
                 }
+                arrParameters.push( 'id=' + encodeURIComponent( this.id ) );
                 arrParameters.push( 'type=' + encodeURIComponent( this.type ) );
                 arrParameters.push( 'initialized=' + encodeURIComponent( this.initialized ) );
                 return '?' + arrParameters.join('&');

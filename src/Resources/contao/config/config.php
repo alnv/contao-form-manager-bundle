@@ -86,3 +86,23 @@ if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() ) {
     }
     $GLOBALS['TL_CSS']['form-manager-bundle'] = $objFormCssCombiner->getCombinedFile();
 }
+
+$arrFormManagerTokens = [
+    'recipients' => ['admin_email', 'form_*'],
+    'email_subject' => ['admin_email', 'form_*'],
+    'email_text' => ['admin_email', 'form_*'],
+    'email_html' => ['admin_email', 'form_*'],
+    'file_name' => ['admin_email', 'form_*'],
+    'file_content' => ['admin_email', 'form_*'],
+    'email_sender_name' => ['admin_email', 'form_*'],
+    'email_sender_address' => ['admin_email', 'form_*'],
+    'email_recipient_cc' => ['admin_email', 'form_*'],
+    'email_recipient_bcc' => ['admin_email', 'form_*'],
+    'email_replyTo' => ['admin_email', 'form_*'],
+    'attachment_tokens' => ['admin_email', 'form_*']
+];
+$GLOBALS['NOTIFICATION_CENTER']['NOTIFICATION_TYPE']['form-manager-bundle'] = [
+    'onCreate' => $arrFormManagerTokens,
+    'onUpdate' => $arrFormManagerTokens,
+    'onDelete' => $arrFormManagerTokens
+];

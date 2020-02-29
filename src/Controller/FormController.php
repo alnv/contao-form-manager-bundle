@@ -105,6 +105,7 @@ class FormController extends Controller {
     public function validateAndSaveDc($table) {
         $this->container->get( 'contao.framework' )->initialize();
         $arrOptions = \Input::get('attributes') ?: [];
+        $arrOptions['id'] = \Input::get('id') ?: null;
         $arrOptions['type'] = \Input::get('type') ?: '';
         $arrOptions['initialized'] = \Input::get('initialized') ?: '';
         $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];

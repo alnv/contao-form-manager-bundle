@@ -6,6 +6,7 @@ use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
 class ResolveDca extends Resolver {
 
+    protected $objModule = null;
     protected $strTable = null;
     protected $arrOptions = [];
     protected $arrPalette = [];
@@ -14,8 +15,12 @@ class ResolveDca extends Resolver {
 
         $this->strTable = $strTable;
         $this->arrOptions = $arrOptions;
+        $this->strModuleId = $arrOptions['id'];
+        if ($arrOptions['id']) {
+            $this->objModule = \ModuleModel::findByPk($arrOptions['id']);
+        }
         \System::loadLanguageFile('default');
-        \Controller::loadDataContainer( $this->strTable );
+        \Controller::loadDataContainer($this->strTable);
         \System::loadLanguageFile( $this->strTable, $arrOptions['language'] ?: null );
         parent::__construct();
     }
@@ -23,17 +28,14 @@ class ResolveDca extends Resolver {
     public function getForm() {
 
         if ( !$GLOBALS['TL_DCA'][ $this->strTable ] ) {
-
             return [];
         }
 
         if ( !$this->arrOptions['initialized'] ) {
-
             $this->arrOptions['type'] = $GLOBALS['TL_DCA'][ $this->strTable ]['fields']['type']['default'];
         }
 
         if ( !$this->arrOptions['type'] ) {
-
             $this->arrOptions['type'] = 'default';
         }
 
@@ -120,6 +122,7 @@ class ResolveDca extends Resolver {
     public function saveRecord( $arrForm ) {
 
         $arrSubmitted = [];
+        $strNotification = null;
         $arrSubmitted['tstamp'] = time();
         foreach ( $arrForm as $objPalette ) {
             foreach ( $objPalette->fields as $arrField ) {
@@ -161,8 +164,10 @@ class ResolveDca extends Resolver {
         }
 
         if ( \Input::post('id') ) {
+            $strNotification = 'OnUpdate';
             \Database::getInstance()->prepare('UPDATE '. $this->strTable .' %s WHERE id=?')->set($arrSubmitted)->execute(\Input::post('id'));
         } else {
+            $strNotification = 'onCreate';
             $objInsert = \Database::getInstance()->prepare('INSERT INTO '. $this->strTable .' %s')->set($arrSubmitted)->execute();
             \Input::setPost('id', $objInsert->insertId);
         }
@@ -184,6 +189,32 @@ class ResolveDca extends Resolver {
                 }
             }
         }
+
+        $this->sendNotifications($strNotification);
+    }
+
+    protected function sendNotifications($strNotification) {
+
+        if ($this->objModule === null || !$strNotification) {
+            return null;
+        }
+
+        if ( !in_array( 'notification_center', array_keys(\System::getContainer()->getParameter('kernel.bundles'))) ) {
+            return null;
+        }
+
+        $arrNotifications = \StringUtil::deserialize($this->objModule->cmNotifications, true);
+
+        if (empty($arrNotifications)) {
+            return null;
+        }
+
+        foreach ($arrNotifications as $strId) {
+            $objNotification = \NotificationCenter\Model\Notification::findByPk($strId);
+            if ($objNotification->type == $strNotification) {
+                (new \Alnv\ContaoFormManagerBundle\Helper\NotificationTokens($this->strTable, \Input::post('id')))->getTokens($objNotification->flatten_delimiter);
+            }
+        }
     }
 
     protected function addParentData($strFieldname, &$arrAttributes) {
@@ -198,7 +229,6 @@ class ResolveDca extends Resolver {
         $this->arrOptions['type'] = null;
 
         if ( !$GLOBALS['TL_DCA'][ $this->strTable ] ) {
-
             return null;
         }
 
@@ -214,7 +244,6 @@ class ResolveDca extends Resolver {
             $strClass = Toolkit::convertBackendFieldToFrontendField( $arrField['inputType'] );
 
             if ( !class_exists( $strClass ) ) {
-
                 continue;
             }
 
@@ -223,7 +252,6 @@ class ResolveDca extends Resolver {
             $this->addParentData( $strFieldname, $arrAttributes );
 
             if ( $arrAttributes === null ) {
-
                 continue;
             }
 

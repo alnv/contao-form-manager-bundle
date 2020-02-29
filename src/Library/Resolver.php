@@ -20,14 +20,11 @@ abstract class Resolver extends \System {
         $strClass = Toolkit::convertBackendFieldToFrontendField( $arrFieldAttributes['type'] );
 
         if ( !class_exists( $strClass ) ) {
-
             return null;
         }
 
         if ( isset( $GLOBALS['TL_HOOKS']['preCompileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['preCompileFormField'] ) ) {
-
             foreach ( $GLOBALS['TL_HOOKS']['preCompileFormField'] as $arrCallback ) {
-
                 $this->import( $arrCallback[0] );
                 $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}( $arrFieldAttributes, $this );
             }
@@ -47,7 +44,7 @@ abstract class Resolver extends \System {
             if (in_array($strFieldname, ['validate', 'messages'])) {
                 continue;
             }
-            $arrFieldAttributes[ $strFieldname ] = $objField->{$strFieldname};
+            $arrFieldAttributes[$strFieldname] = $objField->{$strFieldname};
         }
 
         $arrFieldAttributes['isReactive'] = $this->isReactive( $arrFieldAttributes );
@@ -59,19 +56,15 @@ abstract class Resolver extends \System {
         $arrFieldAttributes['labelValue'] = Toolkit::getLabelValue( $arrFieldAttributes['value'], $arrFieldAttributes );
 
         if ( in_array( $arrFieldAttributes['type'], ['checkbox'] ) && $arrFieldAttributes['multiple'] === false ) {
-
             $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
         }
 
         if ( in_array( $arrFieldAttributes['rgxp'], [ 'date', 'time', 'datim' ] ) ) {
-
             $arrFieldAttributes['dateFormat'] = \Date::getFormatFromRgxp( $arrFieldAttributes['rgxp'] );
         }
 
         if ( isset( $GLOBALS['TL_HOOKS']['compileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['compileFormField'] ) ) {
-
             foreach ( $GLOBALS['TL_HOOKS']['compileFormField'] as $arrCallback ) {
-
                 $this->import( $arrCallback[0] );
                 $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}( $arrFieldAttributes, $this );
             }
@@ -83,7 +76,6 @@ abstract class Resolver extends \System {
     protected function isReactive( $arrField ) {
 
         if ( in_array( $arrField['type'], [ 'select', 'radio', 'checkbox', 'nouislider' ] ) ) {
-
             return true;
         }
 

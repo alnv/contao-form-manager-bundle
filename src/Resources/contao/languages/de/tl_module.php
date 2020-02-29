@@ -10,6 +10,7 @@ $GLOBALS['TL_LANG']['tl_module']['cmForm'] = [ 'Formular verwenden', '' ];
 $GLOBALS['TL_LANG']['tl_module']['cmFormPage'] = [ 'Formularseite auswählen', '' ];
 $GLOBALS['TL_LANG']['tl_module']['cmFormModule'] = [ 'Formular Manager auswählen', '' ];
 $GLOBALS['TL_LANG']['tl_module']['cmFields'] = [ 'Felder', '' ];
+$GLOBALS['TL_LANG']['tl_module']['cmNotifications'] = [ 'Benachrichtigungen', '' ];
 
 $GLOBALS['TL_LANG']['tl_module']['reference']['cmSource'] = [
     'dc' => 'DataContainerArray',
