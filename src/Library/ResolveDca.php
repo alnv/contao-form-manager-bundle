@@ -212,7 +212,7 @@ class ResolveDca extends Resolver {
         foreach ($arrNotifications as $strId) {
             $objNotification = \NotificationCenter\Model\Notification::findByPk($strId);
             if ($objNotification->type == $strNotification) {
-                (new \Alnv\ContaoFormManagerBundle\Helper\NotificationTokens($this->strTable, \Input::post('id')))->getTokens($objNotification->flatten_delimiter);
+                $objNotification->send((new \Alnv\ContaoFormManagerBundle\Helper\NotificationTokens($this->strTable, \Input::post('id')))->getTokens($objNotification->flatten_delimiter));
             }
         }
     }

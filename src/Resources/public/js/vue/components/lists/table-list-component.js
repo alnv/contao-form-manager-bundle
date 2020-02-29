@@ -45,14 +45,7 @@ const tableListComponent = Vue.component( 'table-list', {
                 return null;
             }
             this.$parent.setLoadingAlert('', this);
-            this.$http.post( item.operations.delete.href,
-                {
-                    module: this.module,
-                },
-                {
-                    emulateJSON: true,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
+            this.$http.post( item.operations.delete.href, {module: this.module,}, {emulateJSON: true, 'Content-Type': 'application/x-www-form-urlencoded'}
             ).then( function (objResponse) {
                 if (objResponse.body.success && objResponse.ok) {
                     for (var i = 0; i < this.list.length; i++) {

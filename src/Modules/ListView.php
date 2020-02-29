@@ -49,12 +49,23 @@ class ListView {
 
         foreach ($this->objListing->parse() as $arrEntity) {
             if ( $arrEntity['id'] == $strId ) {
+
+                if ( in_array( 'notification_center', array_keys(\System::getContainer()->getParameter('kernel.bundles'))) ) {
+                    $arrNotifications = \StringUtil::deserialize($this->objModule->cmNotifications, true);
+                    foreach ($arrNotifications as $strNotificationId) {
+                        $objNotification = \NotificationCenter\Model\Notification::findByPk($strNotificationId);
+                        if ($objNotification->type == 'onDelete') {
+                            $objNotification->send((new \Alnv\ContaoFormManagerBundle\Helper\NotificationTokens($this->strTable, $strId))->getTokens($objNotification->flatten_delimiter));
+                        }
+                    }
+                }
+
                 \Database::getInstance()->prepare('DELETE FROM ' . $this->strTable . ' WHERE id=?')->execute($strId);
             }
         }
 
         return [
-            'success' => $this->blnSuccess
+            'success' => true
         ];
     }
 
