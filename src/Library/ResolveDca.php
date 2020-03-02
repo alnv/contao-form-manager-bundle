@@ -123,7 +123,6 @@ class ResolveDca extends Resolver {
 
         $arrSubmitted = [];
         $strNotification = null;
-        $arrSubmitted['tstamp'] = time();
         foreach ( $arrForm as $objPalette ) {
             foreach ( $objPalette->fields as $arrField ) {
                 $arrSubmitted[ $arrField['name'] ] = Toolkit::getDbValue( $arrField['postValue'], $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $arrField['name'] ] );
@@ -137,6 +136,8 @@ class ResolveDca extends Resolver {
                 $arrSubmitted[$strMemberField] = $objMember->id;
             }
         }
+
+        $arrSubmitted['tstamp'] = time();
 
         if ( isset( $GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] ) && is_array($GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] ) ) {
             foreach ( $GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] as $arrCallback ) {
