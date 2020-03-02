@@ -25,6 +25,6 @@ class TableListViewModule extends \Module {
 
     protected function compile() {
 
-        $this->Template->addUrl = $this->cmFormPage ? \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parseDetailLink( $this->cmFormPage, '' ) : '';
+        $this->Template->addUrl = $this->cmForm ? \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parseDetailLink( $this->cmFormPage, '' ) : '';
     }
 }
