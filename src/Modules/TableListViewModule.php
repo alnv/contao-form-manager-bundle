@@ -28,6 +28,6 @@ class TableListViewModule extends \Module {
     protected function compile() {
 
         $this->Template->operations = Toolkit::parseJSObject((new \Alnv\ContaoFormManagerBundle\Library\MemberPermissions())->hasOperations($this->cmTable,['edit','delete']));
-        $this->Template->addUrl = $this->cmForm && (new \Alnv\ContaoFormManagerBundle\Library\MemberPermissions())->hasAddButton($this->cmTable) ? \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parseDetailLink( $this->cmFormPage, '' ) : '';
+        $this->Template->addUrl = ($this->cmForm && (new \Alnv\ContaoFormManagerBundle\Library\MemberPermissions())->hasAddButton($this->cmTable)) ? \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parseDetailLink( $this->cmFormPage, '' ) : '';
     }
 }

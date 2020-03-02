@@ -65,8 +65,7 @@ class MemberPermissions {
             return true;
         }
 
-        if ( ($arrGroupRight['maxEntries'] !== null || $arrGroupRight['maxEntries'] !== '') && $this->isLogged() ) {
-
+        if ( is_numeric($arrGroupRight['maxEntries']) && $this->isLogged() ) {
             $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($strTable);
             $strMemberField = $objRoleResolver->getFieldByRole('member');
             if ($strMemberField) {
