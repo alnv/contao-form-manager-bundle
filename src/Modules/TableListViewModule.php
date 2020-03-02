@@ -2,6 +2,8 @@
 
 namespace Alnv\ContaoFormManagerBundle\Modules;
 
+use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
+
 class TableListViewModule extends \Module {
 
     protected $strTemplate = 'mod_table_list_view';
@@ -25,6 +27,7 @@ class TableListViewModule extends \Module {
 
     protected function compile() {
 
-        $this->Template->addUrl = $this->cmForm ? \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parseDetailLink( $this->cmFormPage, '' ) : '';
+        $this->Template->operations = Toolkit::parseJSObject((new \Alnv\ContaoFormManagerBundle\Library\MemberPermissions())->hasOperations($this->cmTable,['edit','delete']));
+        $this->Template->addUrl = $this->cmForm && (new \Alnv\ContaoFormManagerBundle\Library\MemberPermissions())->hasAddButton($this->cmTable) ? \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parseDetailLink( $this->cmFormPage, '' ) : '';
     }
 }

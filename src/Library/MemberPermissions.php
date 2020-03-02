@@ -30,12 +30,17 @@ class MemberPermissions {
         return true;
     }
 
-    public function hasPermission($strTable,$arrEntity) {
+    public function hasPermission($strTable, $arrEntity) {
 
         $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($strTable, $arrEntity);
 
         if ( !$this->isLogged() ) {
             return false;
+        }
+
+        $arrGroupRight = $this->getGroupRights($strTable);
+        if ($arrGroupRight['admin']) {
+            return true;
         }
 
         if ( $strMemberField = $objRoleResolver->getFieldByRole('member') ) {
@@ -51,5 +56,56 @@ class MemberPermissions {
         }
 
         return true;
+    }
+
+    public function hasAddButton($strTable) {
+
+        $arrGroupRight = $this->getGroupRights($strTable);
+        if ($arrGroupRight['admin']) {
+            return true;
+        }
+
+        if ( ($arrGroupRight['maxEntries'] !== null || $arrGroupRight['maxEntries'] !== '') && $this->isLogged() ) {
+
+            $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($strTable);
+            $strMemberField = $objRoleResolver->getFieldByRole('member');
+            if ($strMemberField) {
+                $objEntities = \Database::getInstance()->prepare('SELECT id FROM ' . $strTable . ' WHERE `'.$strMemberField.'`=?' )->execute($this->strId);
+                if ($objEntities->numRows >= $arrGroupRight['maxEntries']) {
+                    return false;
+                }
+            }
+        }
+
+        return in_array('add', $arrGroupRight['operations']);
+    }
+
+    public function hasOperations($strTable,$arrSelectedOperations=[]) {
+
+        $arrGroupRight = $this->getGroupRights($strTable);
+        if ($arrGroupRight['admin']) {
+            return $arrSelectedOperations;
+        }
+        if (empty($arrSelectedOperations)) {
+            return $arrSelectedOperations;
+        }
+        $arrReturn = [];
+        foreach ($arrSelectedOperations as $strSelectedOperation) {
+            if (in_array($strSelectedOperation,$arrGroupRight['operations'])) {
+                $arrReturn[] = $strSelectedOperation;
+            }
+        }
+        return $arrReturn;
+    }
+
+    protected function getGroupRights($strTable) {
+        if ($GLOBALS['FORM_MANAGER'] && is_array($GLOBALS['FORM_MANAGER']['GROUP_RIGHTS']) && isset($GLOBALS['FORM_MANAGER']['GROUP_RIGHTS'][$strTable])) {
+            return $GLOBALS['FORM_MANAGER']['GROUP_RIGHTS'][$strTable];
+        }
+        return [
+            'admin' => false,
+            'maxEntries' => null,
+            'operations' => ['add', 'edit', 'delete']
+        ];
     }
 }

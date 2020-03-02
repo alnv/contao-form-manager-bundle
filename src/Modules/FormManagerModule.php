@@ -51,42 +51,15 @@ class FormManagerModule extends \Module {
     }
 
     protected function getActiveRecord() {
-        $arrActiveRecord = [];
         if ($this->cmSource != 'dc') {
-            return $arrActiveRecord;
+            return [];
         }
         if (!isset($_GET['auto_item'])) {
-            return $arrActiveRecord;
+            return [];
         }
-        $objMaster = new \Alnv\ContaoCatalogManagerBundle\Views\Master( $this->cmIdentifier, [
+        return (new \Alnv\ContaoCatalogManagerBundle\Views\Master($this->cmIdentifier,[
             'alias' => \Input::get('auto_item'),
             'id' => $this->id
-        ]);
-        $arrMaster = $objMaster->parse();
-        if (empty($arrMaster)) {
-            return $arrActiveRecord;
-        }
-        $arrFields = array_keys($GLOBALS['TL_DCA'][$this->cmIdentifier]['fields']);
-        if (!is_array($arrFields) || empty($arrFields)) {
-            return $arrActiveRecord;
-        }
-        foreach ($arrFields as $strField) {
-            $arrActiveRecord[$strField] = $this->parseModelValue($arrMaster[0][$strField],$GLOBALS['TL_DCA'][$this->cmIdentifier]['fields'][$strField],$arrMaster[0],$strField);
-        }
-        return $arrActiveRecord;
-    }
-
-    protected function parseModelValue($varValue,$arrField,$arrMaster,$strField) {
-
-        if ( $arrField['inputType'] == 'fileTree' ) {
-            $arrFiles = \StringUtil::deserialize($arrMaster['origin'][$strField],true);
-            foreach ($arrFiles as $index => $strUuid) {
-                if ( \Validator::isBinaryUuid($strUuid) ) {
-                    $arrFiles[$index] = \StringUtil::binToUuid($strUuid);
-                }
-            }
-            return $arrFiles;
-        }
-        return $varValue;
+        ]))->parse()[0];
     }
 }

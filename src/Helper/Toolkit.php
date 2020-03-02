@@ -206,4 +206,9 @@ class Toolkit {
 
         return true;
     }
+
+    public static function parseJSObject($varObject) {
+
+        return htmlspecialchars(json_encode($varObject),ENT_QUOTES,'UTF-8');
+    }
 }

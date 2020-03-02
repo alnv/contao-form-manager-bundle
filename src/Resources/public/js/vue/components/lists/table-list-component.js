@@ -84,13 +84,13 @@ const tableListComponent = Vue.component( 'table-list', {
         },
         addUrl: {
             type: String,
-            required: false,
-            default: ''
+            default: null,
+            required: false
         },
         addUrlLabel: {
             type: String,
-            required: false,
-            default: ''
+            default: 'Neu',
+            required: false
         },
         deleteConfirmLabel: {
             type: String,
