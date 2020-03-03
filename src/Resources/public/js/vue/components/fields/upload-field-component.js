@@ -89,16 +89,22 @@ Vue.component( 'upload-field', {
                     source: this.eval['_source'],
                     table: this.eval['_table']
                 },
+                init: function() {
+                    this.on('thumbnail', function(file) {
+                        if (vueInstance.eval['allowedWidth'] && vueInstance.eval['allowedWidth'] !== file.width) {
+                            file.rejectDimensions(vueInstance.eval['allowedWidthError']);
+                            return null;
+                        }
+                        if (vueInstance.eval['allowedHeight'] && vueInstance.eval['allowedHeight'] !== file.height) {
+                            file.rejectDimensions(vueInstance.eval['allowedHeightError']);
+                            return null;
+                        }
+                        file.acceptDimensions();
+                    })
+                },
                 accept: function(file, done) {
-                    if (vueInstance.eval['allowedWidth'] && vueInstance.eval['allowedWidth'] !== file.width ) {
-                        done(vueInstance.eval['allowedWidthError']);
-                        return null;
-                    }
-                    if (vueInstance.eval['allowedHeight'] && vueInstance.eval['allowedHeight'] !== file.height ) {
-                        done(vueInstance.eval['allowedHeightError']);
-                        return null;
-                    }
-                    done();
+                    file.acceptDimensions = done;
+                    file.rejectDimensions = function(strMessage) { done(strMessage) };
                 },
                 complete: function () {
                     for (var i=0;i<this.files.length;i++) {
@@ -115,7 +121,7 @@ Vue.component( 'upload-field', {
                     }
                 }
             };
-            var objDropzone = new Dropzone(this.$el.querySelector('.dropzone'),objDropzoneOptions);
+            var objDropzone = new Dropzone(this.$el.querySelector('.dropzone'), objDropzoneOptions);
             objDropzone.on('complete',function (file) {
                 if (file['status'] !== 'success') {
                     file.previewElement.addEventListener('click', function() {
@@ -157,8 +163,8 @@ Vue.component( 'upload-field', {
         '<div class="field-component-container">' +
             '<div v-if="files.length" class="files">' +
                 '<ul v-for="file in files" class="file">' +
-                    '<li v-if="!file.imagesize" class="document"><span>({{ file.path }})</span><div class="controller"><button v-on:click.prevent="deleteFile(file.uuid,true)">Bild entfernen</button></div></li>' +
-                    '<li v-if="file.imagesize" class="image"><figure><img :src="file.path" alt="{{ file.name }}"></figure><div class="controller"><button v-on:click.prevent="deleteFile(file.uuid,true)">Bild entfernen</button></div></li>' +
+                    '<li v-if="!file.imagesize" class="document"><span>({{ file.path }})</span><div class="controller"><button v-on:click.prevent="deleteFile(file.uuid,true)">Löschen</button></div></li>' +
+                    '<li v-if="file.imagesize" class="image"><figure><img :src="file.path" alt="{{ file.name }}"></figure><div class="controller"><button v-on:click.prevent="deleteFile(file.uuid,true)">Löschen</button></div></li>' +
                 '</ul>' +
             '</div>' +
             '<input type="hidden" :name="name" :value="getStringifyValue()">' +
