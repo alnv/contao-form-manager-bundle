@@ -151,14 +151,14 @@ class ResolveDca extends Resolver {
             }
         }
 
-        if ( isset( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] ) && is_array( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] ) ) {
+        if ( isset( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] ) && is_array( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave']) ) {
             foreach ( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] as $arrCallback ) {
                 if (is_array($arrCallback)) {
                     $this->import($arrCallback[0]);
-                    $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, false, $this->arrOptions, $this);
+                    $this->strRedirect = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, false, $this->arrOptions, $this);
                 }
                 elseif (\is_callable($arrCallback)) {
-                    $arrCallback($arrSubmitted, false, $this->arrOptions, $this);
+                    $this->strRedirect = $arrCallback($arrSubmitted, false, $this->arrOptions, $this);
                 }
             }
             return null;
