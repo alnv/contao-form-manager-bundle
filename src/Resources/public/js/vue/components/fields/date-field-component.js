@@ -54,7 +54,7 @@ Vue.component( 'date-field', {
     '<div class="field-component date" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
             '<label v-if="eval.label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
-            '<flat-pickr v-model="value" :config="config" class="tl_text"></flat-pickr>' +
+            '<flat-pickr v-model="value" :config="config" class="tl_text" :placeholder="eval.placeholder"></flat-pickr>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description"></div>' +
         '</div>' +
