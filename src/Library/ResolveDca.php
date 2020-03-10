@@ -60,12 +60,10 @@ class ResolveDca extends Resolver {
                 $strClass = Toolkit::convertBackendFieldToFrontendField( $arrField['inputType'] );
 
                 if ( !class_exists( $strClass ) ) {
-
                     continue;
                 }
 
                 if ( $strFieldname == 'type' ) {
-
                     $arrField['default'] = $this->arrOptions['type'];
                 }
 
@@ -95,22 +93,14 @@ class ResolveDca extends Resolver {
     protected function getActiveSelector() {
 
         $arrSubpalettes = [];
-
         if ( is_array( $this->arrOptions['subpalettes'] ) && !empty( $this->arrOptions['subpalettes'] ) ) {
-
             foreach ( $this->arrOptions['subpalettes'] as $strSelector ) {
-
                 list( $strFieldname, $strValue ) = explode( '::', $strSelector );
-
                 if ( $strValue == '1' ) {
-
                     $strValue = '';
                 }
-
                 $strPalette = $strFieldname . ( $strValue ? '_' . $strValue : '' ); $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strFieldname . ( $strValue ? '_' . $strValue : '' ) ];
-
                 if ( isset( $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strPalette ] ) ) {
-
                     $arrSubpalettes[ $strPalette ] = $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strPalette ];
                 }
             }
@@ -165,7 +155,7 @@ class ResolveDca extends Resolver {
         }
 
         if ( \Input::post('id') ) {
-            $strNotification = 'OnUpdate';
+            $strNotification = 'onUpdate';
             \Database::getInstance()->prepare('UPDATE '. $this->strTable .' %s WHERE id=?')->set($arrSubmitted)->execute(\Input::post('id'));
         } else {
             $strNotification = 'onCreate';

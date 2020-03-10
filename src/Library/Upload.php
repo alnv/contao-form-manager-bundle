@@ -17,9 +17,7 @@ class Upload {
         switch ( $arrOptions['source'] ) {
 
             case 'form':
-
                 //
-
                 break;
 
             case 'dc':
@@ -31,7 +29,6 @@ class Upload {
                 $strClass = Toolkit::convertBackendFieldToFrontendField( $arrField['inputType'] );
 
                 if ( !class_exists( $strClass ) ) {
-
                     continue;
                 }
 
@@ -52,7 +49,6 @@ class Upload {
                 }
 
                 $arrResponse['file'] = $_SESSION['FILES'][ $arrOptions['identifier'] ];
-
                 break;
         }
 
@@ -63,11 +59,9 @@ class Upload {
     public function delete( $arrOptions ) {
 
         $arrResponse = [];
-
         $objFile = \FilesModel::findByUuid( $arrOptions['file'] );
 
         if ( $objFile == null ) {
-
             return $arrResponse;
         }
 
@@ -85,21 +79,16 @@ class Upload {
         ];
 
         if ( empty( $arrOptions['files'] ) ) {
-
             return $arrResponse;
         }
 
         foreach ( $arrOptions['files'] as $strUuid ) {
 
-            if ( !\Validator::isUuid( $strUuid ) ) {
-
+            if ( !\Validator::isUuid($strUuid) ) {
                 continue;
             }
-
-            $objFile = \FilesModel::findByUuid( $strUuid );
-
+            $objFile = \FilesModel::findByUuid($strUuid);
             if ( $objFile == null ) {
-
                 continue;
             }
 

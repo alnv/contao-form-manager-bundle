@@ -123,10 +123,8 @@ Vue.component( 'upload-field', {
             };
             var objDropzone = new Dropzone(this.$el.querySelector('.dropzone'), objDropzoneOptions);
             objDropzone.on('complete',function (file) {
-                if (file['status'] !== 'success') {
-                    file.previewElement.addEventListener('click', function() {
-                        objDropzone.removeFile(file);
-                    });
+                if (!vueInstance.eval['multiple'] && file['status'] === 'success') {
+                    objDropzone.removeFile(file);
                 }
             });
         }

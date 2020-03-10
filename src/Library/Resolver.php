@@ -31,12 +31,24 @@ abstract class Resolver extends \System {
         }
 
         $objField = new $strClass( $arrFieldAttributes );
+
         if ( $this->blnValidate ) {
             $objField->validate();
             if ( $objField->hasErrors() ) {
                 $this->blnSuccess = false;
                 $arrFieldAttributes['validate'] = false;
-                $arrFieldAttributes['messages'] = $objField->getErrors();;
+                $arrFieldAttributes['messages'] = $objField->getErrors();
+            }
+            if ($arrImplements = class_implements($objField)) {
+                if (in_array('uploadable', $arrImplements)) {
+                    if ($objField->mandatory) {
+                        if (!empty(\Input::post($arrFieldAttributes['name']))) {
+                            $this->blnSuccess = true;
+                            $arrFieldAttributes['messages'] = [];
+                            $arrFieldAttributes['validate'] = true;
+                        }
+                    }
+                }
             }
         }
 
@@ -48,7 +60,7 @@ abstract class Resolver extends \System {
         }
 
         $arrFieldAttributes['isReactive'] = $this->isReactive( $arrFieldAttributes );
-        $arrFieldAttributes['postValue'] = \Input::post( $arrFieldAttributes['name'] );
+        $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
         $arrFieldAttributes['label'] = \Controller::replaceInsertTags( $arrFieldAttributes['label'] );
         $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent( $arrFieldAttributes['type'], $arrFieldAttributes['rgxp'] );
         $arrFieldAttributes['multiple'] = Toolkit::convertMultiple( $arrFieldAttributes['multiple'], $arrFieldAttributes );
