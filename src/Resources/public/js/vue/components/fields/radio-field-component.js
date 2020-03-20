@@ -78,7 +78,7 @@ Vue.component( 'radio-field', {
                 '<slot name="label" v-bind:label="option.label" v-bind:id="idPrefix + \'id_\' + name + \'_\' + index"><label :for="idPrefix + \'id_\' + name + \'_\' + index" v-html="option.label"></label></slot>' +
             '</span>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
-            '<div v-if="eval.description" v-html="eval.description"></div>' +
+            '<p v-if="eval.description" v-html="eval.description" class="info"></p>' +
         '</div>' +
     '</div>'
 });

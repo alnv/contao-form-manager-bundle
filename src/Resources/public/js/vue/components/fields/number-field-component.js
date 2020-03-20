@@ -152,7 +152,7 @@ Vue.component( 'number-field', {
                     '</div>' +
                 '</div>' +
                 '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
-                '<div v-if="eval.description" v-html="eval.description"></div>' +
+                '<p v-if="eval.description" v-html="eval.description" class="info"></p>' +
             '</div>' +
         '</div>'
 });
