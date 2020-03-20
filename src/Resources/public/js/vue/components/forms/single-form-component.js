@@ -94,7 +94,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 }
             },
             fetchBySource: function () {
-                this.fetch( this.getSource() )
+                this.fetch(this.getSource())
             },
             submitOnChange: function ( strValue, strName, blnIsSelector ) {
                 if ( strName === 'type' ) {
@@ -103,13 +103,14 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 if ( blnIsSelector === true ) {
                     this.subpalettes[ strName ] = strName + '::' + strValue;
                 }
+                this.attributes[strName] = strValue;
                 var objParent = this.getParentSharedInstance(this.$parent);
                 objParent.setLoadingAlert('', this);
                 this.fetchBySource();
                 var objShare = {};
                 for ( var j = 0; j < this.$children.length; j++ ) {
                     if ( this.$children[j].$vnode.tag && typeof this.$children[j].onChange !== 'undefined' ) {
-                        objShare[ strName ] = strValue;
+                        objShare[strName] = strValue;
                         this.$children[j].onChange( objShare );
                     }
                 }
