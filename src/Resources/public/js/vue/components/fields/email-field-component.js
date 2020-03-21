@@ -54,7 +54,7 @@ Vue.component( 'email-field', {
                 '<label v-if="eval.label" class="label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
                 '<input type="email" v-model="value" :id="idPrefix + \'id_\' + name" :placeholder="eval.placeholder" class="tl_text">' +
                 '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
-                '<p v-if="eval.description" v-html="eval.description" class="info"></p>' +
+                '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +
             '</div>' +
         '</div>'
 });

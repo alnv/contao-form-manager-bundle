@@ -84,7 +84,7 @@ Vue.component( 'checkbox-field', {
                 // '<label v-if="!eval.multiple" :for="idPrefix + \'id_\' + name + \'_\' + index" v-html="eval.label"></label>' +
             '</span>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
-            '<p v-if="eval.description" v-html="eval.description" class="info"></p>' +
+            '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +
         '</div>' +
     '</div>'
 });
