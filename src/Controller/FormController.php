@@ -196,4 +196,30 @@ class FormController extends Controller {
         $objListView = new \Alnv\ContaoFormManagerBundle\Modules\ListView(\Input::post('module'));
         return new JsonResponse($objListView->delete($id));
     }
+
+    /**
+     *
+     * @Route("/addOption", name="addOption")
+     * @Method({"POST"})
+     */
+    public function addOption() {
+        $this->container->get( 'contao.framework' )->initialize();
+        return new JsonResponse([
+            'value' => \Input::post('option'),
+            'label' =>  \Input::post('option')
+        ]);
+    }
+
+    /**
+     *
+     * @Route("/deleteOption", name="deleteOption")
+     * @Method({"POST"})
+     */
+    public function deleteOption() {
+        $this->container->get( 'contao.framework' )->initialize();
+        return new JsonResponse([
+            'index' => \Input::post('index'),
+            'value' => \Input::post('option')
+        ]);
+    }
 }

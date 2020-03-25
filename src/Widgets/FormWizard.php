@@ -4,7 +4,6 @@ namespace Alnv\ContaoFormManagerBundle\Widgets;
 
 use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
-
 class FormWizard extends \Alnv\ContaoFormManagerBundle\Hybrids\FormWidget {
 
     protected $blnSubmitInput = true;
@@ -13,7 +12,6 @@ class FormWizard extends \Alnv\ContaoFormManagerBundle\Hybrids\FormWidget {
     public function generate() {
 
         if ( $this->readOnly ) {
-
             return $this->readOnly();
         }
 
