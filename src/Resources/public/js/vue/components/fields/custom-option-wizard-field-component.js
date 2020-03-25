@@ -83,6 +83,8 @@ Vue.component( 'custom-option-wizard-field', {
     },
     mounted: function() {
         this.options = this.eval.options || [];
+        this.eval.addButtonLabel1 = 'Neue Auswahl anlegen';
+        this.eval.addButtonLabel2 = 'Hinzufügen';
     },
     props: {
         eval: {
@@ -114,13 +116,13 @@ Vue.component( 'custom-option-wizard-field', {
             '<div class="field-component-container">' +
                 '<p v-if="!noLabel" class="label" v-html="eval.label"></p>' +
                 '<div v-for="(option,index) in options" class="checkbox-container" v-bind:class="{\'checked\': checked(option.value)}">' +
-                    '<input type="checkbox" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
+                    '<input type="checkbox" v-model="value" :name="name + \'[]\'" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
                     '<label :for="idPrefix + \'id_\' + name + \'_\' + index" v-html="option.label"></label>' +
-                    '<button v-if="option.delete" @click.prevent="deleteOption(option)">Option löschen</button>' +
+                    '<button v-if="option.delete" @click.prevent="deleteOption(option)"><i class="delete">X</i></button>' +
                 '</div>' +
                 '<div class="option-wizard-controller">' +
                     '<input v-if="newFormVisible" type="text" v-model="newValue" @keyup.enter.prevent="addOption">' +
-                    '<button @click.prevent="addOption">Neue Auswahl anlegen</button>' +
+                    '<button @click.prevent="addOption"><span v-html="newFormVisible ? this.eval.addButtonLabel2 : this.eval.addButtonLabel1"></span></button>' +
                 '</div>' +
                 '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
                 '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +

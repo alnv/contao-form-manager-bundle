@@ -203,10 +203,22 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function addOption() {
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
+
+        $objField = \Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel::findByFieldname(\Input::post('name'));
+        if ($objField === null) {
+            return new JsonResponse([], 500);
+        }
+        $objOption = new \Alnv\ContaoCatalogManagerBundle\Models\CatalogOptionModel();
+        $objOption->value = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::generateAlias(\Input::post('option'), 'value', 'tl_catalog_option', $objField->id);
+        $objOption->label = \StringUtil::decodeEntities(\Input::post('option'));
+        $objOption->pid = $objField->id;
+        $objOption->tstamp = time();
+        $objOption->save();
+
         return new JsonResponse([
-            'value' => \Input::post('option'),
-            'label' =>  \Input::post('option')
+            'value' => $objOption->value,
+            'label' => $objOption->label
         ]);
     }
 
@@ -217,6 +229,15 @@ class FormController extends Controller {
      */
     public function deleteOption() {
         $this->container->get( 'contao.framework' )->initialize();
+        $objField = \Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel::findByFieldname(\Input::post('name'));
+        if ($objField === null) {
+            return new JsonResponse([], 500);
+        }
+        $objOption = \Alnv\ContaoCatalogManagerBundle\Models\CatalogOptionModel::findByValueAndPid(\Input::post('option'), $objField->id);
+        if ($objOption === null) {
+            return new JsonResponse([], 500);
+        }
+        $objOption->delete();
         return new JsonResponse([
             'index' => \Input::post('index'),
             'value' => \Input::post('option')

@@ -7,6 +7,7 @@ array_insert( $GLOBALS['FE_MOD'], 2, [
     ]
 ]);
 
+$GLOBALS['TL_HOOKS']['parseCatalogField'][] = ['Alnv\ContaoFormManagerBundle\Hooks\CatalogField', 'parseCatalogField'];
 $GLOBALS['TL_HOOKS']['parseEntity'][] = ['Alnv\ContaoFormManagerBundle\Hooks\View','parseEntity'];
 
 $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
@@ -57,8 +58,9 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
     ]
 ];
 
-$GLOBALS['BE_FFL']['formWizard'] = 'Alnv\ContaoFormManagerBundle\Widgets\FormWizard';
+$GLOBALS['CM_FIELDS'][] = 'customOptionWizard';
 $GLOBALS['BE_FFL']['customOptionWizard'] = 'Alnv\ContaoFormManagerBundle\Widgets\CustomOptionWizard';
+$GLOBALS['BE_FFL']['formWizard'] = 'Alnv\ContaoFormManagerBundle\Widgets\FormWizard';
 $GLOBALS['TL_FFL']['formWizard'] = 'Alnv\ContaoFormManagerBundle\Forms\FormWizard';
 
 if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() ) {
