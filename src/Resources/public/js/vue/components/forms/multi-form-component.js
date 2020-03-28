@@ -32,7 +32,7 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
         completeMultiForm: function() {
             this.$http.post( '/form-manager/save/multiform', {
                 forms: objInstances
-            }, {
+            },{
                 emulateJSON: true,
                 'Content-Type': 'application/x-www-form-urlencoded'
             }).then( function ( objResponse ) {
@@ -87,9 +87,9 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                     '<template v-for="palette in summary.palettes">' +
                         '<div class="summary-fields" v-for="field in palette.fields">' +
                             '<div>' +
-                                '<span class="label">{{ field.label }}: </span>' +
-                                '<span v-if="!Array.isArray( field.value )" class="value">{{ field.value }}</span>' +
-                                '<span v-if="Array.isArray( field.value )" class="value"><ul><li v-for="value in field.value">{{ value }}</li></ul></span>' +
+                                '<span class="label" v-html="field.label"></span>' +
+                                '<span v-if="!Array.isArray( field.value )" class="value" v-html="field.value"></span>' +
+                                '<span v-if="Array.isArray( field.value )" class="value"><ul><li v-for="value in field.value" v-html="value"></li></ul></span>' +
                             '</div>' +
                         '</div>' +
                     '</template>' +
@@ -97,7 +97,7 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                 '</div>' +
             '</slot>' +
             '<template v-if="$parent.completeForm.hasOwnProperty(\'source\')">' +
-                '<component is="single-form" v-bind:validate-only="true" v-bind:disable-submit="true" v-bind:id="$parent.completeForm.id" v-bind:source="$parent.completeForm.source" v-bind:identifier="$parent.completeForm.identifier"></component>' +
+                '<component is="single-form" :validate-only="true" :disable-submit="true" :id="$parent.completeForm.id" :source="$parent.completeForm.source" :identifier="$parent.completeForm.identifier"></component>' +
             '</template>' +
             '<div v-if="!success" class="messages error">' +
                 '<ul>' +
@@ -140,6 +140,7 @@ const multiFormComponent = Vue.component( 'multi-form', {
             }
             this.active = form;
             this.active.index = index;
+            this.$parent.setLoadingAlert('', this);
         },
         setComplete: function () {
             //
@@ -149,7 +150,7 @@ const multiFormComponent = Vue.component( 'multi-form', {
         for ( var i = 0; i < this.forms.length; i++ ) {
             this.forms[i].component = 'single-form';
             this.forms[i].valid = false;
-            if ( !i ) {
+            if (!i) {
                 this.active = this.forms[i];
                 this.active.valid = true;
                 this.active.index = i;
@@ -169,15 +170,15 @@ const multiFormComponent = Vue.component( 'multi-form', {
                     '<nav>' +
                         '<ul>' +
                             '<li v-for="(form, index) in forms" v-bind:class="{active: form.valid}">' +
-                                '<strong v-if="form.index === active.index">{{ form.label }}</strong>' +
-                                '<a v-if="form.index !== active.index" @click="goTo(form, index)">{{ form.label }}</a>' +
+                                '<strong v-if="form.index === active.index" v-html="form.label"></strong>' +
+                                '<span v-else v-html="form.label"></span>' +
                             '</li>' +
                         '</ul>' +
                     '</nav>' +
                 '</div>' +
             '</div>' +
             '<template>' +
-                '<component :is="active.component" v-bind:validate-only="true" v-bind:id="active.id" v-bind:source="active.source" v-bind:identifier="active.identifier">' +
+                '<component :is="active.component" :validate-only="true" :id="active.id" :source="active.source" :identifier="active.identifier" submit-label="Weiter">' +
                     '<template v-if="active.component === \'multi-form-summary\'" v-slot:default="slotProps">' +
                         '<slot :summaries="slotProps.summaries" :goTo="goTo"></slot>' +
                     '</template>' +
