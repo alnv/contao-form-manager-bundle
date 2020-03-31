@@ -8,7 +8,7 @@ class CatalogField {
 
         if ($arrCatalogField['type'] == 'customOptionWizard') {
             $arrField['inputType'] = 'customOptionWizard';
-            $arrField['tl_class'] = 'clr';
+            $arrField['eval']['tl_class'] = 'clr';
             $arrField['options_callback'] = function ( $objDataContainer = null ) use ( $arrCatalogField ) {
                 $objOptions = \Alnv\ContaoCatalogManagerBundle\Library\Options::getInstance( $arrCatalogField['fieldname'] . '.' . $arrCatalogField['pid'] );
                 $objOptions::setParameter( $arrCatalogField, $objDataContainer );
