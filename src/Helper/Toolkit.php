@@ -71,6 +71,10 @@ class Toolkit {
             $varMultiple = false;
         }
 
+        if (in_array($arrField['type'], ['radio','textarea'])) {
+            $varMultiple = false;
+        }
+
         return $varMultiple;
     }
 

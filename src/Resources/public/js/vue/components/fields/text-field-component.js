@@ -22,7 +22,7 @@ Vue.component( 'text-field', {
                 }.bind(this),800);
             }
             else {
-                this.$emit( 'input', this.value );
+                this.$emit('input', this.value);
             }
         }
     },
@@ -49,6 +49,12 @@ Vue.component( 'text-field', {
                     this.value = value.join(",");
                 }.bind(this)
             });
+        },
+        submit: function () {
+            // setTimeout(function () {
+                this.eval.submit = true;
+                this.$emit('input', this.value, this.eval.submit);
+            // }.bind(this), 4000);
         }
     },
     props: {
@@ -72,17 +78,21 @@ Vue.component( 'text-field', {
             required: false
         }
     },
+    created: function() {
+        this.eval.submit = false;
+    },
     template:
     '<div class="field-component text" v-bind:class="setCssClass()">' +
         '<div class="field-component-container dcapicker">' +
             '<label class="label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
             '<input class="tl_text" class="tl_text" type="text" v-model="value" :id="idPrefix + \'id_\' + name" :placeholder="eval.placeholder" v-if="!eval.multiple">' +
-            '<a v-if="eval.dcaPicker" v-on:click.prevent="openModalView($event)" href="/contao/picker?context=link">' +
+            '<a v-if="eval.dcaPicker" @click.prevent="openModalView($event)" href="/contao/picker?context=link">' +
                 '<img src="system/themes/flexible/icons/pickpage.svg" width="16" height="16" alt="">' +
             '</a>'+
             '<div v-if="eval.multiple" class="field-multiple">' +
                 '<input v-for="n in eval.size" class="tl_text" type="text" v-model="value[n-1]" :id="idPrefix + \'id_\' + name + (n === 1 ? \'\' : n )" :placeholder="eval.placeholder">' +
             '</div>' +
+            '<button v-if="eval.showButton" v-html="eval.buttonText" @click.prevent="submit" class="button"></button>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +
         '</div>' +
