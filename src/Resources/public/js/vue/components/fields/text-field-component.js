@@ -15,10 +15,10 @@ Vue.component( 'text-field', {
             }
             if ( this.eval['isReactive'] ) {
                 if ( this.timeout !== null ) {
-                    clearTimeout( this.timeout );
+                    clearTimeout(this.timeout);
                 }
                 this.timeout = setTimeout(function () {
-                    this.$emit( 'input', this.value );
+                    this.$emit('input', this.value);
                 }.bind(this),800);
             }
             else {
@@ -52,8 +52,8 @@ Vue.component( 'text-field', {
         },
         submit: function () {
             // setTimeout(function () {
-                this.eval.submit = true;
-                this.$emit('input', this.value, this.eval.submit);
+                // this.eval.submit = true;
+                this.$emit('input', this.value, true);
             // }.bind(this), 4000);
         }
     },
