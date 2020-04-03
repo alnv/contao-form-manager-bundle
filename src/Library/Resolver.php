@@ -58,10 +58,10 @@ abstract class Resolver extends \System {
             }
             $arrFieldAttributes[$strFieldname] = $objField->{$strFieldname};
         }
-
+        $arrFieldAttributes['label'] = \StringUtil::decodeEntities($arrFieldAttributes['label']);
+        $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label']);
         $arrFieldAttributes['isReactive'] = $this->isReactive( $arrFieldAttributes );
         $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
-        $arrFieldAttributes['label'] = \Controller::replaceInsertTags( $arrFieldAttributes['label'] );
         $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent( $arrFieldAttributes['type'], $arrFieldAttributes['rgxp'] );
         $arrFieldAttributes['multiple'] = Toolkit::convertMultiple( $arrFieldAttributes['multiple'], $arrFieldAttributes );
         $arrFieldAttributes['value'] = Toolkit::convertValue( $arrFieldAttributes['value'], $arrFieldAttributes );
