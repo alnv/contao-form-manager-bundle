@@ -9,7 +9,7 @@ Vue.component( 'custom-option-wizard-field', {
     methods: {
         checked: function ( strValue ) {
             if ( Array.isArray(this.value) ) {
-                return this.value.indexOf( strValue ) !== -1;
+                return this.value.indexOf(strValue) !== -1;
             }
             return strValue == this.value;
         },
@@ -78,13 +78,11 @@ Vue.component( 'custom-option-wizard-field', {
     },
     watch: {
         value: function() {
-            this.$emit( 'input', this.value );
+            this.$emit('input', this.value);
         }
     },
     mounted: function() {
         this.options = this.eval.options || [];
-        this.eval.addButtonLabel1 = 'Neue Auswahl anlegen';
-        this.eval.addButtonLabel2 = 'Hinzufügen';
     },
     props: {
         eval: {
@@ -118,11 +116,15 @@ Vue.component( 'custom-option-wizard-field', {
                 '<div v-for="(option,index) in options" class="checkbox-container" v-bind:class="{\'checked\': checked(option.value)}">' +
                     '<input type="checkbox" v-model="value" :name="name + \'[]\'" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
                     '<label :for="idPrefix + \'id_\' + name + \'_\' + index" v-html="option.label"></label>' +
-                    '<button v-if="option.delete" @click.prevent="deleteOption(option)"><i class="delete">X</i></button>' +
+                    '<form class="form-delete">' +
+                        '<button class="delete button" v-if="option.delete" @click.prevent="deleteOption(option)"><i class="delete"></i></button>' +
+                    '</form>' +
                 '</div>' +
                 '<div class="option-wizard-controller">' +
-                    '<input v-if="newFormVisible" type="text" v-model="newValue" @keyup.enter.prevent="addOption">' +
-                    '<button @click.prevent="addOption"><span v-html="newFormVisible ? this.eval.addButtonLabel2 : this.eval.addButtonLabel1"></span></button>' +
+                   '<form class="form-add">'+
+                        '<input v-if="newFormVisible" type="text" class="text" :placeholder="eval.addButtonLabel1" v-model="newValue" @keyup.enter.prevent="addOption">' +
+                        '<button @click.prevent="addOption" class="add button"><span v-html="(newFormVisible ? eval.addButtonLabel2 : eval.addButtonLabel1)"></span></button>' +
+                    '</form>' +
                 '</div>' +
                 '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
                 '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +

@@ -65,11 +65,13 @@ class Toolkit {
 
     public static function convertMultiple( $varMultiple, $arrField ) {
 
+        $varMultiple = $varMultiple ? true : false;
+        /*
         $varMultiple = ( $varMultiple || $arrField['type'] == 'checkbox' ) ? true : false;
-
         if ( $arrField['type'] == 'checkbox' && count( $arrField['options'] ) < 2 ) {
             $varMultiple = false;
         }
+        */
 
         if (in_array($arrField['type'], ['radio','textarea'])) {
             $varMultiple = false;

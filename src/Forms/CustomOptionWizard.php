@@ -2,7 +2,7 @@
 
 namespace Alnv\ContaoFormManagerBundle\Forms;
 
-class CustomOptionWizard extends \CheckBoxWizard {
+class CustomOptionWizard extends \FormCheckBox {
 
     protected $blnSubmitInput = true;
     protected $blnForAttribute = true;

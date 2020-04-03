@@ -90,8 +90,9 @@ if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() ) {
     $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/basic.scss' );
     $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/dropzone.scss' );
     if ( TL_MODE == 'BE' ) {
-        $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/css/form-wizard-component.scss' );
+        $objFormCssCombiner->add('bundles/alnvcontaoformmanager/css/form-wizard-component.scss');
     }
+    $objFormCssCombiner->add('bundles/alnvcontaoformmanager/css/custom-option-wizard-field-component.scss');
     $GLOBALS['TL_CSS']['form-manager-bundle'] = $objFormCssCombiner->getCombinedFile();
 }
 
