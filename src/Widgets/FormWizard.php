@@ -27,12 +27,10 @@ class FormWizard extends \Alnv\ContaoFormManagerBundle\Hybrids\FormWidget {
     protected function readOnly() {
 
         if ( !$this->varValue ) {
-
             return '';
         }
 
         if ( !is_array( $this->varValue ) || empty( $this->varValue ) ) {
-
             return '';
         }
 

@@ -1,0 +1,51 @@
+.custom-option-wizard {
+  i.delete {
+    width: 20px;
+    height: 20px;
+    display: block;
+    background-size: contain;
+    background: url("/bundles/alnvcontaoassetsmanager/icons/delete.svg") no-repeat center center;
+  }
+  button.delete {
+    display: inline-block;
+    background: none;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    width: auto;
+    outline: none;
+    cursor: pointer;
+  }
+  form.form-add {
+    display: flex;
+    input {
+      outline: none;
+      padding: 7px 12px;
+      margin-right: 10px;
+    }
+    button {
+      outline: none;
+      padding: 7px 12px;
+      border: 1px solid #aaa;
+      border-radius: 2px;
+      box-sizing: border-box;
+      cursor: pointer;
+      background: #fff;
+    }
+  }
+  form.form-delete {
+    display: flex;
+  }
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 3px;
+    }
+    label {
+      display: inline-block;
+      margin-bottom: 0;
+    }
+  }
+}

@@ -40,7 +40,7 @@ Vue.component( 'checkbox-field', {
         value: function() {
             this.$emit( 'input', this.value );
             if ( this.eval.submitOnChange ) {
-                this.$parent.submitOnChange( this.value, this.name, this.eval['isSelector'] )
+                this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
             }
         }
     },
@@ -73,16 +73,16 @@ Vue.component( 'checkbox-field', {
     '<div class="field-component checkbox" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
             '<p v-if="eval.multiple && !noLabel" class="label" v-html="eval.label"></p>' +
-            '<span v-if="eval.multiple" class="all" v-bind:class="{ \'checked\': selectAll }">' +
+            '<span v-if="eval.multiple" class="all checkbox-container" v-bind:class="{ \'checked\': selectAll }">' +
                 '<input type="checkbox" v-model="selectAll" :id="idPrefix + \'selectAll\'" @click="setSelectAll()">' +
-                '<label :for="idPrefix + \'selectAll\'">Alle</label>' +
+                '<label :for="idPrefix + \'selectAll\'">Alle auswählen</label>' +
             '</span>'+
             '<span v-for="(option,index) in eval.options" class="checkbox-container" v-bind:class="{\'checked\': checked(option.value)}">' +
                 '<input v-if="eval.multiple" type="checkbox" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
                 '<input v-if="!eval.multiple" type="checkbox" v-model="value" true-value="1" false-value="" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
                 '<slot name="label" v-bind:label="option.label" v-bind:id="idPrefix + \'id_\' + name + \'_\' + index"><label :for="idPrefix + \'id_\' + name + \'_\' + index" v-html="option.label"></label></slot>' +
             '</span>' +
-            '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
+            '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages" v-html="message"></p></template>' +
             '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +
         '</div>' +
     '</div>'

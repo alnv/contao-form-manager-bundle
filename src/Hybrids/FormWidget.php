@@ -13,7 +13,6 @@ class FormWidget extends \Widget {
         }
 
         if ( $this->mandatory && !$this->hasValue( $varValues ) ) {
-
             $this->addError( sprintf($GLOBALS['TL_LANG']['ERR']['mandatory'], $this->strLabel ) );
         }
 
@@ -30,14 +29,12 @@ class FormWidget extends \Widget {
                     $strClass = $GLOBALS['TL_FFL'][ $arrFields[$strFieldname]['inputType'] ];
 
                     if ( !class_exists( $strClass ) ) {
-
                         continue;
                     }
 
                     \Input::setPost( $strPost, $strValue );
 
                     if ( \Validator::isDate( $strValue ) || \Validator::isDatim( $strValue ) ) {
-
                         $strValue = (new \Date( $strValue, $arrFields[$strFieldname]['eval']['dateFormat']))->tstamp;
                     }
 

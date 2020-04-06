@@ -60,6 +60,7 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
 
 $GLOBALS['CM_FIELDS'][] = 'customOptionWizard';
 $GLOBALS['BE_FFL']['customOptionWizard'] = 'Alnv\ContaoFormManagerBundle\Widgets\CustomOptionWizard';
+$GLOBALS['TL_FFL']['customOptionWizard'] = 'Alnv\ContaoFormManagerBundle\Forms\CustomOptionWizard';
 $GLOBALS['BE_FFL']['formWizard'] = 'Alnv\ContaoFormManagerBundle\Widgets\FormWizard';
 $GLOBALS['TL_FFL']['formWizard'] = 'Alnv\ContaoFormManagerBundle\Forms\FormWizard';
 
@@ -89,8 +90,9 @@ if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() ) {
     $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/basic.scss' );
     $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/dropzone.scss' );
     if ( TL_MODE == 'BE' ) {
-        $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/css/form-wizard-component.scss' );
+        $objFormCssCombiner->add('bundles/alnvcontaoformmanager/css/form-wizard-component.scss');
     }
+    $objFormCssCombiner->add('bundles/alnvcontaoformmanager/css/custom-option-wizard-field-component.scss');
     $GLOBALS['TL_CSS']['form-manager-bundle'] = $objFormCssCombiner->getCombinedFile();
 }
 

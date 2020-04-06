@@ -118,7 +118,7 @@ const tableListComponent = Vue.component( 'table-list', {
             '<div class="table-list-component-container">' +
                 '<div v-if="addUrl && addButtonPosition === \'before\'" class="operator add">' +
                     '<slot name="add" v-bind:addUrLabel="addUrlLabel" v-bind:addUrl="addUrl">' +
-                        '<a :href="addUrl" :title="addUrlLabel" v-html="addUrlLabel"></a>' +
+                        '<a class="btn primary" :href="addUrl" :title="addUrlLabel" v-html="addUrlLabel"></a>' +
                     '</slot>' +
                 '</div>' +
                 '<div v-if="list.length" class="table">' +
