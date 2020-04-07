@@ -38,6 +38,9 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
     'checkbox' => [
         'default' => 'checkbox-field'
     ],
+    'explanation' => [
+        'default' => 'explain-field'
+    ],
     'radio' => [
         'default' => 'radio-field'
     ],
@@ -84,6 +87,7 @@ if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() ) {
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/checkbox-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/textarea-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/fieldset-start-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/explain-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/custom-option-wizard-field-component.js' );
     $objFormCssCombiner = new \Combiner();
     $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/styles/flatpickr.min.scss' );

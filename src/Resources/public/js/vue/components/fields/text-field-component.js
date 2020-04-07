@@ -51,10 +51,17 @@ Vue.component( 'text-field', {
             });
         },
         submit: function () {
-            // setTimeout(function () {
-                // this.eval.submit = true;
+            if (this.eval['loadingView']) {
+                if (this.$parent && typeof this.$parent['enableLoadingView'] === 'function') {
+                    this.$parent['enableLoadingView'](this);
+                }
+            }
+            setTimeout(function () {
                 this.$emit('input', this.value, true);
-            // }.bind(this), 4000);
+                if (this.$parent && typeof this.$parent['disableLoadingView'] === 'function') {
+                    this.$parent['disableLoadingView'](this);
+                }
+            }.bind(this),(this.eval['timeout'] ? this.eval['timeout'] : 0));
         }
     },
     props: {
