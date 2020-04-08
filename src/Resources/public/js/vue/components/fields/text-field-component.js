@@ -35,6 +35,9 @@ Vue.component( 'text-field', {
             objCssClass['mandatory'] = !!this.eval['mandatory'];
             objCssClass['multiple'] = !!this.eval['multiple'];
             objCssClass[this.name] = true;
+            if (this.eval['validate'] === false) {
+                objCssClass['error'] = true;
+            }
             return objCssClass;
         },
         openModalView: function (e) {
@@ -50,18 +53,46 @@ Vue.component( 'text-field', {
                 }.bind(this)
             });
         },
+        emit: function() {
+            this.$emit('input', this.value, true);
+        },
+        invalid: function () {
+            this.eval['validate'] = false;
+            this.eval['messages'] = [];
+            this.$forceUpdate();
+        },
         submit: function () {
-            if (this.eval['loadingView']) {
-                if (this.$parent && typeof this.$parent['enableLoadingView'] === 'function') {
-                    this.$parent['enableLoadingView'](this);
-                }
+            if (typeof this.value === 'undefined') {
+                this.invalid();
+                return null;
             }
-            setTimeout(function () {
-                this.$emit('input', this.value, true);
-                if (this.$parent && typeof this.$parent['disableLoadingView'] === 'function') {
-                    this.$parent['disableLoadingView'](this);
+            if (this.value === '' || this.value === null) {
+                this.invalid();
+                return null;
+            }
+            if (typeof this.value === 'object' && !this.value.length) {
+                this.invalid();
+                return null;
+            }
+            if (this.eval['loadingView'] && this.eval['loadingViewUrl']) {
+                if (this.$parent && typeof this.$parent['setLoadingView'] === 'function') {
+                    this.$parent['setLoadingView'](this);
                 }
-            }.bind(this),(this.eval['timeout'] ? this.eval['timeout'] : 0));
+                this.$http.get(this.eval['loadingViewUrl'], {
+                    params: {
+                        name: this.name,
+                        value: this.value
+                    }
+                }).then(function(objResponse) {
+                    if (objResponse.body && objResponse.ok) {
+                        if (this.$parent && typeof this.$parent['disableLoadingView'] === 'function') {
+                            this.$parent['getLoadingViewRequest'](this,objResponse);
+                        }
+                    }
+                }.bind(this));
+            } else {
+                this.emit();
+            }
         }
     },
     props: {
@@ -99,8 +130,8 @@ Vue.component( 'text-field', {
             '<div v-if="eval.multiple" class="field-multiple">' +
                 '<input v-for="n in eval.size" class="tl_text" type="text" v-model="value[n-1]" :id="idPrefix + \'id_\' + name + (n === 1 ? \'\' : n )" :placeholder="eval.placeholder">' +
             '</div>' +
-            '<button v-if="eval.showButton" v-html="eval.buttonText" @click.prevent="submit" class="button submit"></button>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
+            '<button v-if="eval.showButton" v-html="eval.buttonText" @click.prevent="submit" class="button submit"></button>' +
             '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +
         '</div>' +
     '</div>'

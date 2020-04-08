@@ -30,13 +30,18 @@ Vue.component( 'radio-field', {
             }
             objCssClass[this.name] = true;
             return objCssClass;
+        },
+        submit: function (value) {
+            if (value === this.value) {
+                this.$emit('input', this.value, true);
+            }
         }
     },
     watch: {
         value: function() {
-            this.$emit( 'input', this.value );
-            if ( this.eval.submitOnChange ) {
-                this.$parent.submitOnChange( this.value, this.name )
+            this.$emit('input', this.value);
+            if (this.eval.submitOnChange) {
+                this.$parent.submitOnChange(this.value, this.name)
             }
         }
     },
@@ -73,8 +78,8 @@ Vue.component( 'radio-field', {
     '<div class="field-component radio" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
             '<p v-if="eval.label && !noLabel" class="label" v-html="eval.label"></p>' +
-            '<span v-for="(option, index) in eval.options" class="radio-container" v-bind:class="{ \'checked\': checked( option.value ) }">' +
-                '<input type="radio" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
+            '<span v-for="(option, index) in eval.options" class="radio-container" v-bind:class="{ \'checked\': checked(option.value) }">' +
+                '<input type="radio" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index" @click="submit(option.value)">' +
                 '<slot name="label" v-bind:label="option.label" v-bind:id="idPrefix + \'id_\' + name + \'_\' + index"><label :for="idPrefix + \'id_\' + name + \'_\' + index" v-html="option.label"></label></slot>' +
             '</span>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
