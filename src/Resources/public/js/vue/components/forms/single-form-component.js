@@ -64,7 +64,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                     }
                 }.bind(this));
             },
-            setModel: function( palettes ) {
+            setModel: function(palettes) {
                 var objModel = {};
                 if (this.model.hasOwnProperty('id')) {
                     objModel['id'] = this.model['id'];
@@ -88,6 +88,11 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         if (objModel.hasOwnProperty(strName)) {
                             objModel[strName] = objInstances[this.id]['model'][strName];
                         }
+                    }
+                }
+                if (window.VueData._modal) {
+                    if (objModel.hasOwnProperty(window.VueData._modal.field) && window.VueData._modal.created) {
+                        objModel[window.VueData._modal.field] = window.VueData._modal.created;
                     }
                 }
                 return objModel;
@@ -118,7 +123,14 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 for ( var j = 0; j < this.$children.length; j++ ) {
                     if ( this.$children[j].$vnode.tag && typeof this.$children[j].onChange !== 'undefined' ) {
                         objShare[strName] = strValue;
-                        this.$children[j].onChange( objShare );
+                        this.$children[j].onChange(objShare);
+                    }
+                }
+            },
+            onChange: function(share,component) {
+                if (typeof component.$vnode !== 'undefined' && component.$vnode !== null) {
+                    if (component.$vnode.componentOptions.tag === 'modal-view') {
+                        this.fetchBySource();
                     }
                 }
             },
@@ -134,7 +146,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                             } else {
                                 var strRedirect = this.successRedirect;
                                 if (this.submitCallback) {
-                                    strRedirect = this.submitCallback(this);
+                                    strRedirect = this.submitCallback(this,objResponse.body);
                                 }
                                 if (typeof objResponse.body['redirect'] !== 'undefined' && objResponse.body['redirect']) {
                                     strRedirect = objResponse.body['redirect'];
@@ -189,7 +201,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                     }
                 }
                 if ( field['isReactive'] ) {
-                    objParent.onChange( this );
+                    objParent.onChange(this);
                 }
             },
             setActiveStateInMultipleForm: function () {
@@ -209,7 +221,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 }
             },
             getParentSharedInstance: function(parent) {
-                if (typeof parent.shared === 'undefined') {
+                if (typeof parent.$parent !== 'undefined') {
                     return this.getParentSharedInstance(parent.$parent);
                 }
                 return parent;
@@ -234,21 +246,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             id: function (newId) {
                 this.getInstance(newId);
                 this.fetchBySource();
-            },
-            /*
-            mode: {
-                handler: function () {
-                    for ( var i = 0; i < this.palettes.length; i++ ) {
-                        for ( var intKey in this.palettes[i].fields ) {
-                            if ( this.palettes[i].fields.hasOwnProperty( intKey ) ) {
-                                //
-                            }
-                        }
-                    }
-                },
-                deep: true
             }
-            */
         },
         mounted: function () {
             this.getInstance(this.id);

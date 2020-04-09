@@ -16,13 +16,23 @@ Vue.component( 'select-field', {
         },
         reduceOption: function(option) {
             return option.value;
+        },
+        hasModal: function() {
+            return typeof this.eval.modal !== 'undefined';
+        },
+        openModal: function() {
+            this.eval.modal.component.field = {
+                name: this.name,
+                value: this.value
+            };
+            window.VueData.modal = this.eval.modal;
         }
     },
     watch: {
         value: function() {
             this.$emit( 'input', this.value );
             if ( this.eval.submitOnChange ) {
-                this.$parent.submitOnChange( this.value, this.name, this.eval['isSelector'] )
+                this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
             }
         }
     },
@@ -39,7 +49,7 @@ Vue.component( 'select-field', {
         }
     },
     mounted: function() {
-        if ( this.eval.useNativeSelect ) {
+        if (this.eval.useNativeSelect) {
             this.useNativeSelect = this.eval.useNativeSelect;
         }
     },
@@ -91,6 +101,7 @@ Vue.component( 'select-field', {
                 '<select v-else v-model="value" :id="idPrefix + \'id_\' + name" :placeholder="eval.label" :multiple="eval.multiple">' +
                     '<option v-for="option in eval.options" v-bind:value="reduceOption(option)" v-html="option.label"></option>' +
                 '</select>' +
+                '<button v-if="hasModal()" class="button modal" v-html="eval.modal.buttonText" @click.prevent="openModal"></button>' +
             '</div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +

@@ -111,6 +111,7 @@ abstract class Resolver extends \System {
 
         return [
             'form' => $arrForm,
+            'id' => \Input::post('id'),
             'saved' => !$blnValidateOnly,
             'success' => $this->blnSuccess,
             'redirect' => $this->strRedirect
