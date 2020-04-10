@@ -5,7 +5,7 @@ Vue.component( 'checkbox-field', {
         }
     },
     methods: {
-        checked: function ( strValue ) {
+        checked: function (strValue) {
             if ( Array.isArray(this.value) ) {
                 return this.value.indexOf( strValue ) !== -1;
             }
@@ -34,6 +34,16 @@ Vue.component( 'checkbox-field', {
             objCssClass['single'] = !this.eval.multiple;
             objCssClass[this.name] = true;
             return objCssClass;
+        },
+        submit: function (value) {
+            if (value === this.value) {
+                this.$emit('input', this.value, true);
+            }
+        }
+    },
+    created: function() {
+        if (this.value === null && this.eval.multiple) {
+            this.value = [];
         }
     },
     watch: {
@@ -73,7 +83,7 @@ Vue.component( 'checkbox-field', {
     '<div class="field-component checkbox" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
             '<p v-if="eval.multiple && !noLabel" class="label" v-html="eval.label"></p>' +
-            '<span v-if="eval.multiple" class="all checkbox-container" v-bind:class="{ \'checked\': selectAll }">' +
+            '<span v-if="eval.multiple && !eval.disableAllSelection" class="all checkbox-container" v-bind:class="{ \'checked\': selectAll }">' +
                 '<input type="checkbox" v-model="selectAll" :id="idPrefix + \'selectAll\'" @click="setSelectAll()">' +
                 '<label :for="idPrefix + \'selectAll\'">Alle auswählen</label>' +
             '</span>'+
