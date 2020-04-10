@@ -128,7 +128,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 }
             },
             onChange: function(share,component) {
-                if (typeof component.$vnode !== 'undefined' && component.$vnode !== null) {
+                if (typeof component !== 'undefined' && typeof component.$vnode !== 'undefined' && component.$vnode !== null) {
                     if (component.$vnode.componentOptions.tag === 'modal-view') {
                         this.fetchBySource();
                     }

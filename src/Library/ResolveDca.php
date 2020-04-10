@@ -69,15 +69,11 @@ class ResolveDca extends Resolver {
 
                 $arrAttributes = $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
                 $arrAttributes = $this->parseAttributes( $arrAttributes );
-                $this->addParentData( $strFieldname, $arrAttributes );
-
-                if ( $arrAttributes === null ) {
-
+                if ($arrAttributes === null) {
                     continue;
                 }
-
+                $this->addParentData( $strFieldname, $arrAttributes );
                 if ( is_array( $arrSelectors ) && in_array( $strFieldname, $arrSelectors ) && $strFieldname != 'type' ) {
-
                     $arrAttributes['isSelector'] = true;
                 }
 
@@ -239,13 +235,12 @@ class ResolveDca extends Resolver {
             }
 
             $arrAttributes = $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
-            $arrAttributes = $this->parseAttributes( $arrAttributes );
-            $this->addParentData( $strFieldname, $arrAttributes );
-
+            $arrAttributes = $this->parseAttributes($arrAttributes);
             if ( $arrAttributes === null ) {
                 continue;
             }
 
+            $this->addParentData( $strFieldname, $arrAttributes );
             $objPalette->fields[] = $arrAttributes;
         }
 

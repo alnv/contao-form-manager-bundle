@@ -13,16 +13,14 @@ class FormWidget extends \Widget {
         }
 
         if ( $this->mandatory && !$this->hasValue( $varValues ) ) {
-            $this->addError( sprintf($GLOBALS['TL_LANG']['ERR']['mandatory'], $this->strLabel ) );
+            $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['mandatory'], $this->strLabel));
         }
 
         \Input::setGet('params', $this->getParams());
         $arrFields =  $GLOBALS['TL_DCA'][$this->strTable]['fields'][ $this->strName ]['eval']['form'];
 
         if ( is_array( $varValues ) && !empty( $varValues ) ) {
-
             foreach ( $varValues as $strIndex => $arrValue ) {
-
                 foreach ( $arrValue as $strFieldname => $strValue ) {
 
                     $strPost = $this->strName . '_' . $strIndex . '_' . $strFieldname;
@@ -32,7 +30,7 @@ class FormWidget extends \Widget {
                         continue;
                     }
 
-                    \Input::setPost( $strPost, $strValue );
+                    \Input::setPost($strPost, $strValue);
 
                     if ( \Validator::isDate( $strValue ) || \Validator::isDatim( $strValue ) ) {
                         $strValue = (new \Date( $strValue, $arrFields[$strFieldname]['eval']['dateFormat']))->tstamp;
@@ -40,21 +38,24 @@ class FormWidget extends \Widget {
 
                     $varValues[ $strIndex ][ $strFieldname ] = $strValue;
                     $arrFields[ $strFieldname ]['value'] = $strValue;
-                    $arrAttributes = $strClass::getAttributesFromDca( $arrFields[ $strFieldname ], $strPost, $arrFields[ $strFieldname ]['default'], $strPost, $this->strTable );
+                    $arrAttributes = $strClass::getAttributesFromDca($arrFields[ $strFieldname ], $strPost, $arrFields[ $strFieldname ]['default'], $strPost, $this->strTable);
                     $arrAttributes['name'] = $strPost;
                     $objField = new $strClass( $arrAttributes );
                     $objField->validate();
 
                     if ( $objField->hasErrors() ) {
-
                         $arrErrors = $objField->getErrors();
-
-                        if ( is_array( $arrErrors ) && !empty( $arrErrors ) ) {
-
+                        if ( is_array($arrErrors) && !empty($arrErrors)) {
                             foreach ( $arrErrors as $strError ) {
-
-                                $this->addError( $strError );
+                                $this->addError($strError);
                             }
+                        }
+                    }
+
+                    if ( isset( $GLOBALS['TL_HOOKS']['validateFormWidgetField'] ) && is_array( $GLOBALS['TL_HOOKS']['validateFormWidgetField'] ) ) {
+                        foreach ( $GLOBALS['TL_HOOKS']['validateFormWidgetField'] as $arrCallback ) {
+                            $this->import( $arrCallback[0] );
+                            $this->{$arrCallback[0]}->{$arrCallback[1]}($strPost, $arrAttributes, $objField, $this);
                         }
                     }
                 }
@@ -69,17 +70,13 @@ class FormWidget extends \Widget {
         $this->varValue = \StringUtil::deserialize( $this->varValue,true );
 
         if ( empty( $this->varValue ) ) {
-
             return $this->varValue;
         }
 
         $arrFields =  $GLOBALS['TL_DCA'][$this->strTable]['fields'][ $this->strName ]['eval']['form'];
-
         foreach ( $this->varValue as $strIndex => $arrValue ) {
-
             foreach ( $arrValue as $strFieldname => $strValue ) {
-
-                $this->varValue[$strIndex][$strFieldname] = $this->parseValue($strValue,$arrFields[ $strFieldname ]);
+                $this->varValue[$strIndex][$strFieldname] = $this->parseValue($strValue,$arrFields[$strFieldname]);
             }
         }
 
@@ -88,7 +85,7 @@ class FormWidget extends \Widget {
 
     protected function parseValue( $strValue, $arrField ) {
 
-        if ( $strValue && in_array( $arrField['eval']['rgxp'], [ 'date', 'time', 'datim' ] ) ) {
+        if ( \Validator::isNumeric($strValue) && in_array($arrField['eval']['rgxp'], ['date', 'time', 'datim']) ) {
 
             $strValue = (new \Date($strValue, \Date::getFormatFromRgxp($arrField['eval']['rgxp'])))->{$arrField['eval']['rgxp']};
         }

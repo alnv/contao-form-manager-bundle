@@ -25,7 +25,7 @@ Vue.component( 'date-field', {
     },
     watch: {
         value: function() {
-            this.$emit( 'input', this.value );
+            this.$emit('input', this.value);
         }
     },
     props: {
@@ -53,7 +53,7 @@ Vue.component( 'date-field', {
     template:
     '<div class="field-component date" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
-            '<label v-if="eval.label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
+            '<label class="label" v-if="eval.label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
             '<flat-pickr v-model="value" :config="config" class="tl_text" :placeholder="eval.placeholder"></flat-pickr>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +

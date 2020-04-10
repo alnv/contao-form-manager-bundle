@@ -8,7 +8,7 @@ abstract class Resolver extends \System {
 
     protected $blnValidate = false;
     protected $strRedirect = null;
-    protected $blnSuccess = true;
+    public $blnSuccess = true;
 
     abstract public function getForm();
     abstract protected function saveRecord( $arrForm );
@@ -23,16 +23,16 @@ abstract class Resolver extends \System {
             return null;
         }
 
-        if ( isset( $GLOBALS['TL_HOOKS']['preCompileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['preCompileFormField'] ) ) {
-            foreach ( $GLOBALS['TL_HOOKS']['preCompileFormField'] as $arrCallback ) {
-                $this->import( $arrCallback[0] );
-                $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}( $arrFieldAttributes, $this );
+        if ( isset($GLOBALS['TL_HOOKS']['preCompileFormField']) && is_array($GLOBALS['TL_HOOKS']['preCompileFormField']) ) {
+            foreach ($GLOBALS['TL_HOOKS']['preCompileFormField'] as $arrCallback) {
+                $this->import($arrCallback[0]);
+                $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrFieldAttributes, $this);
             }
         }
 
         $objField = new $strClass( $arrFieldAttributes );
 
-        if ( $this->blnValidate ) {
+        if ($this->shouldValidate()) {
             $objField->validate();
             if ( $objField->hasErrors() ) {
                 $this->blnSuccess = false;
@@ -74,17 +74,22 @@ abstract class Resolver extends \System {
         }
 
         if ( in_array( $arrFieldAttributes['rgxp'], [ 'date', 'time', 'datim' ] ) ) {
-            $arrFieldAttributes['dateFormat'] = \Date::getFormatFromRgxp( $arrFieldAttributes['rgxp'] );
+            $arrFieldAttributes['dateFormat'] = \Date::getFormatFromRgxp($arrFieldAttributes['rgxp']);
         }
 
-        if ( isset( $GLOBALS['TL_HOOKS']['compileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['compileFormField'] ) ) {
-            foreach ( $GLOBALS['TL_HOOKS']['compileFormField'] as $arrCallback ) {
+        if (isset( $GLOBALS['TL_HOOKS']['compileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['compileFormField'] )) {
+            foreach ($GLOBALS['TL_HOOKS']['compileFormField'] as $arrCallback) {
                 $this->import( $arrCallback[0] );
-                $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}( $arrFieldAttributes, $this );
+                $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrFieldAttributes, $this) ;
             }
         }
 
         return $arrFieldAttributes;
+    }
+
+    public function shouldValidate() {
+
+        return $this->blnValidate;
     }
 
     protected function isReactive( $arrField ) {
@@ -96,7 +101,7 @@ abstract class Resolver extends \System {
         return $arrField['isReactive'] ? true : false;
     }
 
-    public function save( $blnValidateOnly = false ) {
+    public function save($blnValidateOnly = false) {
 
         $this->blnValidate = true;
         $arrForm = $this->getForm();
