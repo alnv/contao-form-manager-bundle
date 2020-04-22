@@ -15,7 +15,10 @@ Vue.component( 'select-field', {
             return objCssClass;
         },
         reduceOption: function(option) {
-            return option.value;
+            if (typeof option === 'object') {
+                return option.value;
+            }
+            return option;
         },
         hasModal: function() {
             return typeof this.eval.modal !== 'undefined';
@@ -37,10 +40,10 @@ Vue.component( 'select-field', {
         }
     },
     created: function() {
-        if ( this.value === '' || this.value === null ) {
+        if (this.value === '' || this.value === null) {
             return null;
         }
-        if ( typeof this.value === 'object' && typeof this.value.length !== 'undefined') {
+        if (typeof this.value === 'object' && typeof this.value.length !== 'undefined') {
             var reduceValues = [];
             for (var i = 0; i < this.value.length; i++) {
                 reduceValues[i] = this.reduceOption(this.value[i]);

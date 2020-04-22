@@ -3,7 +3,8 @@ Vue.component( 'form-wizard', {
         return {
             fields: [],
             editMode: false,
-            selectedValue: {}
+            selectedValue: {},
+            stringifyValue: null
         }
     },
     methods: {
@@ -65,6 +66,9 @@ Vue.component( 'form-wizard', {
                     this.value.splice(i, 1);
                 }
             }
+        },
+        setInput: function() {
+            this.stringifyValue = this.getStringifyValue();
         },
         setValues: function() {
             if ( typeof this.eval.values !== 'undefined' ) {
@@ -175,7 +179,7 @@ Vue.component( 'form-wizard', {
     template:
         '<div class="field-component form-wizard" v-bind:class="setCssClass()">' +
             '<div class="field-component-container">' +
-                '<input type="hidden" :value="getStringifyValue()" :name="name">' +
+                '<input type="hidden" :value="stringifyValue" :name="name">' +
                 '<p v-if="eval.label" class="label">{{ eval.label }}</p>' +
                 '<div v-if="value && value.length && !eval.showAllForms" class="entities">' +
                     '<div v-for="val in value" class="entity" v-bind:class="{\'active\': val === selectedValue}">' +
@@ -193,7 +197,7 @@ Vue.component( 'form-wizard', {
                 '<div class="forms" v-bind:class="{\'show-all\':eval.showAllForms}" v-if="editMode || eval.showFormIsEmpty">' +
                     '<div class="form" v-for="(val,index) in value" v-show="val === selectedValue || eval.showAllForms">' +
                         '<template v-for="field in fields"  v-if="field.component">' +
-                            '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name + \'_\' + index" v-model="value[index][field.name]"></component>' +
+                            '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name + \'_\' + index" v-model="value[index][field.name]" v-on:input="setInput"></component>' +
                         '</template>' +
                         '<div v-if="eval.showAllForms" class="operations">' +
                             '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete"><span v-html="deleteButtonLabel"></span></button>' +

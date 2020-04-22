@@ -13,7 +13,7 @@ Vue.component( 'text-field', {
                     }
                 }
             }
-            if ( this.eval['isReactive'] ) {
+            if (this.eval['isReactive']) {
                 if ( this.timeout !== null ) {
                     clearTimeout(this.timeout);
                 }
