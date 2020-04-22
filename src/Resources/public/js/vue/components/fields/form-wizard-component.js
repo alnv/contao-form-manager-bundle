@@ -80,6 +80,7 @@ Vue.component( 'form-wizard', {
             if ( Array.isArray(this.value) && !this.value.length && this.eval['showFormIsEmpty'] ) {
                 this.addValue(false);
             }
+            this.stringifyValue = this.getStringifyValue();
         },
         setFieldCssClass: function(field,value) {
             var objCssClass = {};
