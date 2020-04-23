@@ -123,7 +123,7 @@ Vue.component( 'text-field', {
     '<div class="field-component text" v-bind:class="setCssClass()">' +
         '<div class="field-component-container dcapicker">' +
             '<label class="label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
-            '<input class="tl_text" class="tl_text" type="text" v-model="value" :id="idPrefix + \'id_\' + name" :placeholder="eval.placeholder" v-if="!eval.multiple">' +
+            '<input class="tl_text" class="tl_text" type="text" v-model="value" v-on:keyup.enter.prevent="submit" :id="idPrefix + \'id_\' + name" :placeholder="eval.placeholder" v-if="!eval.multiple">' +
             '<a v-if="eval.dcaPicker" @click.prevent="openModalView($event)" href="/contao/picker?context=link">' +
                 '<img src="system/themes/flexible/icons/pickpage.svg" width="16" height="16" alt="">' +
             '</a>'+

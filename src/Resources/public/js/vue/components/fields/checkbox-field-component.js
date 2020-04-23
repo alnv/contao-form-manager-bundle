@@ -25,8 +25,11 @@ Vue.component( 'checkbox-field', {
         },
         setCssClass: function() {
             let objCssClass = {};
-            if ( this.eval['tl_class'] ) {
+            if (this.eval['tl_class']) {
                 objCssClass[this.eval['tl_class']] = true;
+            }
+            if (this.eval.messages.length) {
+                objCssClass['error'] = true;
             }
             if ( this.eval['mandatory'] ) {
                 objCssClass['mandatory'] = true;
