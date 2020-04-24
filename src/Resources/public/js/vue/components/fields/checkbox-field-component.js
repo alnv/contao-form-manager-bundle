@@ -28,7 +28,7 @@ Vue.component( 'checkbox-field', {
             if (this.eval['tl_class']) {
                 objCssClass[this.eval['tl_class']] = true;
             }
-            if (this.eval.messages.length) {
+            if (this.eval.messages && this.eval.messages.length) {
                 objCssClass['error'] = true;
             }
             if ( this.eval['mandatory'] ) {
@@ -51,8 +51,8 @@ Vue.component( 'checkbox-field', {
     },
     watch: {
         value: function() {
-            this.$emit( 'input', this.value );
-            if ( this.eval.submitOnChange ) {
+            this.$emit('input', this.value);
+            if (this.eval.submitOnChange) {
                 this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
             }
         }
