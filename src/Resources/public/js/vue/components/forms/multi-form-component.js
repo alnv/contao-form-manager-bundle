@@ -82,15 +82,13 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
     '<div class="summary-component">' +
         '<div class="summary-component-container">' +
             '<slot :summaries="summaries">' +
-                '<div v-for="(summary,index) in summaries">' +
-                    '<p class="summary-headline">{{ summary.label }}</p>' +
+                '<div v-for="(summary,index) in summaries" class="palette">' +
+                    '<p class="palette-name" v-html="summary.label"></p>' +
                     '<template v-for="palette in summary.palettes">' +
-                        '<div class="summary-fields" v-for="field in palette.fields">' +
-                            '<div>' +
-                                '<span class="label" v-html="field.label"></span>' +
-                                '<span v-if="!Array.isArray( field.value )" class="value" v-html="field.value"></span>' +
-                                '<span v-if="Array.isArray( field.value )" class="value"><ul><li v-for="value in field.value" v-html="value"></li></ul></span>' +
-                            '</div>' +
+                        '<div class="palette-fields" v-for="field in palette.fields">' +
+                            '<p class="field-name" v-html="field.label"></p>' +
+                            '<p class="field-value" v-if="!Array.isArray( field.value )" v-html="field.value"></p>' +
+                            '<p class="field-value" v-if="Array.isArray( field.value )"><ul><li v-for="value in field.value" v-html="value"></li></ul></p>' +
                         '</div>' +
                     '</template>' +
                     '<button class="summary-button" @click="$parent.goTo(summary.form,index)">Ändern</button>' +

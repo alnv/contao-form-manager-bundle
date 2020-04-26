@@ -164,7 +164,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 }.bind(this));
             },
             getSubmitPromise: function() {
-                return this.$http.post( '/form-manager/'+ ( this.validateOnly ? 'validate' : 'save' ) +'/' + this.source + '/' + this.identifier + this.getParameters(), this.model, {
+                return this.$http.post( '/form-manager/'+ (this.validateOnly ? 'validate' : 'save') +'/' + this.source + '/' + this.identifier + this.getParameters(), this.model, {
                     emulateJSON: true,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 });
@@ -190,29 +190,32 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 arrParameters.push( 'initialized=' + encodeURIComponent( this.initialized ) );
                 return '?' + arrParameters.join('&');
             },
-            setPalette: function ( palette ) {
+            setPalette: function (palette) {
                 this.palettes = palette;
             },
             setInput: function (field) {
                 var objParent = this.getParentSharedInstance(this.$parent);
                 for ( var strFieldname in this.model ) {
-                    if ( this.model.hasOwnProperty( strFieldname ) ) {
-                        objParent.shared[ strFieldname ] = this.model[ strFieldname ];
+                    if (this.model.hasOwnProperty(strFieldname)) {
+                        objParent.shared[strFieldname] = this.model[strFieldname];
                     }
                 }
-                if ( field['isReactive'] ) {
+                if (objParent.onInput && typeof objParent.onInput === 'function') {
+                    objParent.onInput(this.model, this);
+                }
+                if (field['isReactive']) {
                     objParent.onChange(this);
                 }
             },
             setActiveStateInMultipleForm: function () {
-                for ( var i = 0; i < this.$parent.forms.length; i++ ) {
-                    if ( this.identifier === this.$parent.forms[i]['identifier'] && this.source === this.$parent.forms[i]['source'] ) {
+                for (var i = 0; i < this.$parent.forms.length; i++) {
+                    if (this.identifier === this.$parent.forms[i]['identifier'] && this.source === this.$parent.forms[i]['source']) {
                         this.$parent.forms[i]['valid'] = true;
-                        if ( !this.$parent.forms[i]['valid'] ) {
+                        if (!this.$parent.forms[i]['valid']) {
                             continue;
                         }
-                        if ( this.$parent.forms[i+1] ) {
-                            this.$parent.setActive( this.$parent.forms[i+1], i+1 );
+                        if (this.$parent.forms[i+1]) {
+                            this.$parent.setActive(this.$parent.forms[i+1], i+1);
                         }
                         else {
                             this.$parent.setComplete();
