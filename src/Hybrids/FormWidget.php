@@ -32,7 +32,7 @@ class FormWidget extends \Widget {
 
                     \Input::setPost($strPost, $strValue);
 
-                    if ( \Validator::isDate( $strValue ) || \Validator::isDatim( $strValue ) ) {
+                    if ( is_string($strValue) && (\Validator::isDate( $strValue ) || \Validator::isDatim( $strValue )) ) {
                         $strValue = (new \Date( $strValue, $arrFields[$strFieldname]['eval']['dateFormat']))->tstamp;
                     }
 
@@ -83,10 +83,9 @@ class FormWidget extends \Widget {
         return $this->varValue;
     }
 
-    protected function parseValue( $strValue, $arrField ) {
+    protected function parseValue($strValue, $arrField) {
 
-        if ( \Validator::isNumeric($strValue) && in_array($arrField['eval']['rgxp'], ['date', 'time', 'datim']) ) {
-
+        if ( !is_array($strValue) && \Validator::isNumeric($strValue) && in_array($arrField['eval']['rgxp'], ['date', 'time', 'datim']) ) {
             $strValue = (new \Date($strValue, \Date::getFormatFromRgxp($arrField['eval']['rgxp'])))->{$arrField['eval']['rgxp']};
         }
 
