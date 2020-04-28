@@ -5,7 +5,7 @@ Vue.component( 'date-field', {
             config: {
                 time_24hr: true,
                 noCalendar: this.eval['rgxp'] === 'time',
-                enableTime: this.eval['rgxp'] !== 'date',
+                enableTime: this.eval['rgxp'] === 'time',
                 dateFormat: this.eval['dateFormat']
             }
         }
