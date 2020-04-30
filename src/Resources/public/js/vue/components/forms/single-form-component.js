@@ -138,10 +138,10 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 var objParent = this.getParentSharedInstance(this.$parent);
                 objParent.setLoadingAlert('', this);
                 this.getSubmitPromise().then(function (objResponse) {
-                    if ( objResponse.body ) {
-                        this.setPalette( objResponse.body.form );
-                        if ( objResponse.body.success ) {
-                            if ( this.$parent.forms ) {
+                    if (objResponse.body) {
+                        this.setPalette(objResponse.body.form);
+                        if (objResponse.body.success) {
+                            if (this.$parent.forms) {
                                 this.setActiveStateInMultipleForm();
                             } else {
                                 var strRedirect = this.successRedirect;
@@ -151,7 +151,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                                 if (typeof objResponse.body['redirect'] !== 'undefined' && objResponse.body['redirect']) {
                                     strRedirect = objResponse.body['redirect'];
                                 }
-                                if ( strRedirect ) {
+                                if (strRedirect) {
                                     window.location.href = strRedirect;
                                 }
                             }
