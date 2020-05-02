@@ -17,7 +17,7 @@ abstract class Resolver extends \System {
 
         $arrFieldAttributes['messages'] = [];
         $arrFieldAttributes['validate'] = true;
-        $strClass = Toolkit::convertBackendFieldToFrontendField( $arrFieldAttributes['type'] );
+        $strClass = Toolkit::convertBackendFieldToFrontendField($arrFieldAttributes['type']);
 
         if ( !class_exists( $strClass ) ) {
             return null;
@@ -30,7 +30,7 @@ abstract class Resolver extends \System {
             }
         }
 
-        $objField = new $strClass( $arrFieldAttributes );
+        $objField = new $strClass($arrFieldAttributes);
 
         if ($this->shouldValidate()) {
             $objField->validate();
