@@ -69,7 +69,7 @@ $GLOBALS['TL_FFL']['formWizard'] = 'Alnv\ContaoFormManagerBundle\Forms\FormWizar
 
 if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() ) {
     $objFormAssetsManager = \Alnv\ContaoAssetsManagerBundle\Library\AssetsManager::getInstance();
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/dropzone/js/dropzone.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/dropzone/js/dropzone.min.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/flatpickr.min.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/vue-flatpickr-component.min.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/single-form-component.js' );
