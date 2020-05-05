@@ -7,11 +7,14 @@ Vue.component( 'email-field', {
     methods: {
         setCssClass: function() {
             let objCssClass = {};
-            if ( this.eval['tl_class'] ) {
+            if (this.eval['tl_class']) {
                 objCssClass[this.eval['tl_class']] = true;
             }
-            if ( this.eval['mandatory'] ) {
+            if (this.eval['mandatory']) {
                 objCssClass['mandatory'] = true;
+            }
+            if (this.eval['validate'] === false) {
+                objCssClass['error'] = true;
             }
             objCssClass[this.name] = true;
             return objCssClass;
