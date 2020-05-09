@@ -61,18 +61,19 @@ Vue.component( 'text-field', {
             this.eval['messages'] = [];
             this.$forceUpdate();
         },
+
         submit: function () {
-            if (typeof this.value === 'undefined') {
+            if (!FormHelperValidator.validateMandatory(this.value)) {
                 this.invalid();
                 return null;
             }
-            if (this.value === '' || this.value === null) {
+            if (!FormHelperValidator.validateMinLength(this.value, this.eval['minlength'])) {
                 this.invalid();
-                return null;
+                return false;
             }
-            if (typeof this.value === 'object' && !this.value.length) {
+            if (!FormHelperValidator.validateMaxLength(this.value, this.eval['maxlength'])) {
                 this.invalid();
-                return null;
+                return false;
             }
             if (this.eval['loadingView'] && this.eval['loadingViewUrl']) {
                 if (this.$parent && typeof this.$parent['setLoadingView'] === 'function') {
