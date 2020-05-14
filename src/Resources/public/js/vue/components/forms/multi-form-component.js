@@ -37,9 +37,8 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }).then( function ( objResponse ) {
                 if ( objResponse.body ) {
-                    if ( objResponse.body['success'] ) {
-                        // @end redirect
-                        // console.log("Gekauft!")
+                    if (objResponse.body['success']) {
+                        this.$parent.afterSubmit(objResponse.body);
                     }
                     else {
                         this.success = false;
@@ -112,18 +111,6 @@ const multiFormComponent = Vue.component( 'multi-form', {
             active: {}
         }
     },
-    props: {
-        forms: {
-            default: [],
-            type: Array,
-            required: true
-        },
-        completeForm: {
-            default: {},
-            type: Object,
-            required: false
-        }
-    },
     methods: {
         goTo: function (form, index) {
             if ( form.valid ) {
@@ -139,6 +126,15 @@ const multiFormComponent = Vue.component( 'multi-form', {
             this.active = form;
             this.active.index = index;
             this.$parent.setLoadingAlert('', this);
+        },
+        afterSubmit: function(objResponse) {
+            var strRedirect = this.successRedirect;
+            if (typeof objResponse.redirect !== 'undefined' && objResponse.redirect) {
+                strRedirect = objResponse.redirect;
+            }
+            if (strRedirect) {
+                window.location.href = strRedirect;
+            }
         },
         setComplete: function () {
             //
@@ -159,6 +155,23 @@ const multiFormComponent = Vue.component( 'multi-form', {
             label: 'Zusammenfassung',
             valid: false
         });
+    },
+    props: {
+        forms: {
+            default: [],
+            type: Array,
+            required: true
+        },
+        completeForm: {
+            default: {},
+            type: Object,
+            required: false
+        },
+        successRedirect: {
+            default: '',
+            type: String,
+            required: false
+        },
     },
     template:
     '<div class="forms-component">' +

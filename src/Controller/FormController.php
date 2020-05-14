@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Alnv\ContaoFormManagerBundle\Library\ResolveDca;
 use Alnv\ContaoFormManagerBundle\Library\ResolveForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Alnv\ContaoFormManagerBundle\Library\MultiFormResolver;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
@@ -171,7 +170,7 @@ class FormController extends Controller {
      */
     public function saveMultiForm() {
         $this->container->get( 'contao.framework' )->initialize();
-        $objMultiFormResolver = new MultiFormResolver();
+        $objMultiFormResolver = new \Alnv\ContaoFormManagerBundle\Library\MultiFormResolver();
         return new JsonResponse($objMultiFormResolver->save());
     }
 
