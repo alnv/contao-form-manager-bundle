@@ -145,8 +145,8 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                                 this.setActiveStateInMultipleForm();
                             } else {
                                 var strRedirect = this.successRedirect;
-                                if (this.submitCallback) {
-                                    strRedirect = this.submitCallback(this,objResponse.body);
+                                if (this.submitCallback && typeof this.submitCallback === 'function') {
+                                    strRedirect = this.submitCallback(this, objResponse.body);
                                 }
                                 if (typeof objResponse.body['redirect'] !== 'undefined' && objResponse.body['redirect']) {
                                     strRedirect = objResponse.body['redirect'];
