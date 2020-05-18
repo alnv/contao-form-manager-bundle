@@ -33,8 +33,8 @@ Vue.component( 'radio-field', {
         },
         submit: function (value) {
             if (value === this.value) {
-                this.value = null;
-                this.$emit('input', this.value, true);
+                // this.value = null;
+                // this.$emit('input', this.value, true);
             }
         }
     },
