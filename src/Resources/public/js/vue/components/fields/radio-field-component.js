@@ -22,7 +22,7 @@ Vue.component( 'radio-field', {
         },
         setCssClass: function() {
             let objCssClass = {};
-            if ( this.eval['tl_class'] ) {
+            if (this.eval['tl_class']) {
                 objCssClass[this.eval['tl_class']] = true;
             }
             if ( this.eval['mandatory'] ) {
@@ -33,7 +33,8 @@ Vue.component( 'radio-field', {
         },
         submit: function (value) {
             if (value === this.value) {
-                this.$emit('input', this.value, true);
+                // this.value = null;
+                // this.$emit('input', this.value, true);
             }
         }
     },
