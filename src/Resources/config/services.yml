@@ -2,3 +2,6 @@ services:
   formmanager.datacontainer.module:
     class: Alnv\ContaoFormManagerBundle\DataContainer\Module
     public: true
+  formmanager.datacontainer.formfield:
+    class: Alnv\ContaoFormManagerBundle\DataContainer\FormField
+    public: true
