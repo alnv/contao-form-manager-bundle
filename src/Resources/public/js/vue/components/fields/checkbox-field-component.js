@@ -6,20 +6,20 @@ Vue.component( 'checkbox-field', {
     },
     methods: {
         checked: function (strValue) {
-            if ( Array.isArray(this.value) ) {
-                return this.value.indexOf( strValue ) !== -1;
+            if (Array.isArray(this.value)) {
+                return this.value.indexOf(strValue) !== -1;
             }
             return strValue == this.value;
         },
         setSelectAll: function () {
             this.selectAll = !this.selectAll;
-            if ( this.selectAll && Array.isArray( this.eval.options ) ) {
+            if (this.selectAll && Array.isArray(this.eval.options)) {
                 this.value = [];
                 for ( var i = 0; i < this.eval.options.length; i++ ) {
-                    this.value.push( this.eval.options[i]['value'] );
+                    this.value.push(this.eval.options[i]['value']);
                 }
             }
-            if ( !this.selectAll ) {
+            if (!this.selectAll) {
                 this.value = [];
             }
         },
