@@ -61,6 +61,7 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
     ]
 ];
 
+$GLOBALS['IGNORE_IN_TL_FFL'] = [];
 $GLOBALS['CM_FIELDS'][] = 'customOptionWizard';
 $GLOBALS['BE_FFL']['customOptionWizard'] = 'Alnv\ContaoFormManagerBundle\Widgets\CustomOptionWizard';
 $GLOBALS['TL_FFL']['customOptionWizard'] = 'Alnv\ContaoFormManagerBundle\Forms\CustomOptionWizard';
