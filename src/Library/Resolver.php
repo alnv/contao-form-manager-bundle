@@ -6,6 +6,7 @@ use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
 abstract class Resolver extends \System {
 
+    protected $strErrorMessage = '';
     protected $blnValidate = false;
     protected $strRedirect = null;
     public $blnSuccess = true;
@@ -13,17 +14,25 @@ abstract class Resolver extends \System {
     abstract public function getForm();
     abstract protected function saveRecord( $arrForm );
 
+    public function setErrorMessage($strMessage) {
+        $this->strErrorMessage = $strMessage;
+    }
+
+    public function getErrorMessage() {
+        return $this->strErrorMessage;
+    }
+
     public function parseAttributes( $arrFieldAttributes ) {
 
         $arrFieldAttributes['messages'] = [];
         $arrFieldAttributes['validate'] = true;
         $strClass = Toolkit::convertBackendFieldToFrontendField($arrFieldAttributes['type']);
 
-        if ( !class_exists( $strClass ) ) {
+        if (!class_exists($strClass)) {
             return null;
         }
 
-        if ( isset($GLOBALS['TL_HOOKS']['preCompileFormField']) && is_array($GLOBALS['TL_HOOKS']['preCompileFormField']) ) {
+        if (isset($GLOBALS['TL_HOOKS']['preCompileFormField']) && is_array($GLOBALS['TL_HOOKS']['preCompileFormField'])) {
             foreach ($GLOBALS['TL_HOOKS']['preCompileFormField'] as $arrCallback) {
                 $this->import($arrCallback[0]);
                 $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrFieldAttributes, $this);
@@ -110,8 +119,15 @@ abstract class Resolver extends \System {
             $this->blnSuccess = false;
         }
 
+        if (isset($GLOBALS['TL_HOOKS']['formResolverBeforeSave']) && is_array($GLOBALS['TL_HOOKS']['formResolverBeforeSave'])) {
+            foreach ($GLOBALS['TL_HOOKS']['formResolverBeforeSave'] as $arrCallback) {
+                $this->import($arrCallback[0]);
+                $this->blnSuccess = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrForm, $blnValidateOnly, $this);
+            }
+        }
+
         if ( $this->blnSuccess && !$blnValidateOnly ) {
-            $this->saveRecord( $arrForm );
+            $this->saveRecord($arrForm);
         }
 
         return [
@@ -119,7 +135,8 @@ abstract class Resolver extends \System {
             'id' => \Input::post('id'),
             'saved' => !$blnValidateOnly,
             'success' => $this->blnSuccess,
-            'redirect' => $this->strRedirect
+            'redirect' => $this->strRedirect,
+            'message' => $this->getErrorMessage()
         ];
     }
 

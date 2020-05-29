@@ -158,7 +158,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                             objParent.onChange(this);
                             objParent.clearAlert();
                         } else {
-                            objParent.setErrorAlert('', this);
+                            objParent.setErrorAlert(objResponse.body.message, this);
                         }
                     }
                 }.bind(this));
