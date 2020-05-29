@@ -122,7 +122,7 @@ abstract class Resolver extends \System {
         if (isset($GLOBALS['TL_HOOKS']['formResolverBeforeSave']) && is_array($GLOBALS['TL_HOOKS']['formResolverBeforeSave'])) {
             foreach ($GLOBALS['TL_HOOKS']['formResolverBeforeSave'] as $arrCallback) {
                 $this->import($arrCallback[0]);
-                $this->blnSuccess = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrForm, $blnValidateOnly, $this);
+                $this->blnSuccess = $this->{$arrCallback[0]}->{$arrCallback[1]}($this->blnSuccess, $arrForm, $blnValidateOnly, $this);
             }
         }
 
