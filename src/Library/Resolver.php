@@ -42,14 +42,17 @@ abstract class Resolver extends \System {
         $objField = new $strClass($arrFieldAttributes);
 
         if ($this->shouldValidate()) {
+
             $objField->validate();
-            if ( $objField->hasErrors() ) {
+
+            if ($objField->hasErrors()) {
                 $this->blnSuccess = false;
                 $arrFieldAttributes['validate'] = false;
                 $arrFieldAttributes['messages'] = array_map(function ($strError){
                     return \StringUtil::decodeEntities($strError);
                 }, $objField->getErrors());
             }
+
             if ($arrImplements = class_implements($objField)) {
                 if (in_array('uploadable', $arrImplements)) {
                     if ($objField->mandatory) {
@@ -69,6 +72,7 @@ abstract class Resolver extends \System {
             }
             $arrFieldAttributes[$strFieldname] = $objField->{$strFieldname};
         }
+
         $arrFieldAttributes['label'] = \StringUtil::decodeEntities($arrFieldAttributes['label']);
         $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label']);
         $arrFieldAttributes['isReactive'] = $this->isReactive( $arrFieldAttributes );
