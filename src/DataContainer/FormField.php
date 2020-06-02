@@ -16,7 +16,6 @@ class FormField {
                 unset($arrFields[$intIndex]);
             }
         }
-
         return $arrFields;
     }
 }

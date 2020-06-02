@@ -8,7 +8,7 @@ Vue.component( 'number-field', {
     },
     watch: {
         value: function() {
-            this.$emit( 'input', this.value );
+            this.$emit('input', this.value);
         }
     },
     methods: {
@@ -25,7 +25,7 @@ Vue.component( 'number-field', {
             return objCssClass;
         },
         setRange: function () {
-            if ( this.range ) {
+            if (this.range) {
                 return null;
             }
             this.range = {};

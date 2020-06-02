@@ -55,10 +55,6 @@ Vue.component( 'form-wizard', {
             this.selectedValue = value;
         },
         deleteValue: function(value) {
-            var blnConfirm = confirm("Soll der Datensatz wirklich gelöscht werden?");
-            if (!blnConfirm) {
-                return null;
-            }
             this.editMode = false;
             this.selectedValue = {};
             for ( var i = 0; i < this.value.length; i++ ) {

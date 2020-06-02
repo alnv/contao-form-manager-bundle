@@ -66,6 +66,11 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             },
             setModel: function(palettes) {
                 var objModel = {};
+                var varStorage = localStorage.getItem('model-' + this.id);
+                if (varStorage) {
+                    this.model = JSON.parse(varStorage);
+                    this.triggerOnInput();
+                }
                 if (this.model.hasOwnProperty('id')) {
                     objModel['id'] = this.model['id'];
                 }
@@ -152,13 +157,14 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                                     strRedirect = objResponse.body['redirect'];
                                 }
                                 if (strRedirect) {
+                                    localStorage.setItem('model-' + this.id, '');
                                     window.location.href = strRedirect;
                                 }
                             }
                             objParent.onChange(this);
                             objParent.clearAlert();
                         } else {
-                            objParent.setErrorAlert('', this);
+                            objParent.setErrorAlert(objResponse.body.message, this);
                         }
                     }
                 }.bind(this));
@@ -185,9 +191,9 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         }
                     }
                 }
-                arrParameters.push( 'id=' + encodeURIComponent( this.id ) );
-                arrParameters.push( 'type=' + encodeURIComponent( this.type ) );
-                arrParameters.push( 'initialized=' + encodeURIComponent( this.initialized ) );
+                arrParameters.push( 'id=' + encodeURIComponent(this.id));
+                arrParameters.push( 'type=' + encodeURIComponent(this.type));
+                arrParameters.push( 'initialized=' + encodeURIComponent(this.initialized));
                 return '?' + arrParameters.join('&');
             },
             setPalette: function (palette) {
@@ -200,11 +206,15 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         objParent.shared[strFieldname] = this.model[strFieldname];
                     }
                 }
-                if (objParent.onInput && typeof objParent.onInput === 'function') {
-                    objParent.onInput(this.model, this);
-                }
+                this.triggerOnInput();
                 if (field['isReactive']) {
                     objParent.onChange(this);
+                }
+            },
+            triggerOnInput: function() {
+                var objParent = this.getParentSharedInstance(this.$parent);
+                if (objParent.onInput && typeof objParent.onInput === 'function') {
+                    objParent.onInput(this.model, this);
                 }
             },
             setActiveStateInMultipleForm: function () {
@@ -249,6 +259,12 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             id: function (newId) {
                 this.getInstance(newId);
                 this.fetchBySource();
+            },
+            model: {
+                handler: function () {
+                    localStorage.setItem('model-' + this.id, JSON.stringify(this.model));
+                },
+                deep: true
             }
         },
         mounted: function () {

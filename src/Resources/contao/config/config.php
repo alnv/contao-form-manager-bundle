@@ -15,7 +15,8 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
         'default' => 'text-field',
         'datim' => 'date-field',
         'time' => 'date-field',
-        'date' => 'date-field'
+        'date' => 'date-field',
+        'natural' => 'number-field'
     ],
     'number' => [
         'default' => 'text-field'

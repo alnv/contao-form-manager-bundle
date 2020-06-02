@@ -7,22 +7,27 @@ class Toolkit {
     public static function getDbValue( $varValue, $arrField ) {
 
         if ( $varValue === null || $varValue === '' ) {
-            $varValue = \Widget::getEmptyStringOrNullByFieldType( $arrField['sql'] );
+
+            $varValue = \Widget::getEmptyStringOrNullByFieldType($arrField['sql']);
         }
 
-        if ( $arrField['eval']['multiple'] && isset( $arrField['eval']['csv'] ) ) {
-            $varValue = implode( $arrField['eval']['csv'], \StringUtil::deserialize( $varValue, true ) );
+        if ($arrField['eval']['multiple'] && isset( $arrField['eval']['csv'])) {
+
+            $varValue = implode( $arrField['eval']['csv'], \StringUtil::deserialize($varValue, true));
         }
 
-        if ( is_array( $varValue ) && $arrField['eval']['multiple'] === false ) {
+        if (is_array($varValue) && $arrField['eval']['multiple'] === false) {
+
             $varValue = implode('', $varValue);
         }
 
-        if ( is_array( $varValue ) ) {
-            $varValue = serialize( $varValue );
+        if (is_array($varValue)) {
+
+            $varValue = serialize($varValue);
         }
 
-        if ( $varValue !== null && $varValue !== '' && in_array( $arrField['eval']['rgxp'], ['date', 'time', 'datim'] ) ) {
+        if ( $varValue !== null && $varValue !== '' && in_array( $arrField['eval']['rgxp'], ['date', 'time', 'datim'])) {
+
             $objDate = new \Date( $varValue, \Date::getFormatFromRgxp( $arrField['eval']['rgxp'] ) );
             $varValue = $objDate->tstamp;
         }
@@ -30,30 +35,35 @@ class Toolkit {
         return $varValue;
     }
 
-    public static function convertTypeToComponent( $strType, $strRgxp = null ) {
+    public static function convertTypeToComponent($strType, $strRgxp = null) {
 
-        if ( !isset( $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] ) && !is_array( $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] ) ) {
+        if (!isset($GLOBALS['FORM_MANAGER_FIELD_COMPONENTS']) && !is_array($GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'])) {
+
             return null;
         }
 
-        $arrTypes = $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'][ $strType ];
+        $arrTypes = $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'][$strType];
 
-        if ( !is_array( $arrTypes ) || empty( $arrTypes ) ) {
+        if (!is_array($arrTypes) || empty($arrTypes)) {
+
             return null;
         }
 
-        if ( $strRgxp && isset( $arrTypes[ $strRgxp ] ) ) {
-            return $arrTypes[ $strRgxp ];
+        if ($strRgxp && isset($arrTypes[$strRgxp])) {
+
+            return $arrTypes[$strRgxp];
         }
 
-        return $arrTypes[ 'default' ];
+
+        return $arrTypes['default'];
     }
 
     public static function convertValue( $strValue, $arrField ) {
 
-        if ( $arrField['multiple'] ) {
+        if ($arrField['multiple']) {
 
-            if ( is_array($strValue)) {
+            if (is_array($strValue)) {
+
                 return $strValue;
             }
 

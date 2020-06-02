@@ -87,7 +87,7 @@ class MultiFormResolver extends \System {
 
         $this->sendNotifications(null, $arrSubmitted); // @todo
 
-        return $arrSubmitted;
+        return $arrState;
     }
 
     public function sendNotifications($strNotificationId, $arrSubmitted) {

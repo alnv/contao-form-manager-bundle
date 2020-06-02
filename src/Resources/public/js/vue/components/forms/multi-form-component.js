@@ -17,7 +17,7 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                                this.setModel( objResponse.body.form );
                                this.setPalette( objResponse.body.form );
                                this.saveInstance();
-                               if ( objResponse.body.success ) {
+                               if (objResponse.body.success) {
                                    objMultiFormSummary.completeMultiForm();
                                }
                            }
@@ -30,13 +30,13 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
             }
         },
         completeMultiForm: function() {
-            this.$http.post( '/form-manager/save/multiform', {
+            this.$http.post( '/form-manager/save/multiform' + this.getParameters(), {
                 forms: objInstances
             },{
                 emulateJSON: true,
                 'Content-Type': 'application/x-www-form-urlencoded'
             }).then( function ( objResponse ) {
-                if ( objResponse.body ) {
+                if (objResponse.body) {
                     if (objResponse.body['success']) {
                         this.$parent.afterSubmit(objResponse.body);
                     }
@@ -46,7 +46,19 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                     }
                 }
             });
-        }
+        },
+        getParameters: function() {
+            var arrParameters = [];
+            if ( typeof this.$parent.attributes !== 'undefined' && this.$parent.attributes ) {
+                for (var strName in this.$parent.attributes) {
+                    if (this.$parent.attributes.hasOwnProperty(strName)) {
+                        arrParameters.push('attributes[' + strName + ']' + '=' + encodeURIComponent(this.$parent.attributes[strName]));
+                    }
+                }
+                return '?' + arrParameters.join('&');
+            }
+            return  '';
+        },
     },
     mounted: function () {
         for ( var i = 0; i < this.$parent.forms.length; i++ ) {
@@ -56,7 +68,7 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                     form: this.$parent.forms[i],
                     palettes: []
                 };
-                var objInstance = objInstances[ this.$parent.forms[i]['id'] ];
+                var objInstance = objInstances[this.$parent.forms[i]['id']];
                 if ( objInstance ) {
                     for ( var j = 0; j < objInstance.palettes.length; j++ ) {
                         objSummary.palettes.push({
@@ -90,7 +102,7 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                             '<p class="field-value" v-if="Array.isArray( field.value )"><ul><li v-for="value in field.value" v-html="value"></li></ul></p>' +
                         '</div>' +
                     '</template>' +
-                    '<button class="summary-button" @click="$parent.goTo(summary.form,index)">Ändern</button>' +
+                    '<button class="summary-button" @click="$parent.goTo(summary.form,index)">{{ $parent.changeButtonText }}</button>' +
                 '</div>' +
             '</slot>' +
             '<template v-if="$parent.completeForm.hasOwnProperty(\'source\')">' +
@@ -101,11 +113,11 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                     '<li v-for="message in messages" class="error">{{ message }}</li>' +
                 '</ul>' +
             '</div>' +
-            '<button @click="save" class="submit">Kostenpflichtig bestellen</button>' +
+            '<button @click="save" class="submit">{{ $parent.checkoutButtonText }}</button>' +
         '</div>' +
     '</div>'
 });
-const multiFormComponent = Vue.component( 'multi-form', {
+const multiFormComponent = Vue.component('multi-form', {
     data: function () {
         return {
             active: {}
@@ -113,12 +125,12 @@ const multiFormComponent = Vue.component( 'multi-form', {
     },
     methods: {
         goTo: function (form, index) {
-            if ( form.valid ) {
-                this.setActive( form, index );
+            if (form.valid) {
+                this.setActive(form, index);
             }
         },
         setActive: function (form, index) {
-            for ( var i = 0; i < this.$children.length; i++ ) {
+            for (var i=0;i<this.$children.length;i++) {
                 if ( typeof this.$children[i].saveInstance !== 'undefined' ) {
                     this.$children[i].saveInstance();
                 }
@@ -133,6 +145,9 @@ const multiFormComponent = Vue.component( 'multi-form', {
                 strRedirect = objResponse.redirect;
             }
             if (strRedirect) {
+                for (var i=0;i<this.forms.length;i++) {
+                    localStorage.setItem('model-' + this.forms[i]['id'], '');
+                }
                 window.location.href = strRedirect;
             }
         },
@@ -152,7 +167,7 @@ const multiFormComponent = Vue.component( 'multi-form', {
         }
         this.forms.push({
             component: 'multi-form-summary',
-            label: 'Zusammenfassung',
+            label: this.summaryText,
             valid: false
         });
     },
@@ -161,6 +176,11 @@ const multiFormComponent = Vue.component( 'multi-form', {
             default: [],
             type: Array,
             required: true
+        },
+        attributes: {
+            default: {},
+            type: Object,
+            required: false
         },
         completeForm: {
             default: {},
@@ -172,6 +192,21 @@ const multiFormComponent = Vue.component( 'multi-form', {
             type: String,
             required: false
         },
+        summaryText: {
+            default: 'Zusammenfassung',
+            type: String,
+            required: false
+        },
+        checkoutButtonText: {
+            default: 'Senden',
+            type: String,
+            required: false
+        },
+        changeButtonText: {
+            default: 'Ändern',
+            type: String,
+            required: false
+        }
     },
     template:
     '<div class="forms-component">' +
