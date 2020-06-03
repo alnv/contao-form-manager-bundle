@@ -67,7 +67,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             setModel: function(palettes) {
                 var objModel = {};
                 var varStorage = localStorage.getItem('model-' + this.id);
-                if (varStorage) {
+                if (varStorage && this.useStorage) {
                     this.model = JSON.parse(varStorage);
                     this.triggerOnInput();
                 }
@@ -322,6 +322,11 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             submitCallback: {
                 default: null,
                 type: Function,
+                required: false
+            },
+            useStorage: {
+                type: Boolean,
+                default: false,
                 required: false
             }
         },

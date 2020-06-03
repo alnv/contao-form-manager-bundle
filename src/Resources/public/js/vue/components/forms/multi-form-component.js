@@ -106,7 +106,7 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                 '</div>' +
             '</slot>' +
             '<template v-if="$parent.completeForm.hasOwnProperty(\'source\')">' +
-                '<component is="single-form" :validate-only="true" :disable-submit="true" :id="$parent.completeForm.id" :source="$parent.completeForm.source" :identifier="$parent.completeForm.identifier"></component>' +
+                '<component is="single-form" :use-storage="true" :validate-only="true" :disable-submit="true" :id="$parent.completeForm.id" :source="$parent.completeForm.source" :identifier="$parent.completeForm.identifier"></component>' +
             '</template>' +
             '<div v-if="!success" class="messages error">' +
                 '<ul>' +
