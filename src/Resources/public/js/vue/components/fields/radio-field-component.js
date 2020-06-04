@@ -32,10 +32,9 @@ Vue.component( 'radio-field', {
             return objCssClass;
         },
         submit: function (value) {
-            if (value === this.value) {
-                // this.value = null;
-                // this.$emit('input', this.value, true);
-            }
+            setTimeout(function () {
+                this.$emit('input', value, true);
+            }.bind(this),100);
         }
     },
     watch: {
