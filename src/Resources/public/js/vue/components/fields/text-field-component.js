@@ -35,8 +35,11 @@ Vue.component( 'text-field', {
         },
         setCssClass: function() {
             let objCssClass = {};
-            if ( this.eval['tl_class'] ) {
+            if (this.eval['tl_class']) {
                 objCssClass[this.eval['tl_class']] = true;
+            }
+            if (this.eval['class']) {
+                objCssClass[this.eval['class']] = true;
             }
             objCssClass['mandatory'] = !!this.eval['mandatory'];
             objCssClass['multiple'] = !!this.eval['multiple'];

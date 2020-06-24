@@ -2,14 +2,11 @@
 
 namespace Alnv\ContaoFormManagerBundle\Library;
 
-
 class ResolveForm extends Resolver {
-
 
     protected $strId = null;
     protected $objForm = null;
     protected $arrFields = [];
-
 
     public function __construct( $strId, $arrOptions = [] ) {
 
@@ -19,7 +16,6 @@ class ResolveForm extends Resolver {
 
         parent::__construct();
     }
-
 
     public function getForm() {
 
@@ -50,21 +46,18 @@ class ResolveForm extends Resolver {
             $arrField = $objFields->row();
 
             if ( $arrField['name'] != '' && isset( $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$arrField['type']] ) && preg_match('/[,;]name[,;]/', $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$arrField['type']] ) ) {
-
                 $this->arrFields[ $arrField['name'] ] = $arrField;
             }
             else {
-
                 $this->arrFields[] = $arrField;
             }
 
-            $arrAttributes = $this->parseAttributes( $arrField );
+            $arrAttributes = $this->parseAttributes($arrField);
             $arrAttributes['_source'] = 'form';
             $arrAttributes['_table'] = 'tl_form_field';
             $arrAttributes['_identifier'] = $arrField['name'];
 
-            if ( $arrAttributes === null ) {
-
+            if ($arrAttributes === null) {
                 continue;
             }
 
@@ -74,20 +67,15 @@ class ResolveForm extends Resolver {
         return [ $objPalette ];
     }
 
-
     public function saveRecord( $arrForm ) {
 
         $arrSubmittedAndLabels = $this->getSubmittedAndLabelsFromForm( $arrForm );
         $this->processFormData( $arrSubmittedAndLabels['submitted'], $arrSubmittedAndLabels['labels'] );
     }
 
-
     protected function processFormData( $arrSubmitted, $arrLabels ) {
-
         if ( isset( $GLOBALS['TL_HOOKS']['prepareFormData']) && is_array($GLOBALS['TL_HOOKS']['prepareFormData'] ) ) {
-
             foreach ($GLOBALS['TL_HOOKS']['prepareFormData'] as $arrCallback) {
-
                 $this->import( $arrCallback[0] );
                 $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $arrLabels, $this->arrFields, null );
             }
@@ -237,7 +225,6 @@ class ResolveForm extends Resolver {
 
         // @todo generate redirect link
     }
-
 
     protected function getSubmittedAndLabelsFromForm( &$arrForm ) {
 
