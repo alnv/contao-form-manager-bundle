@@ -224,7 +224,7 @@ const multiFormComponent = Vue.component('multi-form', {
                 '</div>' +
             '</div>' +
             '<template>' +
-                '<component :is="active.component" :validate-only="true" :id="active.id" :source="active.source" :identifier="active.identifier" submit-label="Weiter">' +
+                '<component :is="active.component" :use-storage="true" :validate-only="true" :id="active.id" :source="active.source" :identifier="active.identifier" submit-label="Weiter">' +
                     '<template v-if="active.component === \'multi-form-summary\'" v-slot:default="slotProps">' +
                         '<slot :summaries="slotProps.summaries" :goTo="goTo"></slot>' +
                     '</template>' +

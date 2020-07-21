@@ -75,6 +75,7 @@ if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() ) {
     $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/libs/flatpickr/js/flatpickr.min.js');
     $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/libs/dropzone/js/dropzone.min.js');
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/vue-flatpickr-component.min.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/de.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/single-form-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/multi-form-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/lists/table-list-component.js' );

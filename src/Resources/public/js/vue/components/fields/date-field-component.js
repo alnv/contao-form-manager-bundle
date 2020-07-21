@@ -7,7 +7,8 @@ Vue.component( 'date-field', {
                 time_24hr: true,
                 noCalendar: this.eval['rgxp'] === 'time',
                 enableTime: this.eval['rgxp'] === 'time',
-                dateFormat: this.eval['dateFormat']
+                dateFormat: this.eval['dateFormat'],
+                locale: 'de'
             }
         }
     },
