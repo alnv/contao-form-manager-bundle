@@ -183,13 +183,13 @@ class Toolkit {
         return $arrReturn;
     }
 
-    public static function getLabelValue( $varValue, $arrField ) {
+    public static function getLabelValue($varValue, $arrField) {
 
-        if ( is_array( $arrField['options'] ) && !empty( $arrField['options'] ) ) {
-            return static::getSelectedOptions( $varValue, $arrField['options'] );
+        if (is_array($arrField['options']) && !empty( $arrField['options'])) {
+            return static::getSelectedOptions($varValue, $arrField['options']);
         }
 
-        return $varValue;
+        return $arrField['value'] ?: $varValue;
     }
 
     public static function convertBackendFieldToFrontendField( $strBackendFieldType ) {

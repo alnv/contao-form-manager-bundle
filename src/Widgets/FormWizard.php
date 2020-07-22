@@ -2,8 +2,6 @@
 
 namespace Alnv\ContaoFormManagerBundle\Widgets;
 
-use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
-
 class FormWizard extends \Alnv\ContaoFormManagerBundle\Hybrids\FormWidget {
 
     protected $blnSubmitInput = true;
@@ -35,18 +33,19 @@ class FormWizard extends \Alnv\ContaoFormManagerBundle\Hybrids\FormWidget {
         }
 
         $strTemplate = '<p>';
-        $arrFields =  $GLOBALS['TL_DCA']['tl_order']['fields'][$this->strName]['eval']['form'];
+        $arrFields =  $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strName]['eval']['form'];
 
-        foreach ($this->varValue as $arrValue) {
-
+        foreach ($this->varValue as $intIndex => $arrValue) {
+            if ($intIndex) {
+                $strTemplate .= '<br>';
+            }
             foreach ($arrValue as $strFieldname => $strValue) {
                 $strClass = $GLOBALS['TL_FFL'][$arrFields[$strFieldname]['inputType']];
                 if (!class_exists($strClass)) {
                     continue;
                 }
-
-                $arrAttributes = $strClass::getAttributesFromDca($arrFields[ $strFieldname ],$strFieldname, $arrFields[ $strFieldname ]['default'], $strFieldname, $this->strTable);
-                $varCleanValue = Toolkit::getLabelValue($strValue, $arrAttributes);
+                $arrAttributes = $strClass::getAttributesFromDca($arrFields[$strFieldname], $strFieldname, $strValue, $strFieldname, $this->strTable);
+                $varCleanValue = \Alnv\ContaoFormManagerBundle\Helper\Toolkit::getLabelValue($strValue, $arrAttributes);
                 if (is_array($varCleanValue)) {
                     $varCleanValue = implode(',', $varCleanValue);
                 }
