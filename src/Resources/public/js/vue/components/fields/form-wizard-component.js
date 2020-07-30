@@ -12,7 +12,8 @@ Vue.component( 'form-wizard', {
             this.$http.get( '/form-manager/getFormWizard/' + this.getIdentifier(), {
                 params: {
                     wizard: this.name,
-                    params: this.params
+                    params: this.params,
+                    language: this.$parent.language
                 }
             }).then(function ( objResponse ) {
                 if ( objResponse.body ) {
@@ -172,6 +173,9 @@ Vue.component( 'form-wizard', {
     },
     mounted: function () {
         this.fetch();
+        if (this.eval.addButtonLabel) {
+            this.addButtonLabel = this.eval.addButtonLabel;
+        }
     },
     template:
         '<div class="field-component form-wizard" v-bind:class="setCssClass()">' +
@@ -182,7 +186,7 @@ Vue.component( 'form-wizard', {
                     '<div v-for="val in value" class="entity" v-bind:class="{\'active\': val === selectedValue}">' +
                         '<div class="rows">' +
                             '<template v-for="field in fields">' +
-                                '<div class="row" v-bind:class="setFieldCssClass(field,val)"><span class="name">{{ field.label }}: </span><span class="value">{{ getLabel(val[field.name],field) }}</span></div>'+
+                                '<div class="row" v-bind:class="setFieldCssClass(field,val)"><span class="name">{{ field.label }}: </span><span class="value">{{ getLabel(val[field.name], field) }}</span></div>'+
                             '</template>' +
                         '</div>'+
                         '<div class="operations">' +

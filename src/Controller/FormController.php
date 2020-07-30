@@ -91,6 +91,10 @@ class FormController extends Controller {
      * @Method({"GET"})
      */
     public function getFormWizard($table) {
+
+        global $objPage;
+        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $objPage->language = $GLOBALS['TL_LANGUAGE'];
         $this->container->get( 'contao.framework' )->initialize();
         $arrOptions = [
             'wizard' => \Input::get('wizard') ?: null,
