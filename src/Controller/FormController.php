@@ -12,7 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 /**
  *
- * @Route("/form-manager", defaults={"_scope" = "frontend", "_token_check" = false})
+ * @Route("/form-manager", defaults={"_scope"="frontend", "_token_check"=false})
  */
 class FormController extends Controller {
 
@@ -71,13 +71,17 @@ class FormController extends Controller {
      * @Route("/getDcForm/{table}", name="getDcFormByTable")
      * @Method({"GET"})
      */
-    public function getDcFormByTable( $table ) {
+    public function getDcFormByTable($table) {
+
+        global $objPage;
+        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $objPage->language = $GLOBALS['TL_LANGUAGE'];
         $this->container->get( 'contao.framework' )->initialize();
         $arrOptions = \Input::get('attributes') ?: [];
         $arrOptions['type'] = \Input::get('type') ?: '';
         $arrOptions['initialized'] = \Input::get('initialized') ?: '';
         $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
-        $objForm = new ResolveDca( $table, $arrOptions );
+        $objForm = new ResolveDca($table, $arrOptions);
         return new JsonResponse($objForm->getForm());
     }
 
@@ -86,13 +90,13 @@ class FormController extends Controller {
      * @Route("/getFormWizard/{table}", name="getFormWizard")
      * @Method({"GET"})
      */
-    public function getFormWizard( $table ) {
+    public function getFormWizard($table) {
         $this->container->get( 'contao.framework' )->initialize();
         $arrOptions = [
             'wizard' => \Input::get('wizard') ?: null,
             'params' => \Input::get('params') ?: []
         ];
-        $objForm = new ResolveDca( $table, $arrOptions );
+        $objForm = new ResolveDca($table, $arrOptions);
         return new JsonResponse($objForm->getWizard());
     }
 
@@ -102,6 +106,10 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function validateAndSaveDc($table) {
+
+        global $objPage;
+        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $objPage->language = $GLOBALS['TL_LANGUAGE'];
         $this->container->get( 'contao.framework' )->initialize();
         $arrOptions = \Input::get('attributes') ?: [];
         $arrOptions['id'] = \Input::get('id') ?: null;
@@ -118,6 +126,10 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function validateDc($table) {
+
+        global $objPage;
+        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $objPage->language = $GLOBALS['TL_LANGUAGE'];
         $this->container->get( 'contao.framework' )->initialize();
         $arrOptions = \Input::get('attributes') ?: [];
         $arrOptions['type'] = \Input::get('type') ?: '';
@@ -132,10 +144,14 @@ class FormController extends Controller {
      * @Route("/getForm/{id}", name="getFormById")
      * @Method({"GET"})
      */
-    public function getFormByTable( $id ) {
-        $this->container->get( 'contao.framework' )->initialize();
+    public function getFormByTable($id) {
+
+        global $objPage;
+        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $objPage->language = $GLOBALS['TL_LANGUAGE'];
+        $this->container->get('contao.framework')->initialize();
         $arrOptions = [];
-        $objForm = new ResolveForm( $id, $arrOptions );
+        $objForm = new ResolveForm($id, $arrOptions);
         return new JsonResponse($objForm->getForm());
     }
 

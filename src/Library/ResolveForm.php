@@ -20,7 +20,7 @@ class ResolveForm extends Resolver {
     public function getForm() {
 
         $arrForm = [ 'palettes' => [] ];
-        $objFields = \FormFieldModel::findPublishedByPid( $this->strId );
+        $objFields = \FormFieldModel::findPublishedByPid($this->strId);
 
         if ( $objFields === null ) {
 
@@ -30,7 +30,7 @@ class ResolveForm extends Resolver {
         $this->objForm = $objFields->getRelated('pid');
         $objFields->reset();
 
-        if ( $objFields === null ) {
+        if ($objFields === null) {
 
             return $arrForm;
         }
@@ -41,12 +41,12 @@ class ResolveForm extends Resolver {
         $objPalette->hide = false;
         $objPalette->name = 'default';
 
-        while ( $objFields->next() ) {
+        while ($objFields->next()) {
 
             $arrField = $objFields->row();
 
-            if ( $arrField['name'] != '' && isset( $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$arrField['type']] ) && preg_match('/[,;]name[,;]/', $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$arrField['type']] ) ) {
-                $this->arrFields[ $arrField['name'] ] = $arrField;
+            if ($arrField['name'] != '' && isset($GLOBALS['TL_DCA']['tl_form_field']['palettes'][$arrField['type']]) && preg_match('/[,;]name[,;]/', $GLOBALS['TL_DCA']['tl_form_field']['palettes'][$arrField['type']])) {
+                $this->arrFields[$arrField['name']] = $arrField;
             }
             else {
                 $this->arrFields[] = $arrField;
@@ -64,7 +64,7 @@ class ResolveForm extends Resolver {
             $objPalette->fields[] = $arrAttributes;
         }
 
-        return [ $objPalette ];
+        return [$objPalette];
     }
 
     public function saveRecord( $arrForm ) {
@@ -90,8 +90,7 @@ class ResolveForm extends Resolver {
 
             foreach ( $arrSubmitted as $strKey => $strValue ) {
 
-                if ( $arrKeys == 'cc' ) {
-
+                if ($arrKeys == 'cc') {
                     continue;
                 }
 

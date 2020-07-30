@@ -48,6 +48,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                     params: {
                         id: this.id,
                         type: this.type,
+                        language: this.language,
                         attributes: this.attributes,
                         initialized: this.initialized,
                         subpalettes: this.subpalettes
@@ -242,6 +243,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             saveInstance: function () {
                 objInstances[this.id] = {
                     initialized: this.initialized,
+                    language: this.language,
                     palettes: this.palettes,
                     model: this.model,
                     type: this.type,
@@ -327,6 +329,11 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             useStorage: {
                 type: Boolean,
                 default: false,
+                required: false
+            },
+            language: {
+                type: String,
+                default: null,
                 required: false
             }
         },

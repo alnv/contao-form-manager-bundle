@@ -106,7 +106,7 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                 '</div>' +
             '</slot>' +
             '<template v-if="$parent.completeForm.hasOwnProperty(\'source\')">' +
-                '<component is="single-form" :use-storage="true" :validate-only="true" :disable-submit="true" :id="$parent.completeForm.id" :source="$parent.completeForm.source" :identifier="$parent.completeForm.identifier"></component>' +
+                '<component is="single-form" :use-storage="true" :validate-only="true" :disable-submit="true" :language="$parent.completeForm.language" :id="$parent.completeForm.id" :source="$parent.completeForm.source" :identifier="$parent.completeForm.identifier"></component>' +
             '</template>' +
             '<div v-if="!success" class="messages error">' +
                 '<ul>' +
@@ -206,6 +206,11 @@ const multiFormComponent = Vue.component('multi-form', {
             default: 'Ändern',
             type: String,
             required: false
+        },
+        nextButtonText: {
+            default: 'Weiter',
+            type: String,
+            required: false
         }
     },
     template:
@@ -224,7 +229,7 @@ const multiFormComponent = Vue.component('multi-form', {
                 '</div>' +
             '</div>' +
             '<template>' +
-                '<component :is="active.component" :use-storage="true" :validate-only="true" :id="active.id" :source="active.source" :identifier="active.identifier" submit-label="Weiter">' +
+                '<component :is="active.component" :use-storage="true" :validate-only="true" :language="active.language" :id="active.id" :source="active.source" :identifier="active.identifier" :submit-label="nextButtonText">' +
                     '<template v-if="active.component === \'multi-form-summary\'" v-slot:default="slotProps">' +
                         '<slot :summaries="slotProps.summaries" :goTo="goTo"></slot>' +
                     '</template>' +

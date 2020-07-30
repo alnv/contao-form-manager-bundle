@@ -49,7 +49,7 @@ abstract class Resolver extends \System {
                 $this->blnSuccess = false;
                 $arrFieldAttributes['validate'] = false;
                 $arrFieldAttributes['messages'] = array_map(function ($strError){
-                    return \StringUtil::decodeEntities($strError);
+                    return \Controller::replaceInsertTags(\StringUtil::decodeEntities($strError), false);
                 }, $objField->getErrors());
             }
 
@@ -66,7 +66,7 @@ abstract class Resolver extends \System {
             }
         }
 
-        foreach ( $arrFieldAttributes as $strFieldname => $strValue ) {
+        foreach ($arrFieldAttributes as $strFieldname => $strValue) {
             if (in_array($strFieldname, ['validate', 'messages'])) {
                 continue;
             }
@@ -74,19 +74,19 @@ abstract class Resolver extends \System {
         }
 
         $arrFieldAttributes['label'] = \StringUtil::decodeEntities($arrFieldAttributes['label']);
-        $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label']);
-        $arrFieldAttributes['isReactive'] = $this->isReactive( $arrFieldAttributes );
+        $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label'], false);
+        $arrFieldAttributes['isReactive'] = $this->isReactive($arrFieldAttributes);
         $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
-        $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent( $arrFieldAttributes['type'], $arrFieldAttributes['rgxp'] );
-        $arrFieldAttributes['multiple'] = Toolkit::convertMultiple( $arrFieldAttributes['multiple'], $arrFieldAttributes );
-        $arrFieldAttributes['value'] = Toolkit::convertValue( $arrFieldAttributes['value'], $arrFieldAttributes );
-        $arrFieldAttributes['labelValue'] = Toolkit::getLabelValue( $arrFieldAttributes['value'], $arrFieldAttributes );
+        $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent($arrFieldAttributes['type'], $arrFieldAttributes['rgxp']);
+        $arrFieldAttributes['multiple'] = Toolkit::convertMultiple($arrFieldAttributes['multiple'], $arrFieldAttributes);
+        $arrFieldAttributes['value'] = Toolkit::convertValue($arrFieldAttributes['value'], $arrFieldAttributes);
+        $arrFieldAttributes['labelValue'] = Toolkit::getLabelValue($arrFieldAttributes['value'], $arrFieldAttributes);
 
         if ( in_array( $arrFieldAttributes['type'], ['checkbox'] ) && $arrFieldAttributes['multiple'] === false ) {
             $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
         }
 
-        if ( in_array( $arrFieldAttributes['rgxp'], [ 'date', 'time', 'datim' ] ) ) {
+        if (in_array( $arrFieldAttributes['rgxp'], ['date', 'time', 'datim' ])) {
             $arrFieldAttributes['dateFormat'] = \Date::getFormatFromRgxp($arrFieldAttributes['rgxp']);
         }
 
