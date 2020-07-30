@@ -192,9 +192,11 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         }
                     }
                 }
-                arrParameters.push( 'id=' + encodeURIComponent(this.id));
-                arrParameters.push( 'type=' + encodeURIComponent(this.type));
-                arrParameters.push( 'initialized=' + encodeURIComponent(this.initialized));
+
+                arrParameters.push('id=' + encodeURIComponent(this.id));
+                arrParameters.push('type=' + encodeURIComponent(this.type));
+                arrParameters.push('language=' + encodeURIComponent(this.language));
+                arrParameters.push('initialized=' + encodeURIComponent(this.initialized));
                 return '?' + arrParameters.join('&');
             },
             setPalette: function (palette) {

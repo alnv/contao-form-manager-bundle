@@ -19,9 +19,10 @@ class ResolveDca extends Resolver {
         if ($arrOptions['id']) {
             $this->objModule = \ModuleModel::findByPk($arrOptions['id']);
         }
-        \System::loadLanguageFile('default');
+        \System::loadLanguageFile('default', $GLOBALS['TL_LANGUAGE']);
+        \System::loadLanguageFile($this->strTable, $GLOBALS['TL_LANGUAGE']);
         \Controller::loadDataContainer($this->strTable);
-        \System::loadLanguageFile( $this->strTable, $arrOptions['language'] ?: null );
+
         parent::__construct();
     }
 
