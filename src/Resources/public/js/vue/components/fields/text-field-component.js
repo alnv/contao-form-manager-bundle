@@ -91,7 +91,8 @@ Vue.component( 'text-field', {
                 this.$http.get(this.eval['loadingViewUrl'], {
                     params: {
                         name: this.name,
-                        value: this.value
+                        value: this.value,
+                        id: this.eval.id ? this.eval.id : ''
                     }
                 }).then(function(objResponse) {
                     if (objResponse.body && objResponse.ok) {
