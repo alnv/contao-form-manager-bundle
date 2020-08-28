@@ -108,17 +108,17 @@ class FormWidget extends \Widget {
         ];
     }
 
-    protected function hasValue( $varValues ) {
+    protected function hasValue($varValues) {
 
-        if ( !$varValues || empty( $varValues ) ) {
+        if (!$varValues || empty($varValues)) {
             return false;
         }
 
-        if ( !is_array( $varValues ) ) {
+        if (!is_array($varValues)) {
             return false;
         }
 
-        if ( isset( $varValues[0] ) && empty( $varValues[0] ) ) {
+        if (isset($varValues[0]) && empty($varValues[0])) {
             return false;
         }
 

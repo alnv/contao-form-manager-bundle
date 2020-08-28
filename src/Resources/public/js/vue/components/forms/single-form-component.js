@@ -48,7 +48,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                     params: {
                         id: this.id,
                         type: this.type,
-                        language: this.language,
+                        language: (this.language ? this.language : ''),
                         attributes: this.attributes,
                         initialized: this.initialized,
                         subpalettes: this.subpalettes
@@ -195,7 +195,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
 
                 arrParameters.push('id=' + encodeURIComponent(this.id));
                 arrParameters.push('type=' + encodeURIComponent(this.type));
-                arrParameters.push('language=' + encodeURIComponent(this.language));
+                arrParameters.push('language=' + encodeURIComponent((this.language ? this.language : '')));
                 arrParameters.push('initialized=' + encodeURIComponent(this.initialized));
                 return '?' + arrParameters.join('&');
             },

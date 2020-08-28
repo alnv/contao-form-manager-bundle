@@ -113,7 +113,7 @@ class FormController extends Controller {
      */
     public function validateAndSaveDc($table) {
 
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
         global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
         $objPage->language = $GLOBALS['TL_LANGUAGE'];
