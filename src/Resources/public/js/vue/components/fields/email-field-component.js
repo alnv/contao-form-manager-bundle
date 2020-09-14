@@ -1,8 +1,6 @@
 Vue.component( 'email-field', {
     data: function () {
-        return {
-            timeout: null
-        }
+        return {}
     },
     methods: {
         setCssClass: function() {
@@ -22,12 +20,7 @@ Vue.component( 'email-field', {
     },
     watch: {
         value: function() {
-            if ( this.timeout !== null ) {
-                clearTimeout( this.timeout );
-            }
-            this.timeout = setTimeout(function () {
-                this.$emit( 'input', this.value );
-            }.bind(this), 800);
+            this.$emit('input', this.value);
         }
     },
     props: {
