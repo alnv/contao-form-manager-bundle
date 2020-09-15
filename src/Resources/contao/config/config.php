@@ -16,6 +16,7 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
         'datim' => 'date-field',
         'time' => 'date-field',
         'date' => 'date-field',
+        'phone' => 'text-field',
         'natural' => 'number-field'
     ],
     'number' => [
@@ -23,6 +24,10 @@ $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
     ],
     'url' => [
         'default' => 'text-field'
+    ],
+    'tel' => [
+        'default' => 'text-field',
+        'phone' => 'text-field'
     ],
     'email' => [
         'default' => 'email-field'

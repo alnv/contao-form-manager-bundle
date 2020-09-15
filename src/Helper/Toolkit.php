@@ -35,25 +35,21 @@ class Toolkit {
         return $varValue;
     }
 
-    public static function convertTypeToComponent($strType, $strRgxp = null) {
+    public static function convertTypeToComponent($strType, $strRgxp=null) {
 
         if (!isset($GLOBALS['FORM_MANAGER_FIELD_COMPONENTS']) && !is_array($GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'])) {
-
             return null;
         }
 
         $arrTypes = $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'][$strType];
 
         if (!is_array($arrTypes) || empty($arrTypes)) {
-
             return null;
         }
 
         if ($strRgxp && isset($arrTypes[$strRgxp])) {
-
             return $arrTypes[$strRgxp];
         }
-
 
         return $arrTypes['default'];
     }
