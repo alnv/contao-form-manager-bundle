@@ -35,15 +35,20 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
             },{
                 emulateJSON: true,
                 'Content-Type': 'application/x-www-form-urlencoded'
-            }).then( function ( objResponse ) {
-                if (objResponse.body) {
-                    if (objResponse.body['success']) {
-                        this.$parent.afterSubmit(objResponse.body);
-                    }
-                    else {
-                        this.success = false;
-                        this.messages = objResponse.body['messages'];
-                    }
+            }).then( function (objResponse) {
+                if (!objResponse.ok) {
+                    this.success = false;
+                    this.messages = [objResponse.statusText];
+                    return null;
+                }
+                if (this.$parent.submitCallback && typeof this.$parent.submitCallback === 'function') {
+                    objResponse.body = this.$parent.submitCallback(objResponse.body, this);
+                }
+                if (objResponse.body.success) {
+                    this.$parent.afterSubmit(objResponse.body);
+                } else {
+                    this.success = false;
+                    this.messages = objResponse.body.messages;
                 }
             });
         },
@@ -106,7 +111,7 @@ const multiFormSummaryComponent = Vue.component( 'multi-form-summary', {
                 '</div>' +
             '</slot>' +
             '<template v-if="$parent.completeForm.hasOwnProperty(\'source\')">' +
-                '<component is="single-form" :use-storage="true" :validate-only="true" :disable-submit="true" :language="$parent.completeForm.language" :id="$parent.completeForm.id" :source="$parent.completeForm.source" :identifier="$parent.completeForm.identifier"></component>' +
+                '<component is="single-form" :use-storage="true" :validate-only="true" :disable-submit="true" :language="$parent.completeForm.language" :id="$parent.completeForm.id" :source="$parent.completeForm.source" :identifier="$parent.completeForm.identifier" :submit-callback="$parent.completeForm.submitCallback"></component>' +
             '</template>' +
             '<div v-if="!success" class="messages error">' +
                 '<ul>' +
@@ -185,6 +190,11 @@ const multiFormComponent = Vue.component('multi-form', {
         completeForm: {
             default: {},
             type: Object,
+            required: false
+        },
+        submitCallback: {
+            default: null,
+            type: Function,
             required: false
         },
         successRedirect: {
