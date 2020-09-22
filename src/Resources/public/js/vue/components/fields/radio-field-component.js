@@ -33,8 +33,19 @@ Vue.component( 'radio-field', {
         },
         submit: function (value) {
             setTimeout(function () {
+                /*
+                if (this.eval['loadingView'] && this.$parent && typeof this.$parent['setLoadingView'] === 'function') {
+                    this.$parent['setLoadingView'](this);
+                    this.$parent['getLoadingViewRequest'](this,{body: {view: this.eval['view']}});
+                } else {
+                    this.$emit('input', value, true);
+                }
+                */
                 this.$emit('input', value, true);
             }.bind(this),100);
+        },
+        emit: function () {
+            this.$emit('input', this.value, true);
         }
     },
     watch: {
