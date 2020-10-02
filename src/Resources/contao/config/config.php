@@ -74,35 +74,65 @@ $GLOBALS['TL_FFL']['customOptionWizard'] = 'Alnv\ContaoFormManagerBundle\Forms\C
 $GLOBALS['BE_FFL']['formWizard'] = 'Alnv\ContaoFormManagerBundle\Widgets\FormWizard';
 $GLOBALS['TL_FFL']['formWizard'] = 'Alnv\ContaoFormManagerBundle\Forms\FormWizard';
 
-if ( \Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() ) {
+$GLOBALS['CM_THIRD_PARTY_WIDGETS'] = [
+    'SCRIPTS' => [
+        'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/flatpickr.min.js',
+        'bundles/alnvcontaoformmanager/js/libs/dropzone/js/dropzone.min.js',
+        'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/vue-flatpickr-component.min.js',
+        'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/de.js',
+        'bundles/alnvcontaoformmanager/js/vue/components/fields/date-field-component.js',
+        'bundles/alnvcontaoformmanager/js/vue/components/fields/form-wizard-component.js',
+        'bundles/alnvcontaoformmanager/js/vue/components/fields/upload-field-component.js'
+    ],
+    'STYLES' => [
+        'bundles/alnvcontaoformmanager/js/libs/flatpickr/styles/flatpickr.min.scss',
+        'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/basic.scss',
+        'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/dropzone.scss'
+    ]
+];
+
+if (\Config::get('doNotUseThirdPartyStylesNScriptsInFrontend') && TL_MODE == 'FE') {
+    $GLOBALS['CM_THIRD_PARTY_WIDGETS']['SCRIPTS'] = [];
+    $GLOBALS['CM_THIRD_PARTY_WIDGETS']['STYLES'] = [];
+}
+
+if (\Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts()) {
     $objFormAssetsManager = \Alnv\ContaoAssetsManagerBundle\Library\AssetsManager::getInstance();
     $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/helpers/validator.js');
-    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/libs/flatpickr/js/flatpickr.min.js');
-    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/libs/dropzone/js/dropzone.min.js');
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/vue-flatpickr-component.min.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/de.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/single-form-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/multi-form-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/lists/table-list-component.js' );
+    foreach ($GLOBALS['CM_THIRD_PARTY_WIDGETS']['SCRIPTS'] as $strScript) {
+        $objFormAssetsManager->addIfNotExist($strScript);
+    }
+    // $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/libs/flatpickr/js/flatpickr.min.js');
+    // $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/libs/dropzone/js/dropzone.min.js');
+    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/vue-flatpickr-component.min.js' );
+    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/de.js' );
+    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/lists/table-list-component.js' );
+    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/date-field-component.js' );
+    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/form-wizard-component.js' );
+    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/upload-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/text-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/date-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/radio-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/form-wizard-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/email-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/select-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/hidden-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/upload-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/number-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/checkbox-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/textarea-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/fieldset-start-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/explain-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/modals/modal-view-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/custom-option-wizard-field-component.js' );
+    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/modals/modal-view-component.js' );
+
     $objFormCssCombiner = new \Combiner();
-    $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/styles/flatpickr.min.scss' );
-    $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/basic.scss' );
-    $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/dropzone.scss' );
+    foreach ($GLOBALS['CM_THIRD_PARTY_WIDGETS']['STYLES'] as $strStyle) {
+        $objFormCssCombiner->add($strStyle);
+    }
+    // $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/styles/flatpickr.min.scss' );
+    // $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/basic.scss' );
+    // $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/dropzone.scss' );
     if ( TL_MODE == 'BE' ) {
         $objFormCssCombiner->add('bundles/alnvcontaoformmanager/css/form-wizard-component.scss');
     }
