@@ -150,6 +150,10 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                             if (this.$parent.forms) {
                                 this.setActiveStateInMultipleForm();
                             } else {
+                                if (this.addCart) {
+                                    this.add2Cart(this.cart.product, this.cart.units, this.cart.cid, this.cart.options);
+                                    return null;
+                                }
                                 var strRedirect = this.successRedirect;
                                 if (this.submitCallback && typeof this.submitCallback === 'function') {
                                     strRedirect = this.submitCallback(this, objResponse.body);
@@ -175,6 +179,34 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                     emulateJSON: true,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 });
+            },
+            add2Cart: function (productId, units, cid, options) {
+                let attributes = {};
+                attributes[this.id] = this.model;
+                this.$http.post('/shop-manager/addCart', {
+                    cid: cid,
+                    units: units,
+                    productId: productId,
+                    attributes: attributes,
+                    language: this.language
+                }, {
+                    emulateJSON: true
+                }).then( function (objResponse) {
+                    if (!objResponse.body.error) {
+                        this.model = {};
+                        localStorage.setItem('model-' + this.id, '');
+                        this.getParentSharedInstance(this.$parent).cartActive = true;
+                        this.getParentSharedInstance(this.$parent).onChange(this);
+                        if (objResponse.body.message) {
+                            this.getParentSharedInstance(this.$parent).setLoadingAlert(objResponse.body.message, this);
+                            this.getParentSharedInstance(this.$parent).clearAlert();
+                        } else {
+                            this.getParentSharedInstance(this.$parent).clearAlert();
+                        }
+                    }else {
+                        this.getParentSharedInstance(this.$parent).setErrorAlert(objResponse.body.message, this);
+                    }
+                }.bind(this));
             },
             getParameters: function() {
                 var arrParameters = [];
@@ -336,6 +368,16 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             language: {
                 type: String,
                 default: null,
+                required: false
+            },
+            addCart: {
+                type: Boolean,
+                default: false,
+                required: false
+            },
+            cart: {
+                default: {},
+                type: Object,
                 required: false
             }
         },
