@@ -9,15 +9,16 @@ Vue.component( 'form-wizard', {
     },
     methods: {
         fetch: function () {
-            this.$http.get( '/form-manager/getFormWizard/' + this.getIdentifier(), {
+            this.$http.get('/form-manager/getFormWizard/' + this.getIdentifier(), {
                 params: {
                     wizard: this.name,
                     params: this.params,
                     language: this.$parent.language
                 }
-            }).then(function ( objResponse ) {
-                if ( objResponse.body ) {
-                    if ( !objResponse.body.length ) {
+            }).then(function (objResponse) {
+                console.log(objResponse.body)
+                if (objResponse.body) {
+                    if (!objResponse.body.length) {
                         return null;
                     }
                     this.fields = objResponse.body[0].fields;
