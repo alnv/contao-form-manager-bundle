@@ -16,7 +16,6 @@ Vue.component( 'form-wizard', {
                     language: this.$parent.language
                 }
             }).then(function (objResponse) {
-                console.log(objResponse.body)
                 if (objResponse.body) {
                     if (!objResponse.body.length) {
                         return null;
