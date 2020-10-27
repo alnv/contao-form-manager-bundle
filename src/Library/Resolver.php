@@ -86,7 +86,7 @@ abstract class Resolver extends \System {
             $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
         }
 
-        if (in_array( $arrFieldAttributes['rgxp'], ['date', 'time', 'datim' ])) {
+        if (in_array( $arrFieldAttributes['rgxp'], ['date', 'time', 'datim'])) {
             $arrFieldAttributes['dateFormat'] = \Date::getFormatFromRgxp($arrFieldAttributes['rgxp']);
         }
 

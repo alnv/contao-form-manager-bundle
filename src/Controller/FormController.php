@@ -143,7 +143,7 @@ class FormController extends Controller {
         $arrOptions['type'] = \Input::get('type') ?: '';
         $arrOptions['initialized'] = \Input::get('initialized') ?: '';
         $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
-        $objForm = new ResolveDca( $table, $arrOptions );
+        $objForm = new ResolveDca($table, $arrOptions);
         return new JsonResponse($objForm->validate());
     }
 
