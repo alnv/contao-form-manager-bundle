@@ -10,6 +10,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['includeBlankOption'] = 'blan
 $GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['dbFilterType_wizard'] = 'dbWizardFilterSettings';
 $GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['dbFilterType_expert'] = 'dbFilterColumn,dbFilterValue';
 $GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['optionsSource_dbOptions'] = \Alnv\ContaoCatalogManagerBundle\Helper\OptionSourcePalette::getPalette();
+$GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['optionsSource_dbActiveOptions'] = \Alnv\ContaoCatalogManagerBundle\Helper\OptionSourcePalette::getActivePalette();
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox'] = str_replace('{options_legend},options', '{options_legend},optionsSource', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox']);
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select'] = str_replace('{options_legend},options', '{options_legend},optionsSource,includeBlankOption', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select']);
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio'] = str_replace('{options_legend},options', '{options_legend},optionsSource,includeBlankOption', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio']);
@@ -46,7 +47,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['optionsSource'] = [
         'submitOnChange' => true,
         'includeBlankOption' => true
     ],
-    'options' => ['options', 'dbOptions'],
+    'options' => ['options', 'dbOptions', 'dbActiveOptions'],
     'reference' => $GLOBALS['TL_LANG']['tl_form_field']['reference']['optionsSource'],
     'exclude' => true,
     'sql' => ['type' => 'string', 'length' => 64, 'default' => 'options']
