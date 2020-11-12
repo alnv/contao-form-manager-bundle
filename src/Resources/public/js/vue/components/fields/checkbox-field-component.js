@@ -42,6 +42,9 @@ Vue.component( 'checkbox-field', {
             if (value === this.value) {
                 this.$emit('input', this.value, true);
             }
+        },
+        getSelectAllId: function () {
+            return this.idPrefix + '_' + this.name + '_' + 'selectAll';
         }
     },
     created: function() {
@@ -87,8 +90,8 @@ Vue.component( 'checkbox-field', {
         '<div class="field-component-container">' +
             '<p v-if="eval.multiple && !noLabel" class="label" v-html="eval.label"></p>' +
             '<span v-if="eval.multiple && !eval.disableAllSelection" class="all checkbox-container" v-bind:class="{ \'checked\': selectAll }">' +
-                '<input type="checkbox" v-model="selectAll" :id="idPrefix + \'selectAll\'" @click="setSelectAll()">' +
-                '<label :for="idPrefix + \'selectAll\'">Alle auswählen</label>' +
+                '<input type="checkbox" v-model="selectAll" :id="getSelectAllId()" @click="setSelectAll()">' +
+                '<label :for="getSelectAllId()">Alle auswählen</label>' +
             '</span>'+
             '<span v-for="(option,index) in eval.options" class="checkbox-container" v-bind:class="{\'checked\': checked(option.value)}">' +
                 '<input v-if="eval.multiple" type="checkbox" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
