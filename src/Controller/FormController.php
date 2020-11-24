@@ -211,7 +211,7 @@ class FormController extends Controller {
      */
     public function getListView() {
         $this->container->get('contao.framework')->initialize();
-        $objListView = new \Alnv\ContaoFormManagerBundle\Modules\ListView('11');
+        $objListView = new \Alnv\ContaoFormManagerBundle\Modules\ListView(\Input::post('module'));
         $arrReturn = $objListView->parse();
         $arrList = [];
         foreach ($arrReturn['list'] as $arrEntity) {
