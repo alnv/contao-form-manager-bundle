@@ -9,7 +9,7 @@ const tableListComponent = Vue.component( 'table-list', {
     methods: {
         fetch: function () {
             this.$parent.setLoadingAlert('', this);
-            this.$http.post( '/form-manager/list-view',
+            this.$http.post('/form-manager/list-view',
                 {
                     module: this.module
                 },
