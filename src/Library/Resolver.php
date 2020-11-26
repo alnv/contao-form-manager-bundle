@@ -6,6 +6,7 @@ use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
 abstract class Resolver extends \System {
 
+    protected $strTable;
     protected $strErrorMessage = '';
     protected $blnValidate = false;
     protected $strRedirect = null;
@@ -73,7 +74,8 @@ abstract class Resolver extends \System {
             $arrFieldAttributes[$strFieldname] = $objField->{$strFieldname};
         }
 
-        $arrFieldAttributes['label'] = \StringUtil::decodeEntities($arrFieldAttributes['label']);
+        $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.' . $arrFieldAttributes['name']), $arrFieldAttributes['label']);
+        $arrFieldAttributes['label'] = \StringUtil::decodeEntities($strLabel);
         $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label'], false);
         $arrFieldAttributes['isReactive'] = $this->isReactive($arrFieldAttributes);
         $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
