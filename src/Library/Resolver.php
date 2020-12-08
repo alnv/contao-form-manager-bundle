@@ -23,7 +23,7 @@ abstract class Resolver extends \System {
         return $this->strErrorMessage;
     }
 
-    public function parseAttributes( $arrFieldAttributes ) {
+    public function parseAttributes($arrFieldAttributes) {
 
         $arrFieldAttributes['messages'] = [];
         $arrFieldAttributes['validate'] = true;
@@ -75,16 +75,20 @@ abstract class Resolver extends \System {
         }
 
         $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.' . $arrFieldAttributes['name']), $arrFieldAttributes['label']);
+        $strDescription = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.description.' . $arrFieldAttributes['name']), $arrFieldAttributes['description']);
+
         $arrFieldAttributes['label'] = \StringUtil::decodeEntities($strLabel);
         $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label'], false);
         $arrFieldAttributes['isReactive'] = $this->isReactive($arrFieldAttributes);
+        $arrFieldAttributes['text'] = \Controller::replaceInserttags($arrFieldAttributes['text'], false);
+        $arrFieldAttributes['description'] = \Controller::replaceInserttags($strDescription, false);
         $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
         $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent($arrFieldAttributes['type'], $arrFieldAttributes['rgxp']);
         $arrFieldAttributes['multiple'] = Toolkit::convertMultiple($arrFieldAttributes['multiple'], $arrFieldAttributes);
         $arrFieldAttributes['value'] = Toolkit::convertValue($arrFieldAttributes['value'], $arrFieldAttributes);
         $arrFieldAttributes['labelValue'] = Toolkit::getLabelValue($arrFieldAttributes['value'], $arrFieldAttributes);
 
-        if ( in_array( $arrFieldAttributes['type'], ['checkbox'] ) && $arrFieldAttributes['multiple'] === false ) {
+        if (in_array($arrFieldAttributes['type'], ['checkbox']) && $arrFieldAttributes['multiple'] === false) {
             $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
         }
 
