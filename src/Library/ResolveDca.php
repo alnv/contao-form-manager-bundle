@@ -28,7 +28,7 @@ class ResolveDca extends Resolver {
 
     public function getForm() {
 
-        if ( !$GLOBALS['TL_DCA'][ $this->strTable ] ) {
+        if (!$GLOBALS['TL_DCA'][$this->strTable]) {
             return [];
         }
 
@@ -47,7 +47,7 @@ class ResolveDca extends Resolver {
         $arrPalettes = [];
         $arrSelectors = $GLOBALS['TL_DCA'][ $this->strTable ]['palettes']['__selector__'];
 
-        foreach ( $this->arrPalette as $strPalette => $arrPalette ) {
+        foreach ($this->arrPalette as $strPalette => $arrPalette) {
 
             $objPalette = new \stdClass();
             $objPalette->label = $GLOBALS['TL_LANG'][ $this->strTable ][$strPalette];
@@ -55,26 +55,26 @@ class ResolveDca extends Resolver {
             $objPalette->name = $strPalette ?: '';
             $objPalette->hide = $arrPalette['blnHide'];
 
-            foreach ( $arrPalette['arrFields'] as $strFieldname ) {
+            foreach ($arrPalette['arrFields'] as $strFieldname) {
 
-                $arrField = $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $strFieldname ];
-                $strClass = Toolkit::convertBackendFieldToFrontendField( $arrField['inputType'] );
+                $arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strFieldname];
+                $strClass = Toolkit::convertBackendFieldToFrontendField($arrField['inputType']);
 
-                if ( !class_exists( $strClass ) ) {
+                if (!class_exists($strClass)) {
                     continue;
                 }
 
-                if ( $strFieldname == 'type' ) {
+                if ($strFieldname == 'type') {
                     $arrField['default'] = $this->arrOptions['type'];
                 }
 
-                $arrAttributes = $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
-                $arrAttributes = $this->parseAttributes( $arrAttributes );
+                $arrAttributes = $strClass::getAttributesFromDca($arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable);
+                $arrAttributes = $this->parseAttributes($arrAttributes);
                 if ($arrAttributes === null) {
                     continue;
                 }
-                $this->addParentData( $strFieldname, $arrAttributes );
-                if ( is_array( $arrSelectors ) && in_array( $strFieldname, $arrSelectors ) && $strFieldname != 'type' ) {
+                $this->addParentData($strFieldname, $arrAttributes);
+                if (is_array($arrSelectors) && in_array( $strFieldname, $arrSelectors ) && $strFieldname != 'type') {
                     $arrAttributes['isSelector'] = true;
                 }
 

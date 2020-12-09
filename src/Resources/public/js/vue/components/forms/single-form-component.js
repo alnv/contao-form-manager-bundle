@@ -67,19 +67,19 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 }.bind(this));
             },
             setModel: function(palettes) {
-                var objModel = {};
-                var varStorage = localStorage.getItem('model-' + this.id);
+                let objModel = {};
+                let varStorage = localStorage.getItem('model-' + this.id);
                 if (varStorage && this.useStorage) {
                     this.model = JSON.parse(varStorage);
                     this.triggerOnInput();
                 }
-                if (this.model.hasOwnProperty('id')) {
+                if (this.model && this.model.hasOwnProperty('id')) {
                     objModel['id'] = this.model['id'];
                 }
-                for ( var i = 0; i < palettes.length; i++ ) {
-                    for ( var intKey in palettes[i].fields ) {
+                for (let i = 0; i < palettes.length; i++) {
+                    for (let intKey in palettes[i].fields) {
                         if ( palettes[i].fields.hasOwnProperty( intKey ) ) {
-                            var strFieldname = palettes[i].fields[intKey]['name'];
+                            let strFieldname = palettes[i].fields[intKey]['name'];
                             if ( !strFieldname ) {
                                 continue;
                             }
@@ -91,7 +91,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                     }
                 }
                 if ( this.id &&  typeof objInstances[this.id] !== 'undefined') {
-                    for (var strName in objModel) {
+                    for (let strName in objModel) {
                         if (objModel.hasOwnProperty(strName)) {
                             objModel[strName] = objInstances[this.id]['model'][strName];
                         }
