@@ -35,6 +35,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
         data: function () {
             return {
                 initialized: false,
+                cartSubmitted: false,
                 subpalettes: {},
                 palettes: [],
                 model: {},
@@ -182,6 +183,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             },
             add2Cart: function (productId, units, cid, options) {
                 let attributes = {};
+                this.cartSubmitted = true;
                 attributes[this.id] = this.model;
                 this.$http.post('/shop-manager/addCart', {
                     cid: cid,
@@ -203,6 +205,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         } else {
                             this.getParentSharedInstance(this.$parent).clearAlert();
                         }
+                        this.cartSubmitted = false;
                     }else {
                         this.getParentSharedInstance(this.$parent).setErrorAlert(objResponse.body.message, this);
                     }
