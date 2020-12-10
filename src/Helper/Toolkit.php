@@ -190,14 +190,13 @@ class Toolkit {
 
     public static function convertBackendFieldToFrontendField( $strBackendFieldType ) {
 
-        if ( $GLOBALS['TL_FFL'][ $strBackendFieldType ] ) {
-            return $GLOBALS['TL_FFL'][ $strBackendFieldType ];
+        if ($GLOBALS['TL_FFL'][$strBackendFieldType]) {
+            return $GLOBALS['TL_FFL'][$strBackendFieldType];
         }
 
-        switch ( $strBackendFieldType ) {
+        switch ($strBackendFieldType) {
             case 'fileTree':
                 return $GLOBALS['TL_FFL']['upload'];
-                break;
             default:
                 return null;
         }
