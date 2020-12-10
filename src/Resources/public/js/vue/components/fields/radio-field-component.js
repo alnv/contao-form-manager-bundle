@@ -1,7 +1,7 @@
 Vue.component( 'radio-field', {
     data: function () {
         return {
-            //
+            css: {}
         }
     },
     methods: {
@@ -21,26 +21,18 @@ Vue.component( 'radio-field', {
             }
         },
         setCssClass: function() {
-            let objCssClass = {};
             if (this.eval['tl_class']) {
-                objCssClass[this.eval['tl_class']] = true;
+                this.css[this.eval['tl_class']] = true;
             }
             if ( this.eval['mandatory'] ) {
-                objCssClass['mandatory'] = true;
+                this.css['mandatory'] = true;
             }
-            objCssClass[this.name] = true;
-            return objCssClass;
+            this.css['error'] = this.eval['validate'] === false;
+            this.css[this.name] = true;
+            return this.css;
         },
         submit: function (value) {
             setTimeout(function () {
-                /*
-                if (this.eval['loadingView'] && this.$parent && typeof this.$parent['setLoadingView'] === 'function') {
-                    this.$parent['setLoadingView'](this);
-                    this.$parent['getLoadingViewRequest'](this,{body: {view: this.eval['view']}});
-                } else {
-                    this.$emit('input', value, true);
-                }
-                */
                 this.$emit('input', value, true);
             }.bind(this),100);
         },
@@ -54,6 +46,7 @@ Vue.component( 'radio-field', {
             if (this.eval.submitOnChange) {
                 this.$parent.submitOnChange(this.value, this.name)
             }
+            this.eval['validate'] = true;
         }
     },
     props: {
