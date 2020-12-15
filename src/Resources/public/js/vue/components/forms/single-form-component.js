@@ -185,6 +185,9 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 let attributes = {};
                 this.cartSubmitted = true;
                 attributes[this.id] = this.model;
+                if (this.model['quantity'] || this.model['units']) {
+                    units = this.model['quantity'];
+                }
                 this.$http.post('/shop-manager/addCart', {
                     cid: cid,
                     units: units,
