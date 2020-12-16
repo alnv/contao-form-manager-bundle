@@ -37,6 +37,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 initialized: false,
                 cartSubmitted: false,
                 subpalettes: {},
+                once: false,
                 palettes: [],
                 model: {},
                 type: ''
@@ -44,6 +45,15 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
         },
         methods: {
             fetch: function (strSource) {
+                if (this.formData && !this.once) {
+                    this.model = this.setModel(this.formData);
+                    this.setPalette(this.formData);
+                    this.initialized = true;
+                    this.once = true;
+                    if (this.palettes.length) {
+                        return null;
+                    }
+                }
                 var objParent = this.getParentSharedInstance(this.$parent);
                 this.$http.get( '/form-manager/get' + strSource + '/' + this.identifier, {
                     params: {
@@ -384,6 +394,11 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             cart: {
                 default: {},
                 type: Object,
+                required: false
+            },
+            formData: {
+                type: Object,
+                default: null,
                 required: false
             }
         },
