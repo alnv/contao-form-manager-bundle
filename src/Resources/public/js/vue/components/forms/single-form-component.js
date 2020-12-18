@@ -35,7 +35,9 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
         data: function () {
             return {
                 initialized: false,
+                cartSubmitted: false,
                 subpalettes: {},
+                once: false,
                 palettes: [],
                 model: {},
                 type: ''
@@ -43,6 +45,15 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
         },
         methods: {
             fetch: function (strSource) {
+                if (this.formData && !this.once) {
+                    this.model = this.setModel(this.formData);
+                    this.setPalette(this.formData);
+                    this.initialized = true;
+                    this.once = true;
+                    if (this.palettes.length) {
+                        return null;
+                    }
+                }
                 var objParent = this.getParentSharedInstance(this.$parent);
                 this.$http.get( '/form-manager/get' + strSource + '/' + this.identifier, {
                     params: {
@@ -54,42 +65,48 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         subpalettes: this.subpalettes
                     }
                 }).then(function(objResponse) {
-                    if ( objResponse.body && objResponse.ok ) {
+                    if (objResponse.body && objResponse.ok) {
                         this.model = this.setModel(objResponse.body);
-                        this.setPalette( objResponse.body );
+                        this.setPalette(objResponse.body);
                         this.initialized = true;
                         objParent.clearAlert();
                     }
-                    if ( !objResponse.ok ) {
+                    if (!objResponse.ok) {
                         objParent.setErrorAlert('',this);
                     }
                 }.bind(this));
             },
             setModel: function(palettes) {
                 let objModel = {};
-                let varStorage = localStorage.getItem('model-' + this.id);
-                if (varStorage && this.useStorage) {
-                    this.model = JSON.parse(varStorage);
-                    this.triggerOnInput();
+                if (this.useStorage) {
+                    let varStorage = localStorage.getItem('model-' + this.id);
+                    if (varStorage) {
+                        this.model = JSON.parse(varStorage);
+                        this.triggerOnInput();
+                    }
                 }
                 if (this.model && this.model.hasOwnProperty('id')) {
                     objModel['id'] = this.model['id'];
                 }
                 for (let i = 0; i < palettes.length; i++) {
                     for (let intKey in palettes[i].fields) {
-                        if ( palettes[i].fields.hasOwnProperty( intKey ) ) {
+                        if (palettes[i].fields.hasOwnProperty(intKey)) {
                             let strFieldname = palettes[i].fields[intKey]['name'];
-                            if ( !strFieldname ) {
+                            if (!strFieldname) {
                                 continue;
                             }
-                            if ( strFieldname === 'type' ) {
+                            if (strFieldname === 'type') {
                                 this.type = palettes[i].fields[intKey]['value'];
                             }
-                            objModel[strFieldname] = this.model[strFieldname] || palettes[i].fields[intKey]['value'];
+                            if (!this.model) {
+                                objModel[strFieldname] = palettes[i].fields[intKey]['value'];
+                            }else {
+                                objModel[strFieldname] = this.model[strFieldname] || palettes[i].fields[intKey]['value'];
+                            }
                         }
                     }
                 }
-                if ( this.id &&  typeof objInstances[this.id] !== 'undefined') {
+                if (this.id && typeof objInstances[this.id] !== 'undefined') {
                     for (let strName in objModel) {
                         if (objModel.hasOwnProperty(strName)) {
                             objModel[strName] = objInstances[this.id]['model'][strName];
@@ -101,10 +118,10 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         objModel[window.VueData._modal.field] = window.VueData._modal.created;
                     }
                 }
-                return objModel;
+                return objModel || {};
             },
             getSource: function() {
-                switch ( this.source ) {
+                switch (this.source) {
                     case 'dc':
                         return 'DcForm';
                     case 'form':
@@ -115,7 +132,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                 this.fetch(this.getSource())
             },
             submitOnChange: function (strValue, strName, blnIsSelector) {
-                if ( strName === 'type' ) {
+                if (strName === 'type') {
                     this.type = strValue;
                 }
                 if ( blnIsSelector === true ) {
@@ -182,7 +199,11 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             },
             add2Cart: function (productId, units, cid, options) {
                 let attributes = {};
+                this.cartSubmitted = true;
                 attributes[this.id] = this.model;
+                if (this.model['quantity'] || this.model['units']) {
+                    units = this.model['quantity'];
+                }
                 this.$http.post('/shop-manager/addCart', {
                     cid: cid,
                     units: units,
@@ -203,6 +224,7 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
                         } else {
                             this.getParentSharedInstance(this.$parent).clearAlert();
                         }
+                        this.cartSubmitted = false;
                     }else {
                         this.getParentSharedInstance(this.$parent).setErrorAlert(objResponse.body.message, this);
                     }
@@ -298,7 +320,13 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             },
             model: {
                 handler: function () {
-                    localStorage.setItem('model-' + this.id, JSON.stringify(this.model));
+                    try {
+                        localStorage.setItem('model-' + this.id, JSON.stringify(this.model));
+                    } catch(e) {
+                        if(e.name === "NS_ERROR_FILE_CORRUPTED") {
+                            //
+                        }
+                    }
                 },
                 deep: true
             }
@@ -378,6 +406,11 @@ const singleFormComponent = Vue.component( 'single-form', function (resolve, rej
             cart: {
                 default: {},
                 type: Object,
+                required: false
+            },
+            formData: {
+                type: Object,
+                default: null,
                 required: false
             }
         },

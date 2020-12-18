@@ -1,7 +1,8 @@
 Vue.component( 'checkbox-field', {
     data: function () {
         return {
-            selectAll: false
+            selectAll: false,
+            css: {}
         }
     },
     methods: {
@@ -15,7 +16,7 @@ Vue.component( 'checkbox-field', {
             this.selectAll = !this.selectAll;
             if (this.selectAll && Array.isArray(this.eval.options)) {
                 this.value = [];
-                for ( var i = 0; i < this.eval.options.length; i++ ) {
+                for (let i = 0; i < this.eval.options.length; i++) {
                     this.value.push(this.eval.options[i]['value']);
                 }
             }
@@ -24,19 +25,16 @@ Vue.component( 'checkbox-field', {
             }
         },
         setCssClass: function() {
-            let objCssClass = {};
             if (this.eval['tl_class']) {
-                objCssClass[this.eval['tl_class']] = true;
+                this.css[this.eval['tl_class']] = true;
             }
-            if (this.eval.messages && this.eval.messages.length) {
-                objCssClass['error'] = true;
-            }
+            this.css['error'] = this.eval.messages && this.eval.messages.length;
             if ( this.eval['mandatory'] ) {
-                objCssClass['mandatory'] = true;
+                this.css['mandatory'] = true;
             }
-            objCssClass['single'] = !this.eval.multiple;
-            objCssClass[this.name] = true;
-            return objCssClass;
+            this.css['single'] = !this.eval.multiple;
+            this.css[this.name] = true;
+            return this.css;
         },
         submit: function (value) {
             if (value === this.value) {
@@ -58,6 +56,7 @@ Vue.component( 'checkbox-field', {
             if (this.eval.submitOnChange) {
                 this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
             }
+            this.eval['messages'] = [];
         }
     },
     mounted: function () {

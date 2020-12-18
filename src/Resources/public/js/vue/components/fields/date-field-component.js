@@ -62,7 +62,7 @@ Vue.component( 'date-field', {
         '<div class="field-component-container">' +
             '<label class="label" v-if="eval.label" :for="idPrefix + \'id_\' + name" v-html="eval.label"></label>' +
             '<flat-pickr v-if="useDatePicker" v-model="value" :config="config" class="tl_text" :placeholder="eval.placeholder"></flat-pickr>' +
-            '<input v-else type="text" v-model="value" class="tl_text" :id="idPrefix + \'id_\' + name" :placeholder="eval.placeholder">' +
+            '<input v-else type="text" v-model="value" class="tl_text" :id="idPrefix + \'id_\' + name" :placeholder="eval.placeholder" :readonly="eval.readonly">' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +
         '</div>' +
