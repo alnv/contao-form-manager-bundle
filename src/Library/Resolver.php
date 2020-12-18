@@ -77,19 +77,24 @@ abstract class Resolver extends \System {
         $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.' . $arrFieldAttributes['name']), $arrFieldAttributes['label']);
         $strDescription = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.description.' . $arrFieldAttributes['name']), $arrFieldAttributes['description']);
 
-        $arrFieldAttributes['label'] = \StringUtil::decodeEntities($strLabel);
-        $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label'], false);
+        // $arrFieldAttributes['label'] = \StringUtil::decodeEntities($strLabel);
+        // $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label'], false);
+        $arrFieldAttributes['label'] = $this->parseString($strLabel);
         $arrFieldAttributes['isReactive'] = $this->isReactive($arrFieldAttributes);
-        $arrFieldAttributes['text'] = \Controller::replaceInserttags($arrFieldAttributes['text'], false);
-        $arrFieldAttributes['description'] = \Controller::replaceInserttags($strDescription, false);
+        $arrFieldAttributes['text'] = $this->parseString($arrFieldAttributes['text']); // \Controller::replaceInserttags($arrFieldAttributes['text'], false);
+        $arrFieldAttributes['description'] = $this->parseString($strDescription); //\Controller::replaceInserttags($strDescription, false);
         $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
         $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent($arrFieldAttributes['type'], $arrFieldAttributes['rgxp']);
         $arrFieldAttributes['multiple'] = Toolkit::convertMultiple($arrFieldAttributes['multiple'], $arrFieldAttributes);
         $arrFieldAttributes['value'] = Toolkit::convertValue($arrFieldAttributes['value'], $arrFieldAttributes);
         $arrFieldAttributes['labelValue'] = Toolkit::getLabelValue($arrFieldAttributes['value'], $arrFieldAttributes);
 
-        if (in_array($arrFieldAttributes['type'], ['checkbox']) && $arrFieldAttributes['multiple'] === false) {
-            $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
+        if (in_array($arrFieldAttributes['type'], ['checkbox'])) {
+            if ($arrFieldAttributes['multiple'] === false) {
+                $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
+            }
+            $strSelectAll = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.' . $arrFieldAttributes['name'].'.selectAll'), '');
+            $arrFieldAttributes['selectAllLabel'] = $this->parseString($strSelectAll);
         }
 
         if (in_array( $arrFieldAttributes['rgxp'], ['date', 'time', 'datim'])) {
@@ -104,6 +109,17 @@ abstract class Resolver extends \System {
         }
 
         return $arrFieldAttributes;
+    }
+
+    protected function parseString($strString) {
+
+        if (!is_string($strString)) {
+            return $strString;
+        }
+
+        $strString = \StringUtil::decodeEntities($strString);
+        $strString = \Controller::replaceInsertTags($strString, false);
+        return $strString;
     }
 
     public function shouldValidate() {
