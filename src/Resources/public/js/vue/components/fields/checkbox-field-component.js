@@ -59,6 +59,11 @@ Vue.component( 'checkbox-field', {
             this.eval['messages'] = [];
         }
     },
+    mounted: function () {
+        if (this.eval.selectAllLabel) {
+            this.selectAllLabel = this.eval.selectAllLabel;
+        }
+    },
     props: {
         eval: {
             default: {},
@@ -82,6 +87,11 @@ Vue.component( 'checkbox-field', {
             type: Boolean,
             default: false,
             required: false
+        },
+        selectAllLabel: {
+            type: String,
+            required: false,
+            default: 'Alle auswählen'
         }
     },
     template:
@@ -90,7 +100,7 @@ Vue.component( 'checkbox-field', {
             '<p v-if="eval.multiple && !noLabel" class="label" v-html="eval.label"></p>' +
             '<span v-if="eval.multiple && !eval.disableAllSelection" class="all checkbox-container" v-bind:class="{ \'checked\': selectAll }">' +
                 '<input type="checkbox" v-model="selectAll" :id="getSelectAllId()" @click="setSelectAll()">' +
-                '<label :for="getSelectAllId()">Alle auswählen</label>' +
+                '<label :for="getSelectAllId()" v-html="selectAllLabel"></label>' +
             '</span>'+
             '<span v-for="(option,index) in eval.options" class="checkbox-container" v-bind:class="{\'checked\': checked(option.value)}">' +
                 '<input v-if="eval.multiple" type="checkbox" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
