@@ -94,10 +94,14 @@ Vue.component( 'text-field', {
                         id: this.eval.id ? this.eval.id : ''
                     }
                 }).then(function(objResponse) {
-                    if (objResponse.body && objResponse.ok) {
+                    if (objResponse.ok) {
                         if (this.$parent && typeof this.$parent['disableLoadingView'] === 'function') {
                             this.$parent['getLoadingViewRequest'](this,objResponse);
                         }
+                    }
+                }.bind(this), function (objResponse){
+                    if (this.$parent && typeof this.$parent['disableLoadingView'] === 'function') {
+                        this.$parent['getLoadingViewRequest'](this,objResponse);
                     }
                 }.bind(this));
             } else {
