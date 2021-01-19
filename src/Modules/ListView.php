@@ -20,6 +20,7 @@ class ListView {
             return null;
         }
         $arrOptions = [
+            'ignoreVisibility' => $this->objModule->cmIgnoreVisibility ? true : false,
             'formPage' => $this->objModule->cmFormPage ?: '',
             'masterPage' => $this->objModule->cmMasterPage ?: ''
         ];

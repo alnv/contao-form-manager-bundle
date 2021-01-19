@@ -61,6 +61,7 @@ class FormManagerModule extends \Module {
         }
         return (new \Alnv\ContaoCatalogManagerBundle\Views\Master($this->cmIdentifier,[
             'alias' => \Input::get('auto_item'),
+            'ignoreVisibility' => true,
             'fastMode' => true,
             'id' => $this->id
         ]))->parse()[0];
