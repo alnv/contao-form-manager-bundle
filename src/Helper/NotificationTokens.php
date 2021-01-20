@@ -7,19 +7,20 @@ class NotificationTokens {
     protected $strTable = null;
     protected $arrData = [];
 
-    public function __construct($strTable,$strId) {
+    public function __construct($strTable, $strId) {
 
         $this->strTable = $strTable;
         \Controller::loadDataContainer($strTable);
-        $this->arrData = (new \Alnv\ContaoCatalogManagerBundle\Views\Master( $strTable, [
-            'alias' => $strId
+        $this->arrData = (new \Alnv\ContaoCatalogManagerBundle\Views\Master($strTable, [
+            'alias' => $strId,
+            'ignoreVisibility' => true
         ]))->parse()[0];
     }
 
     public function getTokens($strDelimiter=', ') {
 
         $arrTokens = [];
-        $arrTokens['admin_email'] = $GLOBALS['TL_ADMIN_EMAIL'];
+        $arrTokens['admin_email'] = \Config::get('adminEmail');
 
         foreach ( $this->arrData as $strFieldname => $varValue ) {
 
