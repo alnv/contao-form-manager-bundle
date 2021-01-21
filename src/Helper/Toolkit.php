@@ -6,28 +6,27 @@ class Toolkit {
 
     public static function getDbValue( $varValue, $arrField ) {
 
-        if ( $varValue === null || $varValue === '' ) {
-
+        if ($varValue === null || $varValue === '') {
             $varValue = \Widget::getEmptyStringOrNullByFieldType($arrField['sql']);
         }
 
         if ($arrField['eval']['multiple'] && isset( $arrField['eval']['csv'])) {
-
             $varValue = implode( $arrField['eval']['csv'], \StringUtil::deserialize($varValue, true));
         }
 
         if (is_array($varValue) && $arrField['eval']['multiple'] === false) {
-
             $varValue = implode('', $varValue);
         }
 
-        if (is_array($varValue)) {
-
+        if (is_array($varValue) && !$arrField['eval']['csv']) {
             $varValue = serialize($varValue);
         }
 
-        if ( $varValue !== null && $varValue !== '' && in_array( $arrField['eval']['rgxp'], ['date', 'time', 'datim'])) {
+        if (is_array($varValue) && $arrField['eval']['csv']) {
+            $varValue = implode($arrField['eval']['csv'], $varValue);
+        }
 
+        if ($varValue !== null && $varValue !== '' && in_array( $arrField['eval']['rgxp'], ['date', 'time', 'datim'])) {
             $objDate = new \Date( $varValue, \Date::getFormatFromRgxp( $arrField['eval']['rgxp'] ) );
             $varValue = $objDate->tstamp;
         }

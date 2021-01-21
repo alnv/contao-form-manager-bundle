@@ -13,7 +13,7 @@ abstract class Resolver extends \System {
     public $blnSuccess = true;
 
     abstract public function getForm();
-    abstract protected function saveRecord( $arrForm );
+    abstract protected function saveRecord($arrForm);
 
     public function setErrorMessage($strMessage) {
         $this->strErrorMessage = $strMessage;
@@ -38,6 +38,17 @@ abstract class Resolver extends \System {
                 $this->import($arrCallback[0]);
                 $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrFieldAttributes, $this);
             }
+        }
+
+        if ($arrFieldAttributes['multiple'] == true && is_array(\Input::post($arrFieldAttributes['name']))) {
+            $arrValues = \Input::post($arrFieldAttributes['name']);
+            $arrReducedValues = [];
+            foreach ($arrValues as $varValue) {
+                if (is_array($varValue) && isset($varValue['value'])) {
+                    $arrReducedValues[] = $varValue['value'];
+                }
+            }
+            \Input::setPost($arrFieldAttributes['name'], $arrReducedValues);
         }
 
         $objField = new $strClass($arrFieldAttributes);
