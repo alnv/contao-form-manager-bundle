@@ -43,12 +43,16 @@ abstract class Resolver extends \System {
         if ($arrFieldAttributes['multiple'] == true && is_array(\Input::post($arrFieldAttributes['name']))) {
             $arrValues = \Input::post($arrFieldAttributes['name']);
             $arrReducedValues = [];
+            $blnAssoc = false;
             foreach ($arrValues as $varValue) {
                 if (is_array($varValue) && isset($varValue['value'])) {
                     $arrReducedValues[] = $varValue['value'];
+                    $blnAssoc = true;
                 }
             }
-            \Input::setPost($arrFieldAttributes['name'], $arrReducedValues);
+            if ($blnAssoc) {
+                \Input::setPost($arrFieldAttributes['name'], $arrReducedValues);
+            }
         }
 
         $objField = new $strClass($arrFieldAttributes);
