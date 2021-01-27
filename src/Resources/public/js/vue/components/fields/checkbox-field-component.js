@@ -1,7 +1,8 @@
 Vue.component( 'checkbox-field', {
     data: function () {
         return {
-            selectAll: false
+            selectAll: false,
+            css: {}
         }
     },
     methods: {
@@ -15,7 +16,7 @@ Vue.component( 'checkbox-field', {
             this.selectAll = !this.selectAll;
             if (this.selectAll && Array.isArray(this.eval.options)) {
                 this.value = [];
-                for ( var i = 0; i < this.eval.options.length; i++ ) {
+                for (let i = 0; i < this.eval.options.length; i++) {
                     this.value.push(this.eval.options[i]['value']);
                 }
             }
@@ -24,24 +25,24 @@ Vue.component( 'checkbox-field', {
             }
         },
         setCssClass: function() {
-            let objCssClass = {};
             if (this.eval['tl_class']) {
-                objCssClass[this.eval['tl_class']] = true;
+                this.css[this.eval['tl_class']] = true;
             }
-            if (this.eval.messages && this.eval.messages.length) {
-                objCssClass['error'] = true;
-            }
+            this.css['error'] = this.eval.messages && this.eval.messages.length;
             if ( this.eval['mandatory'] ) {
-                objCssClass['mandatory'] = true;
+                this.css['mandatory'] = true;
             }
-            objCssClass['single'] = !this.eval.multiple;
-            objCssClass[this.name] = true;
-            return objCssClass;
+            this.css['single'] = !this.eval.multiple;
+            this.css[this.name] = true;
+            return this.css;
         },
         submit: function (value) {
             if (value === this.value) {
                 this.$emit('input', this.value, true);
             }
+        },
+        getSelectAllId: function () {
+            return this.idPrefix + '_' + this.name + '_' + 'selectAll';
         }
     },
     created: function() {
@@ -55,6 +56,12 @@ Vue.component( 'checkbox-field', {
             if (this.eval.submitOnChange) {
                 this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
             }
+            this.eval['messages'] = [];
+        }
+    },
+    mounted: function () {
+        if (this.eval.selectAllLabel) {
+            this.selectAllLabel = this.eval.selectAllLabel;
         }
     },
     props: {
@@ -80,6 +87,11 @@ Vue.component( 'checkbox-field', {
             type: Boolean,
             default: false,
             required: false
+        },
+        selectAllLabel: {
+            type: String,
+            required: false,
+            default: 'Alle auswählen'
         }
     },
     template:
@@ -87,8 +99,8 @@ Vue.component( 'checkbox-field', {
         '<div class="field-component-container">' +
             '<p v-if="eval.multiple && !noLabel" class="label" v-html="eval.label"></p>' +
             '<span v-if="eval.multiple && !eval.disableAllSelection" class="all checkbox-container" v-bind:class="{ \'checked\': selectAll }">' +
-                '<input type="checkbox" v-model="selectAll" :id="idPrefix + \'selectAll\'" @click="setSelectAll()">' +
-                '<label :for="idPrefix + \'selectAll\'">Alle auswählen</label>' +
+                '<input type="checkbox" v-model="selectAll" :id="getSelectAllId()" @click="setSelectAll()">' +
+                '<label :for="getSelectAllId()" v-html="selectAllLabel"></label>' +
             '</span>'+
             '<span v-for="(option,index) in eval.options" class="checkbox-container" v-bind:class="{\'checked\': checked(option.value)}">' +
                 '<input v-if="eval.multiple" type="checkbox" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +

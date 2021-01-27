@@ -1,26 +1,26 @@
-Vue.component( 'email-field', {
+Vue.component('email-field', {
     data: function () {
-        return {}
+        return {
+            css: {}
+        }
     },
     methods: {
         setCssClass: function() {
-            let objCssClass = {};
             if (this.eval['tl_class']) {
-                objCssClass[this.eval['tl_class']] = true;
+                this.css[this.eval['tl_class']] = true;
             }
             if (this.eval['mandatory']) {
-                objCssClass['mandatory'] = true;
+                this.css['mandatory'] = true;
             }
-            if (this.eval['validate'] === false) {
-                objCssClass['error'] = true;
-            }
-            objCssClass[this.name] = true;
-            return objCssClass;
+            this.css['error'] = this.eval['validate'] === false;
+            this.css[this.name] = true;
+            return this.css;
         }
     },
     watch: {
         value: function() {
             this.$emit('input', this.value);
+            this.eval['validate'] = true;
         }
     },
     props: {

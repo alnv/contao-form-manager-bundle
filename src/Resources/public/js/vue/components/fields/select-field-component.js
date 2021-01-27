@@ -36,8 +36,8 @@ Vue.component( 'select-field', {
     },
     watch: {
         value: function() {
-            this.$emit( 'input', this.value );
-            if ( this.eval.submitOnChange ) {
+            this.$emit('input', this.value);
+            if (this.eval.submitOnChange) {
                 this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
             }
         }
@@ -48,7 +48,7 @@ Vue.component( 'select-field', {
         }
         if (typeof this.value === 'object' && typeof this.value.length !== 'undefined') {
             var reduceValues = [];
-            for (var i = 0; i < this.value.length; i++) {
+            for (let i = 0; i < this.value.length; i++) {
                 reduceValues[i] = this.reduceOption(this.value[i]);
             }
             this.value = reduceValues;

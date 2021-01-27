@@ -35,8 +35,10 @@ class FormManagerModule extends \Module {
         $this->Template->source = $this->cmSource;
         $this->Template->formHint = $this->cmFormHint;
         $this->Template->identifier = $this->cmIdentifier;
+        $this->Template->language = $GLOBALS['TL_LANGUAGE'] ?: '';
         $this->Template->successRedirect = $this->getFrontendUrl($this->cmSuccessRedirect);
         $this->Template->model = htmlspecialchars(json_encode($this->arrActiveRecord),ENT_QUOTES,'UTF-8');
+        $this->Template->submitLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate('form.' . $this->cmIdentifier . '.submit',  'Senden');
     }
 
     protected function getFrontendUrl($strPageId) {
@@ -59,6 +61,7 @@ class FormManagerModule extends \Module {
         }
         return (new \Alnv\ContaoCatalogManagerBundle\Views\Master($this->cmIdentifier,[
             'alias' => \Input::get('auto_item'),
+            'ignoreVisibility' => true,
             'fastMode' => true,
             'id' => $this->id
         ]))->parse()[0];

@@ -22,7 +22,7 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function upload() {
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
         $objUpload = new Upload();
         $intStatus = 200;
         $arrUpload = $objUpload->upload([
@@ -73,7 +73,7 @@ class FormController extends Controller {
      */
     public function getDcFormByTable($table) {
 
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
         global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
         $objPage->language = $GLOBALS['TL_LANGUAGE'];
@@ -211,9 +211,22 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function getListView() {
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
         $objListView = new \Alnv\ContaoFormManagerBundle\Modules\ListView(\Input::post('module'));
-        return new JsonResponse($objListView->parse());
+        $arrReturn = $objListView->parse();
+        $arrList = [];
+        foreach ($arrReturn['list'] as $arrEntity) {
+            $arrRow = [];
+            foreach ($arrEntity as $strField => $varValue) {
+                if (is_array($varValue) && !in_array($strField, ['operations'])) {
+                    $varValue = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parse($varValue);
+                }
+                $arrRow[$strField] = $varValue;
+            }
+            $arrList[] = $arrRow;
+        }
+        $arrReturn['list'] = $arrList;
+        return new JsonResponse($arrReturn);
     }
 
     /**

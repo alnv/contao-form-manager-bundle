@@ -20,23 +20,64 @@ class ListView {
             return null;
         }
         $arrOptions = [
+            'ignoreVisibility' => $this->objModule->cmIgnoreVisibility ? true : false,
             'formPage' => $this->objModule->cmFormPage ?: '',
             'masterPage' => $this->objModule->cmMasterPage ?: ''
         ];
+
         $this->strTable = $this->objModule->cmTable;
-        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable,[]);
-        if ( $strMemberField = $objRoleResolver->getFieldByRole('member') ) {
-            $objMember = \FrontendUser::getInstance();
-            if ( !$objMember->id ) {
-                $this->blnSuccess = false;
-            } else {
-                $arrOptions['column'] = [$GLOBALS['TL_DCA'][$this->strTable]['config']['_table'] . '.' . $strMemberField .'=?'];
-                $arrOptions['value'] = [$objMember->id];
-            }
+
+        $arrOptions['column'] = [];
+        $arrOptions['value'] = [];
+
+        if ($this->hasPermissions()) {
+            $this->blnSuccess = $this->getPermissionQuery($arrOptions);
         }
-        if ( $this->blnSuccess ) {
+
+        if ($this->blnSuccess) {
             $this->objListing = new \Alnv\ContaoCatalogManagerBundle\Views\Listing($this->strTable, $arrOptions);
         }
+    }
+
+    protected function hasPermissions() {
+
+        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable, []);
+
+        return $objRoleResolver->getFieldByRole('member') || $objRoleResolver->getFieldByRole('group');
+    }
+
+    protected function getPermissionQuery(&$arrOptions) {
+
+        $arrPermissionQueries = [];
+        $objMember = \FrontendUser::getInstance();
+
+        if (!$objMember->id) {
+            return false;
+        }
+
+        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable, []);
+
+        if ($strMemberField = $objRoleResolver->getFieldByRole('member')) {
+            $arrOptions['value'][] = $objMember->id;
+            $arrPermissionQueries[] = 'FIND_IN_SET('.$GLOBALS['TL_DCA'][$this->strTable]['config']['_table'].'.'.$strMemberField.', ?)';
+        }
+
+        if ($strGroupField = $objRoleResolver->getFieldByRole('group')) {
+            if (is_array($objMember->groups) && !empty($objMember->groups)) {
+                foreach ($objMember->groups as $strGroupId) {
+                    $arrOptions['value'][] = $strGroupId;
+                    $arrPermissionQueries[] = 'FIND_IN_SET('.$GLOBALS['TL_DCA'][$this->strTable]['config']['_table'].'.'.$strGroupField.', ?)';
+                }
+            }
+        }
+
+        if (empty($arrPermissionQueries)) {
+            return false;
+        }
+
+        $arrOptions['column'][] = '(' . implode(' OR ', $arrPermissionQueries) . ')';
+
+        return true;
     }
 
     public function delete($strId) {

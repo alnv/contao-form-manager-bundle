@@ -1,11 +1,13 @@
 Vue.component( 'text-field', {
     data: function () {
         return {
-            timeout: null
+            timeout: null,
+            css: {}
         }
     },
     watch: {
         value: function() {
+            this.eval['validate'] = true;
             if (this.eval.multiple && this.value.length) {
                 for (var i = 0; i < this.eval.size; i++ ) {
                     if (typeof this.value[i] === 'undefined') {
@@ -34,23 +36,21 @@ Vue.component( 'text-field', {
             return 'text';
         },
         setCssClass: function() {
-            let objCssClass = {};
             if (this.eval['tl_class']) {
-                objCssClass[this.eval['tl_class']] = true;
+                this.css[this.eval['tl_class']] = true;
             }
             if (this.eval['class']) {
-                objCssClass[this.eval['class']] = true;
+                this.css[this.eval['class']] = true;
             }
-            objCssClass['mandatory'] = !!this.eval['mandatory'];
-            objCssClass['multiple'] = !!this.eval['multiple'];
-            objCssClass[this.name] = true;
-            if (this.eval['validate'] === false) {
-                objCssClass['error'] = true;
-            }
-            return objCssClass;
+            this.css['mandatory'] = !!this.eval['mandatory'];
+            this.css['multiple'] = !!this.eval['multiple'];
+            this.css[this.name] = true;
+            this.css['error'] = this.eval['validate'] === false;
+
+            return this.css;
         },
         openModalView: function (e) {
-            if ( typeof Backend === 'undefined') {
+            if (typeof Backend === 'undefined') {
                 return null;
             }
             Backend.openModalSelector({
@@ -70,7 +70,6 @@ Vue.component( 'text-field', {
             this.eval['messages'] = [];
             this.$forceUpdate();
         },
-
         submit: function () {
             if (!FormHelperValidator.validateMandatory(this.value)) {
                 this.invalid();
@@ -95,10 +94,14 @@ Vue.component( 'text-field', {
                         id: this.eval.id ? this.eval.id : ''
                     }
                 }).then(function(objResponse) {
-                    if (objResponse.body && objResponse.ok) {
+                    if (objResponse.ok) {
                         if (this.$parent && typeof this.$parent['disableLoadingView'] === 'function') {
                             this.$parent['getLoadingViewRequest'](this,objResponse);
                         }
+                    }
+                }.bind(this), function (objResponse){
+                    if (this.$parent && typeof this.$parent['disableLoadingView'] === 'function') {
+                        this.$parent['getLoadingViewRequest'](this,objResponse);
                     }
                 }.bind(this));
             } else {

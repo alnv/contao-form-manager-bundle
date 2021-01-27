@@ -6,13 +6,14 @@ use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
 abstract class Resolver extends \System {
 
+    protected $strTable;
     protected $strErrorMessage = '';
     protected $blnValidate = false;
     protected $strRedirect = null;
     public $blnSuccess = true;
 
     abstract public function getForm();
-    abstract protected function saveRecord( $arrForm );
+    abstract protected function saveRecord($arrForm);
 
     public function setErrorMessage($strMessage) {
         $this->strErrorMessage = $strMessage;
@@ -22,7 +23,7 @@ abstract class Resolver extends \System {
         return $this->strErrorMessage;
     }
 
-    public function parseAttributes( $arrFieldAttributes ) {
+    public function parseAttributes($arrFieldAttributes) {
 
         $arrFieldAttributes['messages'] = [];
         $arrFieldAttributes['validate'] = true;
@@ -36,6 +37,21 @@ abstract class Resolver extends \System {
             foreach ($GLOBALS['TL_HOOKS']['preCompileFormField'] as $arrCallback) {
                 $this->import($arrCallback[0]);
                 $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrFieldAttributes, $this);
+            }
+        }
+
+        if ($arrFieldAttributes['multiple'] == true && is_array(\Input::post($arrFieldAttributes['name']))) {
+            $arrValues = \Input::post($arrFieldAttributes['name']);
+            $arrReducedValues = [];
+            $blnAssoc = false;
+            foreach ($arrValues as $varValue) {
+                if (is_array($varValue) && isset($varValue['value'])) {
+                    $arrReducedValues[] = $varValue['value'];
+                    $blnAssoc = true;
+                }
+            }
+            if ($blnAssoc) {
+                \Input::setPost($arrFieldAttributes['name'], $arrReducedValues);
             }
         }
 
@@ -73,17 +89,27 @@ abstract class Resolver extends \System {
             $arrFieldAttributes[$strFieldname] = $objField->{$strFieldname};
         }
 
-        $arrFieldAttributes['label'] = \StringUtil::decodeEntities($arrFieldAttributes['label']);
-        $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label'], false);
+        $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.' . $arrFieldAttributes['name']), $arrFieldAttributes['label']);
+        $strDescription = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.description.' . $arrFieldAttributes['name']), $arrFieldAttributes['description']);
+
+        // $arrFieldAttributes['label'] = \StringUtil::decodeEntities($strLabel);
+        // $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label'], false);
+        $arrFieldAttributes['label'] = $this->parseString($strLabel);
         $arrFieldAttributes['isReactive'] = $this->isReactive($arrFieldAttributes);
+        $arrFieldAttributes['text'] = $this->parseString($arrFieldAttributes['text']); // \Controller::replaceInserttags($arrFieldAttributes['text'], false);
+        $arrFieldAttributes['description'] = $this->parseString($strDescription); //\Controller::replaceInserttags($strDescription, false);
         $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
         $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent($arrFieldAttributes['type'], $arrFieldAttributes['rgxp']);
         $arrFieldAttributes['multiple'] = Toolkit::convertMultiple($arrFieldAttributes['multiple'], $arrFieldAttributes);
         $arrFieldAttributes['value'] = Toolkit::convertValue($arrFieldAttributes['value'], $arrFieldAttributes);
         $arrFieldAttributes['labelValue'] = Toolkit::getLabelValue($arrFieldAttributes['value'], $arrFieldAttributes);
 
-        if ( in_array( $arrFieldAttributes['type'], ['checkbox'] ) && $arrFieldAttributes['multiple'] === false ) {
-            $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
+        if (in_array($arrFieldAttributes['type'], ['checkbox'])) {
+            if ($arrFieldAttributes['multiple'] === false) {
+                $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
+            }
+            $strSelectAll = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.' . $arrFieldAttributes['name'].'.selectAll'), '');
+            $arrFieldAttributes['selectAllLabel'] = $this->parseString($strSelectAll);
         }
 
         if (in_array( $arrFieldAttributes['rgxp'], ['date', 'time', 'datim'])) {
@@ -98,6 +124,17 @@ abstract class Resolver extends \System {
         }
 
         return $arrFieldAttributes;
+    }
+
+    protected function parseString($strString) {
+
+        if (!is_string($strString)) {
+            return $strString;
+        }
+
+        $strString = \StringUtil::decodeEntities($strString);
+        $strString = \Controller::replaceInsertTags($strString, false);
+        return $strString;
     }
 
     public function shouldValidate() {

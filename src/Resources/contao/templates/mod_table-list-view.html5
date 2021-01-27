@@ -1,0 +1,3 @@
+<div class="v-component">
+    <table-list module="<?= $this->id ?>" :operations="<?= $this->operations ?>" add-url="<?= $this->addUrl ?>"></table-list>
+</div>
