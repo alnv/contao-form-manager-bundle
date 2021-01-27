@@ -157,8 +157,9 @@ class FormController extends Controller {
         $this->container->get('contao.framework')->initialize();
         global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
-        $objPage->language = $GLOBALS['TL_LANGUAGE'];
-
+        if ($objPage) {
+            $objPage->language = $GLOBALS['TL_LANGUAGE'];
+        }
         $arrOptions = [];
         $objForm = new ResolveForm($id, $arrOptions);
         return new JsonResponse($objForm->getForm());
