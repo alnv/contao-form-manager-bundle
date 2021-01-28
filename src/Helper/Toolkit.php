@@ -53,12 +53,10 @@ class Toolkit {
         return $arrTypes['default'];
     }
 
-    public static function convertValue( $strValue, $arrField ) {
+    public static function convertValue($strValue, $arrField) {
 
         if ($arrField['multiple']) {
-
             if (is_array($strValue)) {
-
                 return $strValue;
             }
 
