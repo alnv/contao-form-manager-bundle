@@ -22,9 +22,9 @@ class NotificationTokens {
         $arrTokens = [];
         $arrTokens['admin_email'] = \Config::get('adminEmail');
 
-        foreach ( $this->arrData as $strFieldname => $varValue ) {
+        foreach ($this->arrData as $strFieldname => $varValue) {
 
-            if ( $strFieldname == 'origin' && is_array($varValue) ) {
+            if ($strFieldname == 'origin' && is_array($varValue)) {
                 foreach ($varValue as $strOriginFieldname => $strValue) {
                     $arrTokens['origin_' . $strOriginFieldname] = $strValue;
                 }
@@ -43,16 +43,16 @@ class NotificationTokens {
                             break;
                     }
                 }
-                if (is_array($varValue) && $arrField['eval']['multiple']) {
+                // if (is_array($varValue) && $arrField['eval']['multiple']) {
                     // $varValue = array_filter($varValue);
                     // $arrTokens['form_' . $strFieldname] = implode($strDelimiter, $varValue);
                     // $blnParsed = true;
-                }
+                // }
             }
             if ($blnParsed) {
                 continue;
             }
-
+            $arrTokens[$strFieldname] = $varValue;
             \Haste\Util\StringUtil::flatten($varValue, 'form_' . $strFieldname, $arrTokens, $strDelimiter);
         }
 
