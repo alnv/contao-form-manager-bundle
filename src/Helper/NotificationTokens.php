@@ -32,21 +32,21 @@ class NotificationTokens {
             }
 
             $blnParsed = false;
-            if ( $arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strFieldname] ) {
-                if ( isset( $arrField['inputType'] ) ) {
+            if ($arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strFieldname]) {
+                if (isset($arrField['inputType'])) {
                     switch ($arrField['inputType']) {
                         case 'fileTree':
-                            if ( isset( $arrField['eval']['isImage'] ) && $arrField['eval']['isImage'] == true ) {
+                            if (isset($arrField['eval']['isImage']) && $arrField['eval']['isImage'] == true) {
                                 $arrTokens['form_' . $strFieldname] = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parseImage($varValue);
                                 $blnParsed = true;
                             }
                             break;
                     }
                 }
-                if ( is_array($varValue) && $arrField['eval']['multiple'] ) {
-                    $varValue = array_filter($varValue);
-                    $arrTokens['form_' . $strFieldname] = implode($strDelimiter, $varValue);
-                    $blnParsed = true;
+                if (is_array($varValue) && $arrField['eval']['multiple']) {
+                    // $varValue = array_filter($varValue);
+                    // $arrTokens['form_' . $strFieldname] = implode($strDelimiter, $varValue);
+                    // $blnParsed = true;
                 }
             }
             if ($blnParsed) {
