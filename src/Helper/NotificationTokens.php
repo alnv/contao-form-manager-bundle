@@ -52,7 +52,7 @@ class NotificationTokens {
             if ($blnParsed) {
                 continue;
             }
-            $arrTokens[$strFieldname] = $varValue;
+            // $arrTokens[$strFieldname] = $varValue;
             \Haste\Util\StringUtil::flatten($varValue, 'form_' . $strFieldname, $arrTokens, $strDelimiter);
         }
 
