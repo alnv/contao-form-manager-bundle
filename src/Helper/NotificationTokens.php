@@ -43,19 +43,32 @@ class NotificationTokens {
                             break;
                     }
                 }
-                // if (is_array($varValue) && $arrField['eval']['multiple']) {
-                    // $varValue = array_filter($varValue);
-                    // $arrTokens['form_' . $strFieldname] = implode($strDelimiter, $varValue);
-                    // $blnParsed = true;
-                // }
+                if (is_array($varValue) && $arrField['eval']['multiple']) {
+                    $varValue = array_filter($varValue);
+                    $arrTokens['form_' . $strFieldname] = implode($strDelimiter, $this->pluckArray($varValue));
+                    $blnParsed = true;
+               }
             }
             if ($blnParsed) {
                 continue;
             }
-            // $arrTokens[$strFieldname] = $varValue;
+
             \Haste\Util\StringUtil::flatten($varValue, 'form_' . $strFieldname, $arrTokens, $strDelimiter);
         }
-
+        
         return $arrTokens;
+    }
+
+    protected function pluckArray($varValue) {
+        if (is_array($varValue) && isset($varValue[0])) {
+            if (isset($varValue[0]['label'])) {
+                $arrReturn = [];
+                foreach ($varValue as $arrValue) {
+                    $arrReturn[] = $arrValue['label'];
+                }
+                return $arrReturn;
+            }
+        }
+        return $varValue;
     }
 }
