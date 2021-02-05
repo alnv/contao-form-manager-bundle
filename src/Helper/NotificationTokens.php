@@ -43,7 +43,7 @@ class NotificationTokens {
                             break;
                     }
                 }
-                if (is_array($varValue) && $arrField['eval']['multiple']) {
+                if (is_array($varValue)) {
                     $varValue = array_filter($varValue);
                     $arrTokens['form_' . $strFieldname] = implode($strDelimiter, $this->pluckArray($varValue));
                     $blnParsed = true;
@@ -60,11 +60,12 @@ class NotificationTokens {
     }
 
     protected function pluckArray($varValue) {
+
         if (is_array($varValue) && isset($varValue[0])) {
             if (isset($varValue[0]['label'])) {
                 $arrReturn = [];
                 foreach ($varValue as $arrValue) {
-                    $arrReturn[] = $arrValue['label'];
+                    $arrReturn[] = $arrValue['label']?:$arrValue['value'];
                 }
                 return $arrReturn;
             }
