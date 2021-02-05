@@ -126,8 +126,8 @@ class ResolveDca extends Resolver {
 
         $arrSubmitted['tstamp'] = time();
 
-        if ( isset( $GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] ) && is_array($GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] ) ) {
-            foreach ( $GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] as $arrCallback ) {
+        if (isset($GLOBALS['TL_HOOKS']['prepareDataBeforeSave']) && is_array($GLOBALS['TL_HOOKS']['prepareDataBeforeSave'])) {
+            foreach ($GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] as $arrCallback) {
                 if (is_array($arrCallback)) {
                     $this->import($arrCallback[0]);
                     $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, $arrForm, $this->arrOptions, $this);
@@ -200,7 +200,14 @@ class ResolveDca extends Resolver {
         foreach ($arrNotifications as $strId) {
             $objNotification = \NotificationCenter\Model\Notification::findByPk($strId);
             if ($objNotification->type == $strNotification) {
-                $objNotification->send((new \Alnv\ContaoFormManagerBundle\Helper\NotificationTokens($this->strTable, \Input::post('id')))->getTokens($objNotification->flatten_delimiter));
+                $arrTokens = (new \Alnv\ContaoFormManagerBundle\Helper\NotificationTokens($this->strTable, \Input::post('id')))->getTokens($objNotification->flatten_delimiter);
+                if (isset($GLOBALS['TL_HOOKS']['beforeSendFeNotification']) && is_array($GLOBALS['TL_HOOKS']['beforeSendFeNotification'])) {
+                    foreach ($GLOBALS['TL_HOOKS']['beforeSendFeNotification'] as $arrCallback) {
+                        $objClass = new $arrCallback[0]();
+                        $arrTokens = $objClass->{$arrCallback[1]}($arrTokens, $strNotification, $this->strTable, \Input::post('id'), $objNotification, $this);
+                    }
+                }
+                $objNotification->send($arrTokens);
             }
         }
     }
