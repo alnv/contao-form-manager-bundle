@@ -22,9 +22,9 @@ class NotificationTokens {
         $arrTokens = [];
         $arrTokens['admin_email'] = \Config::get('adminEmail');
 
-        foreach ( $this->arrData as $strFieldname => $varValue ) {
+        foreach ($this->arrData as $strFieldname => $varValue) {
 
-            if ( $strFieldname == 'origin' && is_array($varValue) ) {
+            if ($strFieldname == 'origin' && is_array($varValue)) {
                 foreach ($varValue as $strOriginFieldname => $strValue) {
                     $arrTokens['origin_' . $strOriginFieldname] = $strValue;
                 }
@@ -32,22 +32,22 @@ class NotificationTokens {
             }
 
             $blnParsed = false;
-            if ( $arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strFieldname] ) {
-                if ( isset( $arrField['inputType'] ) ) {
+            if ($arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strFieldname]) {
+                if (isset($arrField['inputType'])) {
                     switch ($arrField['inputType']) {
                         case 'fileTree':
-                            if ( isset( $arrField['eval']['isImage'] ) && $arrField['eval']['isImage'] == true ) {
+                            if (isset($arrField['eval']['isImage']) && $arrField['eval']['isImage'] == true) {
                                 $arrTokens['form_' . $strFieldname] = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parseImage($varValue);
                                 $blnParsed = true;
                             }
                             break;
                     }
                 }
-                if ( is_array($varValue) && $arrField['eval']['multiple'] ) {
+                if (is_array($varValue) && $arrField['eval']['multiple']) {
                     $varValue = array_filter($varValue);
-                    $arrTokens['form_' . $strFieldname] = implode($strDelimiter, $varValue);
+                    $arrTokens['form_' . $strFieldname] = implode($strDelimiter, $this->pluckArray($varValue));
                     $blnParsed = true;
-                }
+               }
             }
             if ($blnParsed) {
                 continue;
@@ -55,7 +55,20 @@ class NotificationTokens {
 
             \Haste\Util\StringUtil::flatten($varValue, 'form_' . $strFieldname, $arrTokens, $strDelimiter);
         }
-
+        
         return $arrTokens;
+    }
+
+    protected function pluckArray($varValue) {
+        if (is_array($varValue) && isset($varValue[0])) {
+            if (isset($varValue[0]['label'])) {
+                $arrReturn = [];
+                foreach ($varValue as $arrValue) {
+                    $arrReturn[] = $arrValue['label'];
+                }
+                return $arrReturn;
+            }
+        }
+        return $varValue;
     }
 }

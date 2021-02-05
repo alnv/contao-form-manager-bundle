@@ -26,7 +26,7 @@ Vue.component( 'form-wizard', {
             });
         },
         getIdentifier: function() {
-            if ( this.$parent.identifier ) {
+            if (this.$parent.identifier) {
                 return this.$parent.identifier;
             }
             return this.eval.identifier;
@@ -58,23 +58,24 @@ Vue.component( 'form-wizard', {
         deleteValue: function(value) {
             this.editMode = false;
             this.selectedValue = {};
-            for ( var i = 0; i < this.value.length; i++ ) {
-                if ( this.value[i] === value ) {
+            for (var i = 0; i < this.value.length; i++) {
+                if (this.value[i] === value) {
                     this.value.splice(i, 1);
                 }
             }
+            this.stringifyValue = this.getStringifyValue();
         },
         setInput: function() {
             this.stringifyValue = this.getStringifyValue();
         },
         setValues: function() {
-            if ( typeof this.eval.values !== 'undefined' ) {
+            if (typeof this.eval.values !== 'undefined') {
                 this.value = this.eval.values;
             }
-            if ( typeof this.value === 'undefined' || this.value === null) {
+            if (typeof this.value === 'undefined' || this.value === null) {
                 this.value = [];
             }
-            if ( Array.isArray(this.value) && !this.value.length && this.eval['showFormIsEmpty'] ) {
+            if (Array.isArray(this.value) && !this.value.length && this.eval['showFormIsEmpty']) {
                 this.addValue(false);
             }
             this.stringifyValue = this.getStringifyValue();
