@@ -63,6 +63,7 @@ class FormManagerModule extends \Module {
             'alias' => \Input::get('auto_item'),
             'ignoreVisibility' => true,
             'fastMode' => true,
+            'isForm' => true,
             'id' => $this->id
         ]))->parse()[0];
     }

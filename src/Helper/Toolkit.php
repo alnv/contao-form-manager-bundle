@@ -59,7 +59,6 @@ class Toolkit {
             if (is_array($strValue)) {
                 return $strValue;
             }
-
             return $strValue ? [$strValue] : [];
         }
 

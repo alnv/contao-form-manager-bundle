@@ -11,7 +11,7 @@ class ResolveDca extends Resolver {
     protected $arrOptions = [];
     protected $arrPalette = [];
 
-    public function __construct( $strTable, $arrOptions = [] ) {
+    public function __construct($strTable, $arrOptions = []) {
 
         $this->strTable = $strTable;
         $this->arrOptions = $arrOptions;
@@ -32,25 +32,25 @@ class ResolveDca extends Resolver {
             return [];
         }
 
-        if ( !$this->arrOptions['initialized'] ) {
+        if (!$this->arrOptions['initialized']) {
             $this->arrOptions['type'] = $GLOBALS['TL_DCA'][ $this->strTable ]['fields']['type']['default'];
         }
 
-        if ( !$this->arrOptions['type'] ) {
+        if (!$this->arrOptions['type']) {
             $this->arrOptions['type'] = 'default';
         }
 
-        $strPalette = $GLOBALS['TL_DCA'][ $this->strTable ]['palettes'][ $this->arrOptions['type'] ];
+        $strPalette = $GLOBALS['TL_DCA'][$this->strTable]['palettes'][$this->arrOptions['type']];
         $arrActiveSelectors = $this->getActiveSelector();
-        $this->arrPalette = Toolkit::extractPaletteToArray( $strPalette, $arrActiveSelectors );
+        $this->arrPalette = Toolkit::extractPaletteToArray($strPalette, $arrActiveSelectors);
 
         $arrPalettes = [];
-        $arrSelectors = $GLOBALS['TL_DCA'][ $this->strTable ]['palettes']['__selector__'];
+        $arrSelectors = $GLOBALS['TL_DCA'][$this->strTable]['palettes']['__selector__'];
 
         foreach ($this->arrPalette as $strPalette => $arrPalette) {
 
             $objPalette = new \stdClass();
-            $objPalette->label = $GLOBALS['TL_LANG'][ $this->strTable ][$strPalette];
+            $objPalette->label = $GLOBALS['TL_LANG'][$this->strTable][$strPalette];
             $objPalette->fields = [];
             $objPalette->name = $strPalette ?: '';
             $objPalette->hide = $arrPalette['blnHide'];
@@ -74,7 +74,7 @@ class ResolveDca extends Resolver {
                     continue;
                 }
                 $this->addParentData($strFieldname, $arrAttributes);
-                if (is_array($arrSelectors) && in_array( $strFieldname, $arrSelectors ) && $strFieldname != 'type') {
+                if (is_array($arrSelectors) && in_array($strFieldname, $arrSelectors) && $strFieldname != 'type') {
                     $arrAttributes['isSelector'] = true;
                 }
 
@@ -90,19 +90,18 @@ class ResolveDca extends Resolver {
     protected function getActiveSelector() {
 
         $arrSubpalettes = [];
-        if ( is_array( $this->arrOptions['subpalettes'] ) && !empty( $this->arrOptions['subpalettes'] ) ) {
-            foreach ( $this->arrOptions['subpalettes'] as $strSelector ) {
-                list( $strFieldname, $strValue ) = explode( '::', $strSelector );
-                if ( $strValue == '1' ) {
+        if (is_array($this->arrOptions['subpalettes']) && !empty($this->arrOptions['subpalettes'])) {
+            foreach ($this->arrOptions['subpalettes'] as $strSelector) {
+                list($strFieldname, $strValue) = explode('::', $strSelector);
+                if ($strValue == '1') {
                     $strValue = '';
                 }
-                $strPalette = $strFieldname . ( $strValue ? '_' . $strValue : '' ); $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strFieldname . ( $strValue ? '_' . $strValue : '' ) ];
-                if ( isset( $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strPalette ] ) ) {
-                    $arrSubpalettes[ $strPalette ] = $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strPalette ];
+                $strPalette = $strFieldname . ($strValue ? '_' . $strValue : ''); $GLOBALS['TL_DCA'][$this->strTable]['subpalettes'][$strFieldname . ($strValue ? '_' . $strValue : '')];
+                if (isset($GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strPalette ])) {
+                    $arrSubpalettes[$strPalette] = $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][$strPalette];
                 }
             }
         }
-
         return $arrSubpalettes;
     }
 

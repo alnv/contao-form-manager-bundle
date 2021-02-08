@@ -49,6 +49,9 @@ Vue.component( 'checkbox-field', {
         if (this.value === null && this.eval.multiple) {
             this.value = [];
         }
+        if (this.value === '1' && this.eval['isSelector']) {
+            this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
+        }
     },
     watch: {
         value: function() {
