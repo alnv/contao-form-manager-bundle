@@ -85,7 +85,13 @@ Vue.component( 'text-field', {
             }
             if (this.eval['loadingView'] && this.eval['loadingViewUrl']) {
                 if (this.$parent && typeof this.$parent['setLoadingView'] === 'function') {
-                    this.$parent['setLoadingView'](this);
+                    this.$parent['setLoadingView'](this, {ok: false});
+                }
+                if (this.eval['loadingViewUrl'] === '/') {
+                    if (this.$parent && typeof this.$parent['disableLoadingView'] === 'function') {
+                        this.$parent['getLoadingViewRequest'](this, {ok: true, body: {view: this.eval['view']}});
+                    }
+                    return null;
                 }
                 this.$http.get(this.eval['loadingViewUrl'], {
                     params: {
