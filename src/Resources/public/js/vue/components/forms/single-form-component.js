@@ -78,6 +78,7 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
             },
             setModel: function(palettes) {
                 let objModel = {};
+
                 if (this.useStorage) {
                     let varStorage = localStorage.getItem('model-' + this.id);
                     if (varStorage) {
@@ -85,10 +86,12 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
                         this.triggerOnInput();
                     }
                 }
+
                 if (this.model && this.model.hasOwnProperty('id')) {
                     objModel['id'] = this.model['id'];
                 }
-                for (let i = 0; i < palettes.length; i++) {
+
+                for (let i=0; i<palettes.length; i++) {
                     for (let intKey in palettes[i].fields) {
                         if (palettes[i].fields.hasOwnProperty(intKey)) {
                             let strFieldname = palettes[i].fields[intKey]['name'];
@@ -106,6 +109,7 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
                         }
                     }
                 }
+
                 if (this.id && typeof objInstances[this.id] !== 'undefined') {
                     for (let strName in objModel) {
                         if (objModel.hasOwnProperty(strName)) {
@@ -113,9 +117,21 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
                         }
                     }
                 }
+
                 if (window.VueData._modal) {
                     if (objModel.hasOwnProperty(window.VueData._modal.field) && window.VueData._modal.created) {
                         objModel[window.VueData._modal.field] = window.VueData._modal.created;
+                    }
+                }
+
+                if (this.model) {
+                    for(let strName in this.model) {
+                        if (!this.model.hasOwnProperty(strName)) {
+                            continue;
+                        }
+                        if (!objModel.hasOwnProperty(strName)) {
+                            objModel[strName] = this.model[strName];
+                        }
                     }
                 }
 
