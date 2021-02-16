@@ -31,6 +31,10 @@ class Toolkit {
             $varValue = $objDate->tstamp;
         }
 
+        if (is_string($varValue) && ($arrField['eval']['decodeEntities'] || $arrField['eval']['multiple'])) {
+            $varValue = \StringUtil::decodeEntities($varValue);
+        }
+
         return $varValue;
     }
 

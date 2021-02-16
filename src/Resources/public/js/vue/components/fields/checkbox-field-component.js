@@ -43,6 +43,12 @@ Vue.component( 'checkbox-field', {
         },
         getSelectAllId: function () {
             return this.idPrefix + '_' + this.name + '_' + 'selectAll';
+        },
+        reduceOption: function(option) {
+            if (typeof option === 'object') {
+                return option.value;
+            }
+            return option;
         }
     },
     created: function() {
@@ -51,6 +57,13 @@ Vue.component( 'checkbox-field', {
         }
         if (this.value === '1' && this.eval['isSelector']) {
             this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
+        }
+        if (typeof this.value === 'object' && typeof this.value.length !== 'undefined') {
+            let reduceValues = [];
+            for (let i = 0; i < this.value.length; i++) {
+                reduceValues[i] = this.reduceOption(this.value[i]);
+            }
+            this.value = reduceValues;
         }
     },
     watch: {

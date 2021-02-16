@@ -219,7 +219,7 @@ class ResolveForm extends Resolver {
 
         else {
 
-            $this->log( 'Form "' . $this->objForm->title . '" has been submitted by a guest.', __METHOD__, TL_FORMS );
+            \System::log( 'Form "' . $this->objForm->title . '" has been submitted by a guest.', __METHOD__, TL_FORMS );
         }
 
         // @todo generate redirect link
