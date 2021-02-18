@@ -58,18 +58,43 @@ class FormManagerModule extends \Module {
     }
 
     protected function getActiveRecord() {
+
         if ($this->cmSource != 'dc') {
             return [];
         }
+
         if (!isset($_GET['auto_item'])) {
-            return [];
+            if (!$this->cmStandalone) {
+                return [];
+            }
+            $objUser = \FrontendUser::getInstance();
+            if (!$objUser->id) {
+                return [];
+            }
+            $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->cmIdentifier);
+            $arrField = $objRoleResolver->getFieldByRole('member');
+            $arrListings = (new \Alnv\ContaoCatalogManagerBundle\Views\Listing($this->cmIdentifier, [
+                'column' => [''.$arrField.'=?'],
+                'value' => [$objUser->id],
+                'ignoreVisibility' => true,
+                'limit' => 1,
+                'fastMode' => true,
+                'isForm' => true,
+                'id' => $this->id
+            ]))->parse();
+            if (empty($arrListings)) {
+                return [];
+            } else {
+                return $arrListings[0];
+            }
+        } else {
+            return (new \Alnv\ContaoCatalogManagerBundle\Views\Master($this->cmIdentifier, [
+                'alias' => \Input::get('auto_item'),
+                'ignoreVisibility' => true,
+                'fastMode' => true,
+                'isForm' => true,
+                'id' => $this->id
+            ]))->parse()[0];
         }
-        return (new \Alnv\ContaoCatalogManagerBundle\Views\Master($this->cmIdentifier, [
-            'alias' => \Input::get('auto_item'),
-            'ignoreVisibility' => true,
-            'fastMode' => true,
-            'isForm' => true,
-            'id' => $this->id
-        ]))->parse()[0];
     }
 }

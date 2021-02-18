@@ -5,7 +5,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'cmSource';
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['cmSource_dc'] = 'cmIdentifier';
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['cmSource_form'] = 'cmIdentifier';
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['cmForm'] = 'cmFormPage,cmFormModule';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['form-manager'] = '{title_legend},name,headline,type;{form_setting},cmSource,cmSuccessRedirect,cmNotifications,cmFormHint;{template_legend:hide},customTpl;{protected_legend:hide:hide},protected;{expert_legend:hide},guests,cssID,space';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['form-manager'] = '{title_legend},name,headline,type;{form_setting},cmSource,cmStandalone,cmSuccessRedirect,cmNotifications,cmFormHint;{template_legend:hide},customTpl;{protected_legend:hide:hide},protected;{expert_legend:hide},guests,cssID,space';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['table-list-view'] = '{title_legend},name,headline,type;{form_setting},cmTable,cmFields,cmIgnoreVisibility,cmForm,cmNotifications;{template_legend:hide},customTpl;{protected_legend:hide:hide},protected;{expert_legend:hide},guests,cssID,space';
 
 \Contao\CoreBundle\DataContainer\PaletteManipulator::create()->addField('cmMaster', 'cmForm')->applyToPalette('table-list-view', 'tl_module');
@@ -16,6 +16,15 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cmForm'] = [
         'multiple' => false,
         'tl_class' => 'clr',
         'submitOnChange' => true
+    ],
+    'exclude' => true,
+    'sql' => "char(1) NOT NULL default ''"
+];
+$GLOBALS['TL_DCA']['tl_module']['fields']['cmStandalone'] = [
+    'inputType' => 'checkbox',
+    'eval' => [
+        'multiple' => false,
+        'tl_class' => 'clr'
     ],
     'exclude' => true,
     'sql' => "char(1) NOT NULL default ''"
