@@ -6,22 +6,22 @@ Vue.component( 'upload-field', {
     },
     methods: {
         fetchUploads: function() {
-            if ( !this.value || !this.value.length ) {
+            if (!this.value || !this.value.length) {
                 this.files = [];
                 return null;
             }
-            this.$http.post( '/form-manager/getFiles', {
+            this.$http.post('/form-manager/getFiles', {
                 files: this.value,
                 table: this.eval['_table'],
                 fieldname: this.eval['_identifier']
             },{
                 emulateJSON: true,
                 'Content-Type': 'application/x-www-form-urlencoded'
-            }).then(function ( objResponse ) {
-                if ( objResponse.body ) {
+            }).then(function (objResponse) {
+                if (objResponse.body) {
                     this.files = objResponse.body.files;
                 }
-            });
+            }.bind(this));
         },
         setCssClass: function () {
             let objCssClass = {};
@@ -34,13 +34,13 @@ Vue.component( 'upload-field', {
             return objCssClass;
         },
         setValue: function(uuid) {
-            if ( !this.value ) {
+            if (!this.value) {
                 this.value = [];
             }
-            if ( this.value.indexOf(uuid) !== -1 ) {
+            if (this.value.indexOf(uuid) !== -1) {
                 return null;
             }
-            if ( this.multiple ) {
+            if (this.eval.multiple) {
                 this.value.push(uuid);
             } else {
                 this.deleteFiles();
@@ -49,16 +49,16 @@ Vue.component( 'upload-field', {
             this.fetchUploads();
         },
         deleteFiles: function() {
-            var values = this.value;
-            for (var i=0;i<values.length;i++) {
+            let values = this.value;
+            for (let i=0;i<values.length;i++) {
                 this.deleteFile(values[i],false);
             }
         },
         deleteFile: function(uuid,fetch) {
-            var index = this.value.indexOf(uuid);
+            let index = this.value.indexOf(uuid);
             if (index !== -1) {
                 this.value.splice(index,1);
-                this.$http.post( '/form-manager/deleteFile', {
+                this.$http.post('/form-manager/deleteFile', {
                     file: uuid,
                     table: this.eval['_table'],
                     fieldname: this.eval['_identifier']
@@ -76,11 +76,11 @@ Vue.component( 'upload-field', {
             return JSON.stringify(this.value);
         },
         setDropzone: function (setValue) {
-            if ( typeof Dropzone === 'undefined' ) {
+            if (typeof Dropzone === 'undefined') {
                 return null;
             }
-            var vueInstance = this;
-            var objDropzoneOptions = {
+            let vueInstance = this;
+            let objDropzoneOptions = {
                 url: '/form-manager/upload',
                 paramName: this.name,
                 parallelUploads: 1,
@@ -107,21 +107,21 @@ Vue.component( 'upload-field', {
                     file.rejectDimensions = function(strMessage) { done(strMessage) };
                 },
                 complete: function () {
-                    for (var i=0;i<this.files.length;i++) {
-                        if (this.files[i]['status'] !== 'success' ) {
+                    for (let i=0;i<this.files.length;i++) {
+                        if (this.files[i]['status'] !== 'success') {
                             continue;
                         }
-                        if ( !this.files[i]['xhr']['response'] ) {
+                        if (!this.files[i]['xhr']['response']) {
                             continue;
                         }
-                        var objResponse = JSON.parse(this.files[i]['xhr']['response']);
-                        if ( objResponse['file'] ) {
+                        let objResponse = JSON.parse(this.files[i]['xhr']['response']);
+                        if (objResponse['file']) {
                             setValue(objResponse['file']['uuid']);
                         }
                     }
                 }
             };
-            var objDropzone = new Dropzone(this.$el.querySelector('.dropzone'), objDropzoneOptions);
+            let objDropzone = new Dropzone(this.$el.querySelector('.dropzone'), objDropzoneOptions);
             objDropzone.on('complete',function (file) {
                 if (!vueInstance.eval['multiple'] && file['status'] === 'success') {
                     objDropzone.removeFile(file);
