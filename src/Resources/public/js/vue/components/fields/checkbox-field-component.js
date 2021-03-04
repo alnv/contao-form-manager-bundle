@@ -58,7 +58,7 @@ Vue.component( 'checkbox-field', {
         if (this.value === '1' && this.eval['isSelector']) {
             this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
         }
-        if (typeof this.value === 'object' && typeof this.value.length !== 'undefined') {
+        if (typeof this.value === 'object' && this.value !== null && typeof this.value.length !== 'undefined') {
             let reduceValues = [];
             for (let i = 0; i < this.value.length; i++) {
                 reduceValues[i] = this.reduceOption(this.value[i]);
