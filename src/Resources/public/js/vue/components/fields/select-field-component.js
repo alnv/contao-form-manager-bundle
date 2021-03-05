@@ -47,7 +47,7 @@ Vue.component( 'select-field', {
             return null;
         }
         if (typeof this.value === 'object' && typeof this.value.length !== 'undefined') {
-            var reduceValues = [];
+            let reduceValues = [];
             for (let i = 0; i < this.value.length; i++) {
                 reduceValues[i] = this.reduceOption(this.value[i]);
             }

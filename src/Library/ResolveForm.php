@@ -19,7 +19,7 @@ class ResolveForm extends Resolver {
 
     public function getForm() {
 
-        $arrForm = [ 'palettes' => [] ];
+        $arrForm = ['palettes' => []];
         $objFields = \FormFieldModel::findPublishedByPid($this->strId);
 
         if ( $objFields === null ) {
@@ -74,14 +74,15 @@ class ResolveForm extends Resolver {
     }
 
     protected function processFormData( $arrSubmitted, $arrLabels ) {
-        if ( isset( $GLOBALS['TL_HOOKS']['prepareFormData']) && is_array($GLOBALS['TL_HOOKS']['prepareFormData'] ) ) {
+
+        if (isset( $GLOBALS['TL_HOOKS']['prepareFormData']) && is_array($GLOBALS['TL_HOOKS']['prepareFormData'])) {
             foreach ($GLOBALS['TL_HOOKS']['prepareFormData'] as $arrCallback) {
                 $this->import( $arrCallback[0] );
                 $this->{ $arrCallback[0] }->{ $arrCallback[1] }( $arrSubmitted, $arrLabels, $this->arrFields, null );
             }
         }
 
-        if ( $this->objForm->sendViaEmail ) {
+        if ($this->objForm->sendViaEmail) {
 
             $arrKeys = [];
             $arrValues = [];

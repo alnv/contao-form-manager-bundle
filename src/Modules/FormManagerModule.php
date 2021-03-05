@@ -23,7 +23,7 @@ class FormManagerModule extends \Module {
 
         $this->arrActiveRecord = $this->getActiveRecord();
         $objPermission = new \Alnv\ContaoFormManagerBundle\Library\MemberPermissions();
-        if ( !empty($this->arrActiveRecord) && !$objPermission->hasPermission($this->cmIdentifier, $this->arrActiveRecord) ) {
+        if (!empty($this->arrActiveRecord) && !$objPermission->hasPermission($this->cmIdentifier, $this->arrActiveRecord)) {
             throw new \CoreBundle\Exception\InsufficientAuthenticationException('Page access denied:  ' . \Environment::get('uri'));
         }
 
@@ -43,7 +43,25 @@ class FormManagerModule extends \Module {
 
     protected function getJsModelObject() {
 
-        return htmlspecialchars(json_encode($this->arrActiveRecord),ENT_QUOTES,'UTF-8');
+        if (empty($this->arrActiveRecord)) {
+            return null;
+        }
+        $arrModel = [];
+        $arrFields = $GLOBALS['TL_DCA'][$this->cmIdentifier]['fields'];
+        foreach ($arrFields as $strField => $arrDcField) {
+            $varValue = $this->arrActiveRecord[$strField];
+            if (!$arrDcField['eval']['multiple'] && is_array($varValue)) {
+                if (isset($varValue[0])) {
+                    if (isset($varValue[0]['value'])) {
+                        $varValue = $varValue[0]['value'];
+                    } else {
+                        $varValue = $varValue[0];
+                    }
+                }
+            }
+            $arrModel[$strField] = $varValue;
+        }
+        return htmlspecialchars(json_encode($arrModel),ENT_QUOTES,'UTF-8');
     }
 
     protected function getFrontendUrl($strPageId) {

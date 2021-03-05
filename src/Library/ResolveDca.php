@@ -115,8 +115,8 @@ class ResolveDca extends Resolver {
             }
         }
 
-        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable,$arrSubmitted);
-        if ( $strMemberField = $objRoleResolver->getFieldByRole('member') ) {
+        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable, $arrSubmitted);
+        if ($strMemberField = $objRoleResolver->getFieldByRole('member')) {
             $objMember = \FrontendUser::getInstance();
             if ($objMember->id) {
                 $arrSubmitted[$strMemberField] = $objMember->id;
@@ -137,8 +137,8 @@ class ResolveDca extends Resolver {
             }
         }
 
-        if ( isset( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] ) && is_array( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave']) ) {
-            foreach ( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] as $arrCallback ) {
+        if (isset($GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave']) && is_array( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'])) {
+            foreach ($GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] as $arrCallback) {
                 if (is_array($arrCallback)) {
                     $this->import($arrCallback[0]);
                     $this->strRedirect = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, false, $this->arrOptions, $this);
@@ -150,7 +150,7 @@ class ResolveDca extends Resolver {
             return null;
         }
 
-        if ( \Input::post('id') ) {
+        if (\Input::post('id')) {
             $strNotification = 'onUpdate';
             \Database::getInstance()->prepare('UPDATE '. $this->strTable .' %s WHERE id=?')->set($arrSubmitted)->execute(\Input::post('id'));
         } else {
