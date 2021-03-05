@@ -50,7 +50,7 @@ class FormManagerModule extends \Module {
         $arrFields = $GLOBALS['TL_DCA'][$this->cmIdentifier]['fields'];
         foreach ($arrFields as $strField => $arrDcField) {
             $varValue = $this->arrActiveRecord[$strField];
-            if (!$arrDcField['eval']['multiple'] && is_array($varValue)) {
+            if (!$arrDcField['eval']['multiple'] && $arrDcField['inputType'] == 'select' && is_array($varValue)) {
                 if (isset($varValue[0])) {
                     if (isset($varValue[0]['value'])) {
                         $varValue = $varValue[0]['value'];
