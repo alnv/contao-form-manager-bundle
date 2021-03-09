@@ -73,9 +73,9 @@ Vue.component( 'text-field', {
         submit: function () {
             if (!FormHelperValidator.validateMandatory(this.value)) {
                 this.invalid();
-                return null;
+                return false;
             }
-            if (!FormHelperValidator.validateMinLength(this.value, this.eval['minlength'])) {
+            if (!FormHelperValidator.validateMinLength(this.value, this.eval['minlength']) && this.value) {
                 this.invalid();
                 return false;
             }
