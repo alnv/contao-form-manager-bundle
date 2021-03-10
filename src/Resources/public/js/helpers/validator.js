@@ -3,10 +3,16 @@ const FormHelperValidator = {
         if (minlength === null) {
             return true;
         }
+        if (!value) {
+            return true;
+        }
         return value.length >= minlength;
     },
     validateMaxLength: function (value, maxlength) {
         if (maxlength === null) {
+            return true;
+        }
+        if (!value) {
             return true;
         }
         return value.length <= maxlength;

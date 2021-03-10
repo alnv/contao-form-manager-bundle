@@ -71,11 +71,11 @@ Vue.component( 'text-field', {
             this.$forceUpdate();
         },
         submit: function () {
-            if (!FormHelperValidator.validateMandatory(this.value)) {
+            if (this.eval['mandatory'] && !FormHelperValidator.validateMandatory(this.value)) {
                 this.invalid();
                 return false;
             }
-            if (!FormHelperValidator.validateMinLength(this.value, this.eval['minlength']) && this.value) {
+            if (!FormHelperValidator.validateMinLength(this.value, this.eval['minlength'])) {
                 this.invalid();
                 return false;
             }
