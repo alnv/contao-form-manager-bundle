@@ -92,12 +92,10 @@ abstract class Resolver extends \System {
         $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.' . $arrFieldAttributes['name']), $arrFieldAttributes['label']);
         $strDescription = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.description.' . $arrFieldAttributes['name']), $arrFieldAttributes['description']);
 
-        // $arrFieldAttributes['label'] = \StringUtil::decodeEntities($strLabel);
-        // $arrFieldAttributes['label'] = \Controller::replaceInsertTags($arrFieldAttributes['label'], false);
         $arrFieldAttributes['label'] = $this->parseString($strLabel);
         $arrFieldAttributes['isReactive'] = $this->isReactive($arrFieldAttributes);
-        $arrFieldAttributes['text'] = $this->parseString($arrFieldAttributes['text']); // \Controller::replaceInserttags($arrFieldAttributes['text'], false);
-        $arrFieldAttributes['description'] = $this->parseString($strDescription); //\Controller::replaceInserttags($strDescription, false);
+        $arrFieldAttributes['text'] = $this->parseString($arrFieldAttributes['text']);
+        $arrFieldAttributes['description'] = $this->parseString($strDescription);
         $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
         $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent($arrFieldAttributes['type'], $arrFieldAttributes['rgxp']);
         $arrFieldAttributes['multiple'] = Toolkit::convertMultiple($arrFieldAttributes['multiple'], $arrFieldAttributes);
@@ -112,13 +110,13 @@ abstract class Resolver extends \System {
             $arrFieldAttributes['selectAllLabel'] = $this->parseString($strSelectAll);
         }
 
-        if (in_array( $arrFieldAttributes['rgxp'], ['date', 'time', 'datim'])) {
+        if (in_array($arrFieldAttributes['rgxp'], ['date', 'time', 'datim'])) {
             $arrFieldAttributes['dateFormat'] = \Date::getFormatFromRgxp($arrFieldAttributes['rgxp']);
         }
 
         if (isset( $GLOBALS['TL_HOOKS']['compileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['compileFormField'] )) {
             foreach ($GLOBALS['TL_HOOKS']['compileFormField'] as $arrCallback) {
-                $this->import( $arrCallback[0] );
+                $this->import($arrCallback[0]);
                 $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrFieldAttributes, $this) ;
             }
         }
