@@ -89,14 +89,15 @@ abstract class Resolver extends \System {
             $arrFieldAttributes[$strFieldname] = $objField->{$strFieldname};
         }
 
-        $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.' . $arrFieldAttributes['name']), $arrFieldAttributes['label']);
-        $strDescription = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.description.' . $arrFieldAttributes['name']), $arrFieldAttributes['description']);
+        $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable?$this->strTable.'.':'') . $arrFieldAttributes['name']), $arrFieldAttributes['label']);
+        $strDescription = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable?$this->strTable.'.':'') . 'description.' . $arrFieldAttributes['name']), $arrFieldAttributes['description']);
 
         $arrFieldAttributes['label'] = $this->parseString($strLabel);
         $arrFieldAttributes['isReactive'] = $this->isReactive($arrFieldAttributes);
         $arrFieldAttributes['text'] = $this->parseString($arrFieldAttributes['text']);
         $arrFieldAttributes['description'] = $this->parseString($strDescription);
         $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
+        $arrFieldAttributes['blankOptionLabel'] = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable?$this->strTable.'.':'') . 'blankOptionLabel.' . $arrFieldAttributes['name']), $arrFieldAttributes['blankOptionLabel']);
         $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent($arrFieldAttributes['type'], $arrFieldAttributes['rgxp']);
         $arrFieldAttributes['multiple'] = Toolkit::convertMultiple($arrFieldAttributes['multiple'], $arrFieldAttributes);
         $arrFieldAttributes['value'] = Toolkit::convertValue($arrFieldAttributes['value'], $arrFieldAttributes);
@@ -106,7 +107,7 @@ abstract class Resolver extends \System {
             if ($arrFieldAttributes['multiple'] === false) {
                 $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
             }
-            $strSelectAll = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . $this->strTable . '.' . $arrFieldAttributes['name'].'.selectAll'), '');
+            $strSelectAll = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable?$this->strTable.'.':'') . $arrFieldAttributes['name'].'.selectAll'), '');
             $arrFieldAttributes['selectAllLabel'] = $this->parseString($strSelectAll);
         }
 
