@@ -90,9 +90,12 @@ class FormManagerModule extends \Module {
                 return [];
             }
             $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->cmIdentifier);
-            $arrField = $objRoleResolver->getFieldByRole('member');
+            $strUserField = $objRoleResolver->getFieldByRole('member');
+            if (!$strUserField) {
+                return [];
+            }
             $arrListings = (new \Alnv\ContaoCatalogManagerBundle\Views\Listing($this->cmIdentifier, [
-                'column' => [''.$arrField.'=?'],
+                'column' => [''.$strUserField.'=?'],
                 'value' => [$objUser->id],
                 'ignoreVisibility' => true,
                 'limit' => 1,
