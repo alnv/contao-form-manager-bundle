@@ -40,7 +40,7 @@ Vue.component( 'form-wizard', {
                     blnEmpty = false;
                 }
             }
-            if ( blnEmpty ) {
+            if (blnEmpty) {
                 return null;
             }
             if (!this.eval['maxEntities']) {
@@ -58,7 +58,7 @@ Vue.component( 'form-wizard', {
         deleteValue: function(value) {
             this.editMode = false;
             this.selectedValue = {};
-            for (var i = 0; i < this.value.length; i++) {
+            for (let i=0; i < this.value.length; i++) {
                 if (this.value[i] === value) {
                     this.value.splice(i, 1);
                 }
@@ -103,14 +103,14 @@ Vue.component( 'form-wizard', {
         },
         getLabel: function(value,field) {
             if (field.options && field.options.length) {
-                for ( var i = 0; i < field.options.length; i++ ) {
-                    var objOption = field.options[i];
-                    if ( objOption['value'] === value ) {
+                for (let i=0; i<field.options.length; i++) {
+                    let objOption = field.options[i];
+                    if (objOption['value'] === value) {
                         return objOption['label'];
                     }
                 }
             }
-            if (typeof value === 'object' && JSON.stringify( value ) === '{}' || JSON.stringify( value ) === '[]') {
+            if (typeof value === 'object' && JSON.stringify(value) === '{}' || JSON.stringify(value) === '[]') {
                 return '';
             }
             if (value && typeof value === 'object' && typeof value.length !== 'undefined') {

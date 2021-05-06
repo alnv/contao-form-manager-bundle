@@ -20,6 +20,7 @@ Vue.component( 'upload-field', {
             }).then(function (objResponse) {
                 if (objResponse.body) {
                     this.files = objResponse.body.files;
+                    this.$emit('input',this.value);
                 }
             }.bind(this));
         },
@@ -66,10 +67,11 @@ Vue.component( 'upload-field', {
                     emulateJSON: true,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }).then(function () {
+                    this.$emit('input',this.value);
                     if (fetch) {
                         this.fetchUploads();
                     }
-                });
+                }.bind(this));
             }
         },
         getStringifyValue: function() {

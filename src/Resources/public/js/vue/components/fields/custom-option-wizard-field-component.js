@@ -7,18 +7,18 @@ Vue.component( 'custom-option-wizard-field', {
         }
     },
     methods: {
-        checked: function ( strValue ) {
-            if ( Array.isArray(this.value) ) {
+        checked: function (strValue) {
+            if (Array.isArray(this.value)) {
                 return this.value.indexOf(strValue) !== -1;
             }
             return strValue == this.value;
         },
         setCssClass: function() {
             let objCssClass = {};
-            if ( this.eval['tl_class'] ) {
+            if (this.eval['tl_class']) {
                 objCssClass[this.eval['tl_class']] = true;
             }
-            if ( this.eval['mandatory'] ) {
+            if (this.eval['mandatory']) {
                 objCssClass['mandatory'] = true;
             }
             objCssClass['single'] = !this.eval.multiple;
