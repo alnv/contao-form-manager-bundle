@@ -59,6 +59,7 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
                     params: {
                         id: this.id,
                         type: this.type,
+                        hash: (window.location.hash ? window.location.hash.substr(1) : ''),
                         language: (this.language ? this.language : ''),
                         attributes: this.attributes,
                         initialized: this.initialized,
