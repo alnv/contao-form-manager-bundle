@@ -105,8 +105,11 @@ Vue.component( 'upload-field', {
                     })
                 },
                 accept: function(file, done) {
+                    if (vueInstance.eval['role'] === 'files' || vueInstance.eval['role'] === 'file') {
+                        done();
+                    }
                     file.acceptDimensions = done;
-                    file.rejectDimensions = function(strMessage) { done(strMessage) };
+                    file.rejectDimensions = function(strMessage) {done(strMessage)};
                 },
                 complete: function () {
                     for (let i=0;i<this.files.length;i++) {
@@ -166,7 +169,7 @@ Vue.component( 'upload-field', {
         '<div class="field-component-container">' +
             '<div v-if="files.length" class="files">' +
                 '<ul v-for="file in files" class="file">' +
-                    '<li v-if="!file.imagesize" class="document"><span>({{ file.path }})</span><div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="eval.deleteLabel"></span></button></div></li>' +
+                    '<li v-if="!file.imagesize" class="document"><span>{{ file.name }}</span><div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="eval.deleteLabel"></span></button></div></li>' +
                     '<li v-if="file.imagesize" class="image"><figure><img :src="file.path" :alt="file.name"></figure><div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="eval.deleteLabel"></span></button></div></li>' +
                 '</ul>' +
             '</div>' +
