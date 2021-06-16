@@ -105,13 +105,18 @@ class ResolveDca extends Resolver {
         return $arrSubpalettes;
     }
 
-    public function saveRecord( $arrForm ) {
+    public function saveRecord($arrForm) {
 
         $arrSubmitted = [];
         $strNotification = null;
-        foreach ( $arrForm as $objPalette ) {
-            foreach ( $objPalette->fields as $arrField ) {
-                $arrSubmitted[$arrField['name']] = Toolkit::getDbValue($arrField['postValue'], $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $arrField['name']]);
+        foreach ($arrForm as $objPalette) {
+            foreach ($objPalette->fields as $arrField) {
+                $strName = $arrField['name'];
+                if (!\Database::getInstance()->fieldExists($strName, $this->strTable)) {
+                    \System::log('Field '. $strName .' in '.$this->strTable.' do not exist', __METHOD__, TL_ERROR);
+                    continue;
+                }
+                $arrSubmitted[$strName] = Toolkit::getDbValue($arrField['postValue'], $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]);
             }
         }
 

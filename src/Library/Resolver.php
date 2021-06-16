@@ -83,7 +83,7 @@ abstract class Resolver extends \System {
         }
 
         foreach ($arrFieldAttributes as $strFieldname => $strValue) {
-            if (in_array($strFieldname, ['validate', 'messages'])) {
+            if (in_array($strFieldname, ['validate', 'messages', 'name'])) {
                 continue;
             }
             $arrFieldAttributes[$strFieldname] = $objField->{$strFieldname};
@@ -166,7 +166,7 @@ abstract class Resolver extends \System {
             }
         }
 
-        if ( $this->blnSuccess && !$blnValidateOnly ) {
+        if ($this->blnSuccess && !$blnValidateOnly) {
             $this->saveRecord($arrForm);
         }
 
