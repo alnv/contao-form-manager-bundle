@@ -1,4 +1,4 @@
-Vue.component( 'upload-field', {
+Vue.component('upload-field', {
     data: function () {
         return {
             files: []
@@ -155,27 +155,45 @@ Vue.component( 'upload-field', {
             default: [],
             type: Array,
             required: false
+        },
+        dropzoneLabels: {
+            default: {
+                dictDefaultMessage: 'Dateien zum Hochladen hier ablegen'
+            },
+            type: Object,
+            required: false
+        },
+        defaultLabels: {
+            default: {
+                remove: 'Löschen'
+            },
+            type: Object,
+            required: false
         }
     },
     mounted: function() {
         this.setDropzone(this.setValue);
         this.fetchUploads();
 
-        this.eval.dropHereLabel = this.eval.dropHereLabel ? this.eval.dropHereLabel : 'Drop files here to upload';
-        this.eval.deleteLabel = this.eval.deleteLabel ? this.eval.deleteLabel : 'Löschen';
+        if (this.eval.dropHereLabel) {
+            this.dropzoneLabels.dictDefaultMessage = this.eval.dropHereLabel;
+        }
+        if (this.eval.deleteLabel) {
+            this.defaultLabels.remove = this.eval.deleteLabel;
+        }
     },
     template:
     '<div class="field-component upload" v-bind:class="setCssClass()">' +
         '<div class="field-component-container">' +
             '<div v-if="files.length" class="files">' +
                 '<ul v-for="file in files" class="file">' +
-                    '<li v-if="!file.imagesize" class="document"><span>{{ file.name }}</span><div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="eval.deleteLabel"></span></button></div></li>' +
-                    '<li v-if="file.imagesize" class="image"><figure><img :src="file.path" :alt="file.name"></figure><div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="eval.deleteLabel"></span></button></div></li>' +
+                    '<li v-if="!file.imagesize" class="document"><span>{{ file.name }}</span><div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="defaultLabels.remove"></span></button></div></li>' +
+                    '<li v-if="file.imagesize" class="image"><figure><img :src="file.path" :alt="file.name"></figure><div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="defaultLabels.remove"></span></button></div></li>' +
                 '</ul>' +
             '</div>' +
             '<input type="hidden" :name="name" :value="getStringifyValue()">' +
             '<label v-if="eval.label" class="label" v-html="eval.label"></label>' +
-            '<div class="dropzone"><div class="dz-message" data-dz-message><span v-html="eval.dropHereLabel"></span></div></div>' +
+            '<div class="dropzone"><div class="dz-message" data-dz-message><span v-html="dropzoneLabels.dictDefaultMessage"></span></div></div>' +
             '<template v-if="!eval.validate"><p class="error" v-for="message in eval.messages">{{ message }}</p></template>' +
             '<div v-if="eval.description" v-html="eval.description" class="info"></div>' +
         '</div>' +

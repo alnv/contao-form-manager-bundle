@@ -62,7 +62,6 @@ abstract class Resolver extends \System {
             $objField->validate();
 
             if ($objField->hasErrors()) {
-                $this->blnSuccess = false;
                 $arrFieldAttributes['validate'] = false;
                 $arrFieldAttributes['messages'] = array_map(function ($strError){
                     return \Controller::replaceInsertTags(\StringUtil::decodeEntities($strError), false);
@@ -73,12 +72,15 @@ abstract class Resolver extends \System {
                 if (in_array('uploadable', $arrImplements)) {
                     if ($objField->mandatory) {
                         if (!empty(\Input::post($arrFieldAttributes['name']))) {
-                            $this->blnSuccess = true;
                             $arrFieldAttributes['messages'] = [];
                             $arrFieldAttributes['validate'] = true;
                         }
                     }
                 }
+            }
+
+            if (!$arrFieldAttributes['validate']) {
+                $this->blnSuccess = false;
             }
         }
 
