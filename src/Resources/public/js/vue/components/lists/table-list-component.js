@@ -68,6 +68,7 @@ const tableListComponent = Vue.component( 'table-list', {
             }
         },
         sort: function (field, e) {
+            this.order = {};
             let order = 'desc';
             if (e.target.classList.contains('desc')) {
                 order = 'asc';
