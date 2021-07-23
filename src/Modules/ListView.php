@@ -34,6 +34,18 @@ class ListView {
             $this->blnSuccess = $this->getPermissionQuery($arrOptions);
         }
 
+        $arrOrder = \Input::post('order') ?: [];
+        if (!empty($arrOrder)) {
+            $arrOrders = [];
+            foreach ($arrOrder as $strField => $strOrder) {
+                $arrOrders[] = [
+                    'field' => $this->strTable.'.'.$strField,
+                    'order' => $strOrder
+                ];
+            }
+            $arrOptions['order'] = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::getOrderByStatementFromArray($arrOrders);
+        }
+
         if ($this->blnSuccess) {
             $this->objListing = new \Alnv\ContaoCatalogManagerBundle\Views\Listing($this->strTable, $arrOptions);
         }

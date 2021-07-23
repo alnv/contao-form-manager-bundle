@@ -3,15 +3,17 @@ const tableListComponent = Vue.component( 'table-list', {
         return {
             list: [],
             fields: [],
-            labels: {}
+            labels: {},
+            reload: false
         }
     },
     methods: {
         fetch: function () {
-            this.$parent.setLoadingAlert('', this);
+            this.reload = true;
             this.$http.post('/form-manager/list-view',
                 {
-                    module: this.module
+                    module: this.module,
+                    order: this.order
                 },
                 {
                 emulateJSON: true,
@@ -21,46 +23,39 @@ const tableListComponent = Vue.component( 'table-list', {
                 this.list = objResponse.body.list;
                 this.labels = objResponse.body.labels;
                 this.fields = objResponse.body.fields;
-                if (objResponse.body.success) {
-                    this.$parent.clearAlert();
-                } else {
-                    this.$parent.setErrorAlert('', this);
-                }
-            });
+                this.reload = false;
+            }.bind(this));
         },
         setOperatorCssClass: function (operator) {
-            var objCssClass = {};
+            let objCssClass = {};
             objCssClass['operator'] = true;
             objCssClass[operator] = true;
             return objCssClass;
         },
         setFieldCssClass: function (field) {
-            var objCssClass = {};
+            let objCssClass = {};
             objCssClass['field'] = true;
             objCssClass[field] = true;
+            objCssClass['desc'] = this.order.hasOwnProperty(field) && this.order[field] === 'desc';
+            objCssClass['asc'] = this.order.hasOwnProperty(field) && this.order[field] === 'asc';
             return objCssClass;
         },
         deleteItem: function(item) {
-            if ( !confirm(this.deleteConfirmLabel) ) {
+            if (!confirm(this.deleteConfirmLabel)) {
                 return null;
             }
-            this.$parent.setLoadingAlert('', this);
-            this.$http.post( item.operations.delete.href, {module: this.module,}, {emulateJSON: true, 'Content-Type': 'application/x-www-form-urlencoded'}
-            ).then( function (objResponse) {
+            this.reload = true;
+            this.$http.post(item.operations.delete.href, {module: this.module,}, {emulateJSON: true, 'Content-Type': 'application/x-www-form-urlencoded'}
+            ).then(function (objResponse) {
                 if (objResponse.body.success && objResponse.ok) {
-                    for (var i = 0; i < this.list.length; i++) {
+                    for (let i = 0; i < this.list.length; i++) {
                         if (this.list[i] === item) {
                             this.list.splice(i,1);
                         }
                     }
-                    if (!this.list.length) {
-                        this.disableLoader = true;
-                    }
-                    this.$parent.clearAlert();
-                } else {
-                    this.$parent.setErrorAlert('', this);
                 }
-            });
+                this.reload = false;
+            }.bind(this));
         },
         callOperator: function ($e,operator,item) {
             switch (operator) {
@@ -71,6 +66,14 @@ const tableListComponent = Vue.component( 'table-list', {
                 default:
                     return null;
             }
+        },
+        sort: function (field, e) {
+            let order = 'desc';
+            if (e.target.classList.contains('desc')) {
+                order = 'asc';
+            }
+            this.order[field] = order;
+            this.fetch();
         }
     },
     mounted: function () {
@@ -102,19 +105,19 @@ const tableListComponent = Vue.component( 'table-list', {
             required: false,
             default: ['edit','delete']
         },
-        disableLoader: {
-            type: Boolean,
-            default: false,
-            required: false
-        },
         addButtonPosition: {
             type: String,
             required: false,
             default: 'before'
+        },
+        order: {
+            default: {},
+            type: Object,
+            required: false
         }
     },
     template:
-        '<div class="table-list-component">' +
+        '<div class="table-list-component" style="position:relative;min-height:200px;">' +
             '<div class="table-list-component-container">' +
                 '<div v-if="addUrl && addButtonPosition === \'before\'" class="operator add">' +
                     '<slot name="add" v-bind:addUrLabel="addUrlLabel" v-bind:addUrl="addUrl">' +
@@ -125,7 +128,7 @@ const tableListComponent = Vue.component( 'table-list', {
                     '<div class="thead">' +
                         '<div class="tr">' +
                             '<slot name="th" v-bind:fields="fields" v-bind:labels="labels">' +
-                                '<div v-for="field in fields" class="th" v-bind:class="setFieldCssClass(field)" v-html="labels[field]"></div>' +
+                                '<div v-for="field in fields" class="th" v-bind:class="setFieldCssClass(field)" v-html="labels[field]" @click="sort(field, event)" style="cursor:pointer"></div>' +
                                 '<div v-if="operations.length" class="th operations" v-html="labels[\'operations\']"></div>' +
                             '</slot>' +
                         '</div>' +
@@ -149,5 +152,6 @@ const tableListComponent = Vue.component( 'table-list', {
                     '</slot>' +
                 '</div>' +
             '</div>' +
+            '<div class="reload" v-if="reload" style="position:absolute;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><img src="bundles/alnvcontaoformmanager/assets/loading.svg" alt=""></div>' +
         '</div>'
 });

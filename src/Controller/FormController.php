@@ -211,10 +211,13 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function getListView() {
+
         $this->container->get('contao.framework')->initialize();
+
         $objListView = new \Alnv\ContaoFormManagerBundle\Modules\ListView(\Input::post('module'));
         $arrReturn = $objListView->parse();
         $arrList = [];
+
         foreach ($arrReturn['list'] as $arrEntity) {
             $arrRow = [];
             foreach ($arrEntity as $strField => $varValue) {
@@ -225,7 +228,9 @@ class FormController extends Controller {
             }
             $arrList[] = $arrRow;
         }
+
         $arrReturn['list'] = $arrList;
+
         return new JsonResponse($arrReturn);
     }
 
