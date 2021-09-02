@@ -1,7 +1,15 @@
 services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Alnv\ContaoFormManagerBundle\Controller\FormController:
+    public: true
+
   formmanager.datacontainer.module:
     class: Alnv\ContaoFormManagerBundle\DataContainer\Module
     public: true
+
   formmanager.datacontainer.formfield:
     class: Alnv\ContaoFormManagerBundle\DataContainer\FormField
     public: true

@@ -6,7 +6,6 @@ use Alnv\ContaoFormManagerBundle\Library\Upload;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Alnv\ContaoFormManagerBundle\Library\ResolveDca;
 use Alnv\ContaoFormManagerBundle\Library\ResolveForm;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
@@ -14,7 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
  *
  * @Route("/form-manager", defaults={"_scope"="frontend", "_token_check"=false})
  */
-class FormController extends Controller {
+class FormController extends \Contao\CoreBundle\Controller\AbstractController {
 
     /**
      *
@@ -22,6 +21,7 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function upload() {
+
         $this->container->get('contao.framework')->initialize();
         $objUpload = new Upload();
         $intStatus = 200;
@@ -42,6 +42,7 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function getFiles() {
+
         $this->container->get( 'contao.framework' )->initialize();
         $objUpload = new Upload();
         return new JsonResponse($objUpload->getFiles([
@@ -57,6 +58,7 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function deleteFile() {
+
         $this->container->get( 'contao.framework' )->initialize();
         $objUpload = new Upload();
         return new JsonResponse($objUpload->delete([
@@ -188,6 +190,7 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function validateAndSaveForm($id) {
+
         $this->container->get( 'contao.framework' )->initialize();
         $arrOptions = [];
         $objForm = new ResolveForm( $id, $arrOptions );
@@ -200,6 +203,7 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function saveMultiForm() {
+
         $this->container->get( 'contao.framework' )->initialize();
         $objMultiFormResolver = new \Alnv\ContaoFormManagerBundle\Library\MultiFormResolver();
         return new JsonResponse($objMultiFormResolver->save());
@@ -240,6 +244,7 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function deleteItem($id) {
+
         $this->container->get( 'contao.framework' )->initialize();
         $objListView = new \Alnv\ContaoFormManagerBundle\Modules\ListView(\Input::post('module'));
         return new JsonResponse($objListView->delete($id));
@@ -251,6 +256,7 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function addOption() {
+
         $this->container->get('contao.framework')->initialize();
 
         $objField = \Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel::findByFieldname(\Input::post('name'));
@@ -276,6 +282,7 @@ class FormController extends Controller {
      * @Method({"POST"})
      */
     public function deleteOption() {
+
         $this->container->get( 'contao.framework' )->initialize();
         $objField = \Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel::findByFieldname(\Input::post('name'));
         if ($objField === null) {
