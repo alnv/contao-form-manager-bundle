@@ -1,4 +1,4 @@
-Vue.component( 'radio-field', {
+Vue.component('radio-field', {
     data: function () {
         return {
             css: {}
@@ -6,15 +6,15 @@ Vue.component( 'radio-field', {
     },
     methods: {
         checked: function ( strValue ) {
-            if ( Array.isArray( this.value ) ) {
-                return this.value.indexOf( strValue ) !== -1;
+            if (Array.isArray(this.value)) {
+                return this.value.indexOf(strValue) !== -1;
             }
             return this.value == strValue;
         },
         setDefault: function () {
-            if ( this.eval.options ) {
-                for ( var i = 0; i < this.eval.options.length; i++ ) {
-                    if ( this.eval.options[i]['default'] ) {
+            if (this.eval.options) {
+                for (let i=0; i < this.eval.options.length; i++) {
+                    if (this.eval.options[i]['default']) {
                         this.value = this.eval.options[i]['value'];
                     }
                 }

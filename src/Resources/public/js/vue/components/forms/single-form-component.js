@@ -55,7 +55,7 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
                     }
                 }
                 var objParent = this.getParentSharedInstance(this.$parent);
-                this.$http.get( '/form-manager/get' + strSource + '/' + this.identifier, {
+                this.$http.get(this.absoluteUrl+'/form-manager/get' + strSource + '/' + this.identifier, {
                     params: {
                         id: this.id,
                         type: this.type,
@@ -210,7 +210,7 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
                 }.bind(this));
             },
             getSubmitPromise: function() {
-                return this.$http.post( '/form-manager/'+ (this.validateOnly ? 'validate' : 'save') +'/' + this.source + '/' + this.identifier + this.getParameters(), this.model, {
+                return this.$http.post(this.absoluteUrl+'/form-manager/'+ (this.validateOnly ? 'validate' : 'save') +'/' + this.source + '/' + this.identifier + this.getParameters(), this.model, {
                     emulateJSON: true,
                     'Content-Type': 'application/x-www-form-urlencoded'
                 });
@@ -222,7 +222,7 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
                 if (this.model['quantity'] || this.model['units']) {
                     units = this.model['quantity'];
                 }
-                this.$http.post('/shop-manager/addCart', {
+                this.$http.post(this.absoluteUrl+'/shop-manager/addCart', {
                     cid: cid,
                     units: units,
                     productId: productId,
@@ -275,8 +275,8 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
                 this.palettes = palette;
             },
             setInput: function (field) {
-                var objParent = this.getParentSharedInstance(this.$parent);
-                for ( var strFieldname in this.model ) {
+                let objParent = this.getParentSharedInstance(this.$parent);
+                for (let strFieldname in this.model) {
                     if (this.model.hasOwnProperty(strFieldname)) {
                         objParent.shared[strFieldname] = this.model[strFieldname];
                     }
@@ -429,6 +429,11 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
             formData: {
                 type: Object,
                 default: null,
+                required: false
+            },
+            absoluteUrl: {
+                default: '',
+                type: String,
                 required: false
             }
         },

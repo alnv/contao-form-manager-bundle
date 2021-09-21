@@ -76,6 +76,9 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
     public function getDcFormByTable($table) {
 
         $this->container->get('contao.framework')->initialize();
+
+        header("Access-Control-Allow-Origin: *");
+
         global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
         $objPage->language = $GLOBALS['TL_LANGUAGE'];
@@ -96,6 +99,9 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
     public function getFormWizard($table) {
 
         $this->container->get( 'contao.framework' )->initialize();
+
+        header("Access-Control-Allow-Origin: *");
+
         global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
         $objPage->language = $GLOBALS['TL_LANGUAGE'];
@@ -116,6 +122,9 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
     public function validateAndSaveDc($table) {
 
         $this->container->get('contao.framework')->initialize();
+
+        header("Access-Control-Allow-Origin: *");
+
         global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
         $objPage->language = $GLOBALS['TL_LANGUAGE'];
@@ -137,6 +146,9 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
     public function validateDc($table) {
 
         $this->container->get( 'contao.framework' )->initialize();
+
+        header("Access-Control-Allow-Origin: *");
+
         global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
         $objPage->language = $GLOBALS['TL_LANGUAGE'];
@@ -157,6 +169,9 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
     public function getFormByTable($id) {
 
         $this->container->get('contao.framework')->initialize();
+
+        header("Access-Control-Allow-Origin: *");
+
         global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
         if ($objPage) {
@@ -175,6 +190,9 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
     public function validateForm($id) {
 
         $this->container->get('contao.framework')->initialize();
+
+        header("Access-Control-Allow-Origin: *");
+
         global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
         $objPage->language = $GLOBALS['TL_LANGUAGE'];
@@ -192,6 +210,9 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
     public function validateAndSaveForm($id) {
 
         $this->container->get( 'contao.framework' )->initialize();
+
+        header("Access-Control-Allow-Origin: *");
+
         $arrOptions = [];
         $objForm = new ResolveForm( $id, $arrOptions );
         return new JsonResponse($objForm->save());
