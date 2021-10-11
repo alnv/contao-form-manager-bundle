@@ -227,7 +227,7 @@ class ResolveDca extends Resolver {
 
         $this->arrOptions['type'] = null;
 
-        if ( !$GLOBALS['TL_DCA'][ $this->strTable ] ) {
+        if (!$GLOBALS['TL_DCA'][ $this->strTable ]) {
             return null;
         }
 
@@ -236,23 +236,23 @@ class ResolveDca extends Resolver {
         $objPalette->fields = [];
         $objPalette->hide = false;
         $objPalette->name = $this->arrOptions['wizard'];
-        $arrFields = $GLOBALS['TL_DCA'][ $this->strTable ]['fields'][ $this->arrOptions['wizard'] ]['eval']['form'] ?: [];
+        $arrFields = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->arrOptions['wizard']]['eval']['form'] ?: [];
 
-        foreach ( $arrFields as $strFieldname => $arrField ) {
+        foreach ($arrFields as $strFieldname => $arrField) {
 
-            $strClass = Toolkit::convertBackendFieldToFrontendField( $arrField['inputType'] );
+            $strClass = Toolkit::convertBackendFieldToFrontendField($arrField['inputType']);
 
-            if ( !class_exists( $strClass ) ) {
+            if (!class_exists($strClass)) {
                 continue;
             }
 
-            $arrAttributes = $strClass::getAttributesFromDca( $arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable );
+            $arrAttributes = $strClass::getAttributesFromDca($arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable);
             $arrAttributes = $this->parseAttributes($arrAttributes);
-            if ( $arrAttributes === null ) {
+            if ($arrAttributes === null) {
                 continue;
             }
 
-            $this->addParentData( $strFieldname, $arrAttributes );
+            $this->addParentData($strFieldname, $arrAttributes);
             $objPalette->fields[] = $arrAttributes;
         }
 

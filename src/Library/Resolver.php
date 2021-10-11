@@ -117,7 +117,7 @@ abstract class Resolver extends \System {
             $arrFieldAttributes['dateFormat'] = \Date::getFormatFromRgxp($arrFieldAttributes['rgxp']);
         }
 
-        if (isset( $GLOBALS['TL_HOOKS']['compileFormField'] ) && is_array( $GLOBALS['TL_HOOKS']['compileFormField'] )) {
+        if (isset($GLOBALS['TL_HOOKS']['compileFormField']) && is_array($GLOBALS['TL_HOOKS']['compileFormField'])) {
             foreach ($GLOBALS['TL_HOOKS']['compileFormField'] as $arrCallback) {
                 $this->import($arrCallback[0]);
                 $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrFieldAttributes, $this) ;
