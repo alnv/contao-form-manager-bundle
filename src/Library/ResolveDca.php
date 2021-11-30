@@ -216,6 +216,11 @@ class ResolveDca extends Resolver {
         }
     }
 
+    public function getTable() {
+
+        return $this->strTable;
+    }
+
     protected function addParentData($strFieldname, &$arrAttributes) {
 
         $arrAttributes['_source'] = 'dc';
