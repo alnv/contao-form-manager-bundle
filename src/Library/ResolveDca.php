@@ -109,6 +109,7 @@ class ResolveDca extends Resolver {
 
         $arrSubmitted = [];
         $strNotification = null;
+
         foreach ($arrForm as $objPalette) {
             foreach ($objPalette->fields as $arrField) {
                 $strName = $arrField['name'];
@@ -125,6 +126,22 @@ class ResolveDca extends Resolver {
             $objMember = \FrontendUser::getInstance();
             if ($objMember->id) {
                 $arrSubmitted[$strMemberField] = $objMember->id;
+            }
+        }
+
+        if ($strMemberField = $objRoleResolver->getFieldByRole('members')) {
+            $objMember = \FrontendUser::getInstance();
+            if ($objMember->id) {
+                $arrMembers = [];
+                if ($strEntityId = \Input::post('id')) {
+                    $objEntity = \Database::getInstance()->prepare('SELECT * FROM '. $this->strTable .' WHERE id=?')->limit(1)->execute($strEntityId);
+                    if ($strMembers = $objEntity->{$strMemberField}) {
+                        $arrMembers = explode(',', $strMembers);
+                    }
+                }
+                if (!in_array($objMember->id, $arrMembers)) {
+                    $arrSubmitted[$strMemberField] = implode(',', $arrMembers);
+                }
             }
         }
 

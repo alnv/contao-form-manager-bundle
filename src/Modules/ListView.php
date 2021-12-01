@@ -54,8 +54,7 @@ class ListView {
     protected function hasPermissions() {
 
         $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable, []);
-
-        return $objRoleResolver->getFieldByRole('member') || $objRoleResolver->getFieldByRole('group');
+        return $objRoleResolver->getFieldByRole('member') || $objRoleResolver->getFieldByRole('members')  || $objRoleResolver->getFieldByRole('group');
     }
 
     protected function getPermissionQuery(&$arrOptions) {
@@ -68,10 +67,11 @@ class ListView {
         }
 
         $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable, []);
+        $strMemberField = $objRoleResolver->getFieldByRole('member') ?: $objRoleResolver->getFieldByRole('members');
 
-        if ($strMemberField = $objRoleResolver->getFieldByRole('member')) {
+        if ($strMemberField) {
             $arrOptions['value'][] = $objMember->id;
-            $arrPermissionQueries[] = 'FIND_IN_SET('.$GLOBALS['TL_DCA'][$this->strTable]['config']['_table'].'.'.$strMemberField.', ?)';
+            $arrPermissionQueries[] = 'FIND_IN_SET(?, '.$GLOBALS['TL_DCA'][$this->strTable]['config']['_table'].'.'.$strMemberField.')';
         }
 
         if ($strGroupField = $objRoleResolver->getFieldByRole('group')) {

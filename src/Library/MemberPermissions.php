@@ -10,6 +10,7 @@ class MemberPermissions {
     public function __construct() {
 
         $objMember = \FrontendUser::getInstance();
+
         $this->strId = $objMember->id;
         $this->arrGroups = \StringUtil::deserialize($objMember->groups,true);
     }
@@ -23,7 +24,7 @@ class MemberPermissions {
 
         $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($strTable);
 
-        if ( $objRoleResolver->getFieldByRole('member') || $objRoleResolver->getFieldByRole('group') ) {
+        if ($objRoleResolver->getFieldByRole('member') || $objRoleResolver->getFieldByRole('members') || $objRoleResolver->getFieldByRole('group')) {
             return $this->isLogged();
         }
 
@@ -32,11 +33,9 @@ class MemberPermissions {
 
     public function hasPermission($strTable, $arrEntity) {
 
-        return true;
-
         $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($strTable, $arrEntity);
 
-        if ( !$this->isLogged() ) {
+        if (!$this->isLogged()) {
             return false;
         }
 
@@ -45,13 +44,19 @@ class MemberPermissions {
             return true;
         }
 
-        if ( $strMemberField = $objRoleResolver->getFieldByRole('member') ) {
+        if ($objRoleResolver->getFieldByRole('member')) {
             if (!in_array($this->strId, explode(',', \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parse($objRoleResolver->getValueByRole('member'), ',', 'value')))) {
                 return false;
             }
         }
 
-        if ( $strGroupField = $objRoleResolver->getFieldByRole('group') ) {
+        if ($objRoleResolver->getFieldByRole('members')) {
+            if (!in_array($this->strId, explode(',', \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parse($objRoleResolver->getValueByRole('members'), ',', 'value')))) {
+                return false;
+            }
+        }
+
+        if ($strGroupField = $objRoleResolver->getFieldByRole('group')) {
             if (empty(array_intersect($this->arrGroups, \StringUtil::deserialize($objRoleResolver->getValueByRole('group'), true)))) {
                 return false;
             }
@@ -67,11 +72,17 @@ class MemberPermissions {
             return true;
         }
 
-        if ( is_numeric($arrGroupRight['maxEntries']) && $this->isLogged() ) {
+        if (is_numeric($arrGroupRight['maxEntries']) && $this->isLogged()) {
             $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($strTable);
-            $strMemberField = $objRoleResolver->getFieldByRole('member');
-            if ($strMemberField) {
-                $objEntities = \Database::getInstance()->prepare('SELECT id FROM ' . $strTable . ' WHERE `'.$strMemberField.'`=?' )->execute($this->strId);
+            if ($strMemberField = $objRoleResolver->getFieldByRole('member')) {
+                $objEntities = \Database::getInstance()->prepare('SELECT id FROM ' . $strTable . ' WHERE `'.$strMemberField.'`=?')->execute($this->strId);
+                if ($objEntities->numRows >= $arrGroupRight['maxEntries']) {
+                    return false;
+                }
+            }
+
+            if ($strMemberField = $objRoleResolver->getFieldByRole('members')) {
+                $objEntities = \Database::getInstance()->prepare('SELECT id FROM ' . $strTable . ' WHERE FIND_IN_SET(?, '.$strMemberField.')')->execute($this->strId);
                 if ($objEntities->numRows >= $arrGroupRight['maxEntries']) {
                     return false;
                 }
@@ -81,7 +92,7 @@ class MemberPermissions {
         return in_array('add', $arrGroupRight['operations']);
     }
 
-    public function hasOperations($strTable,$arrSelectedOperations=[]) {
+    public function hasOperations($strTable, $arrSelectedOperations=[]) {
 
         $arrGroupRight = $this->getGroupRights($strTable);
         if ($arrGroupRight['admin']) {
