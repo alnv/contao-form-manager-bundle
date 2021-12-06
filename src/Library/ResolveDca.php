@@ -108,7 +108,8 @@ class ResolveDca extends Resolver {
     public function saveRecord($arrForm) {
 
         $arrSubmitted = [];
-        $strNotification = null;
+        $arrSubmitted['tstamp'] = time();
+        $objMember = \FrontendUser::getInstance();
 
         foreach ($arrForm as $objPalette) {
             foreach ($objPalette->fields as $arrField) {
@@ -123,14 +124,12 @@ class ResolveDca extends Resolver {
 
         $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable, $arrSubmitted);
         if ($strMemberField = $objRoleResolver->getFieldByRole('member')) {
-            $objMember = \FrontendUser::getInstance();
             if ($objMember->id) {
                 $arrSubmitted[$strMemberField] = $objMember->id;
             }
         }
 
         if ($strMemberField = $objRoleResolver->getFieldByRole('members')) {
-            $objMember = \FrontendUser::getInstance();
             if ($objMember->id) {
                 $arrMembers = [];
                 if ($strEntityId = \Input::post('id')) {
@@ -140,12 +139,11 @@ class ResolveDca extends Resolver {
                     }
                 }
                 if (!in_array($objMember->id, $arrMembers)) {
+                    $arrMembers[] = $objMember->id;
                     $arrSubmitted[$strMemberField] = implode(',', $arrMembers);
                 }
             }
         }
-
-        $arrSubmitted['tstamp'] = time();
 
         if (isset($GLOBALS['TL_HOOKS']['prepareDataBeforeSave']) && is_array($GLOBALS['TL_HOOKS']['prepareDataBeforeSave'])) {
             foreach ($GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] as $arrCallback) {
