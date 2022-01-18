@@ -38,7 +38,7 @@ class FormManagerModule extends \Module {
         $this->Template->language = $GLOBALS['TL_LANGUAGE'] ?: '';
         $this->Template->successRedirect = $this->getFrontendUrl($this->cmSuccessRedirect);
         $this->Template->model = $this->getJsModelObject();
-        $this->Template->submitLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate('form.' . $this->cmIdentifier . '.submit',  'Senden');
+        $this->Template->submitLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate('form.' . $this->cmIdentifier . '.submit',  'Speichern');
     }
 
     protected function getJsModelObject() {
