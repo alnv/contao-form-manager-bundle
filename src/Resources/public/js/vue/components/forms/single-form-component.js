@@ -444,6 +444,11 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
                 default: '',
                 type: String,
                 required: false
+            },
+            pageId: {
+                default: '',
+                type: String,
+                required: false
             }
         },
         template:

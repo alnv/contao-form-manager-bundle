@@ -72,24 +72,28 @@ class Upload {
     }
 
 
-    public function getFiles( $arrOptions ) {
+    public function getFiles($arrOptions) {
 
         $arrResponse = [
             'files' => []
         ];
 
-        if ( empty( $arrOptions['files'] ) ) {
+        if (empty($arrOptions['files'])) {
             return $arrResponse;
         }
 
-        foreach ( $arrOptions['files'] as $strUuid ) {
-
-            if ( !\Validator::isUuid($strUuid) ) {
+        foreach ($arrOptions['files'] as $strUuid) {
+            if (!\Validator::isUuid($strUuid)) {
                 continue;
             }
             $objFile = \FilesModel::findByUuid($strUuid);
-            if ( $objFile == null ) {
+            if ($objFile == null) {
                 continue;
+            }
+
+            $strHref = '';
+            if ($objPage = \PageModel::findByPk(\Input::post('pageId'))) {
+                $strHref = $objPage->getFrontendUrl() . '?file=' . $objFile->path;
             }
 
             $arrResponse['files'][] = [
@@ -98,9 +102,10 @@ class Upload {
                 'path' => $objFile->path,
                 'type' => $objFile->type,
                 'extension' => $objFile->extension,
-                'uuid' => \StringUtil::binToUuid( $objFile->uuid ),
+                'uuid' => \StringUtil::binToUuid($objFile->uuid),
+                'href' => $strHref,
                 'size' => \System::getReadableSize((new \File($objFile->path))->filesize),
-                'imagesize' => getimagesize( \System::getContainer()->getParameter('kernel.project_dir') . '/' . $objFile->path )
+                'imagesize' => getimagesize(\System::getContainer()->getParameter('kernel.project_dir') . '/' . $objFile->path)
             ];
         }
 

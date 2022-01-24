@@ -13,7 +13,8 @@ Vue.component('upload-field', {
             this.$http.post('/form-manager/getFiles', {
                 files: this.value,
                 table: this.eval['_table'],
-                fieldname: this.eval['_identifier']
+                fieldname: this.eval['_identifier'],
+                pageId: (this.$parent.pageId?this.$parent.pageId:'')
             },{
                 emulateJSON: true,
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -187,8 +188,15 @@ Vue.component('upload-field', {
         '<div class="field-component-container">' +
             '<div v-if="files.length" class="files">' +
                 '<ul v-for="file in files" class="file">' +
-                    '<li v-if="!file.imagesize" class="document"><span>{{ file.name }}</span><div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="defaultLabels.remove"></span></button></div></li>' +
-                    '<li v-if="file.imagesize" class="image"><figure><img :src="file.path" :alt="file.name"></figure><div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="defaultLabels.remove"></span></button></div></li>' +
+                    '<li v-if="!file.imagesize" class="document"><a v-if="file.href" target="_blank" :href="file.href">{{ file.name }}</a><span v-if="!file.href">{{ file.name }}</span><div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="defaultLabels.remove"></span></button></div></li>' +
+                    '<li v-if="file.imagesize" class="image">' +
+                        '<figure>' +
+                            '<a target="_blank" :href="file.href">' +
+                                '<img :src="file.path" :alt="file.name">' +
+                            '</a>'+
+                        '</figure>' +
+                        '<div class="controller"><button type="button" v-on:click.prevent="deleteFile(file.uuid,true)"><span v-html="defaultLabels.remove"></span></button></div>' +
+                    '</li>' +
                 '</ul>' +
             '</div>' +
             '<input type="hidden" :name="name" :value="getStringifyValue()">' +

@@ -1,5 +1,6 @@
+<?php global $objPage; ?>
 <div class="v-component">
-    <single-form submit-label="<?= $this->submitLabel ?>" id="<?= $this->id ?>"<?php if ($this->model): ?> :model="<?= $this->model ?>"<?php endif; ?><?php if ($this->language): ?> language="<?= $this->language ?>"<?php endif; ?> identifier="<?= $this->identifier ?>" source="<?= $this->source ?>" success-redirect="<?= $this->successRedirect ?>">
+    <single-form page-id="<?= ($objPage?$objPage->id:'') ?>" submit-label="<?= $this->submitLabel ?>" id="<?= $this->id ?>"<?php if ($this->model): ?> :model="<?= $this->model ?>"<?php endif; ?><?php if ($this->language): ?> language="<?= $this->language ?>"<?php endif; ?> identifier="<?= $this->identifier ?>" source="<?= $this->source ?>" success-redirect="<?= $this->successRedirect ?>">
         <?php if ($this->formHint): ?>
             <?= $this->formHint ?>
         <?php endif; ?>

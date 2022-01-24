@@ -9,7 +9,7 @@ class FormManagerModule extends \Module {
 
     public function generate() {
 
-        if ( \System::getContainer()->get( 'request_stack' )->getCurrentRequest()->get('_scope') == 'backend' ) {
+        if (\System::getContainer()->get( 'request_stack' )->getCurrentRequest()->get('_scope') == 'backend') {
 
             $objTemplate = new \BackendTemplate('be_wildcard');
             $objTemplate->id = $this->id;
@@ -19,6 +19,10 @@ class FormManagerModule extends \Module {
             $objTemplate->wildcard = '### ' . strtoupper( $GLOBALS['TL_LANG']['FMD']['form-manager'][0] ) . ' ###';
 
             return $objTemplate->parse();
+        }
+
+        if ($objFile = \FilesModel::findByPath(\Input::get('file'))) {
+            \Controller::sendFileToBrowser($objFile->path, true);
         }
 
         $this->arrActiveRecord = $this->getActiveRecord();
