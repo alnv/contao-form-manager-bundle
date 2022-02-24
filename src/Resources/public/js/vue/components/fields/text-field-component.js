@@ -1,4 +1,4 @@
-Vue.component( 'text-field', {
+Vue.component('text-field', {
     data: function () {
         return {
             timeout: null,
@@ -9,7 +9,7 @@ Vue.component( 'text-field', {
         value: function() {
             this.eval['validate'] = true;
             if (this.eval.multiple && this.value.length) {
-                for (var i = 0; i < this.eval.size; i++ ) {
+                for (let i=0; i < this.eval.size; i++) {
                     if (typeof this.value[i] === 'undefined') {
                         this.value[i] = '';
                     }

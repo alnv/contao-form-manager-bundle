@@ -79,9 +79,12 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
 
         header("Access-Control-Allow-Origin: *");
 
-        global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
-        $objPage->language = $GLOBALS['TL_LANGUAGE'];
+
+        global $objPage;
+        if ($objPage) {
+            $objPage->language = $GLOBALS['TL_LANGUAGE'];
+        }
 
         $arrOptions = \Input::get('attributes') ?: [];
         $arrOptions['type'] = \Input::get('type') ?: '';
@@ -102,9 +105,12 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
 
         header("Access-Control-Allow-Origin: *");
 
-        global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
-        $objPage->language = $GLOBALS['TL_LANGUAGE'];
+
+        global $objPage;
+        if ($objPage) {
+            $objPage->language = $GLOBALS['TL_LANGUAGE'];
+        }
 
         $arrOptions = [
             'wizard' => \Input::get('wizard') ?: null,
@@ -125,9 +131,12 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
 
         header("Access-Control-Allow-Origin: *");
 
-        global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
-        $objPage->language = $GLOBALS['TL_LANGUAGE'];
+
+        global $objPage;
+        if ($objPage) {
+            $objPage->language = $GLOBALS['TL_LANGUAGE'];
+        }
 
         $arrOptions = \Input::get('attributes') ?: [];
         $arrOptions['id'] = \Input::get('id') ?: null;
@@ -193,9 +202,12 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
 
         header("Access-Control-Allow-Origin: *");
 
-        global $objPage;
         $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
-        $objPage->language = $GLOBALS['TL_LANGUAGE'];
+
+        global $objPage;
+        if ($objPage) {
+            $objPage->language = $GLOBALS['TL_LANGUAGE'];
+        }
 
         $arrOptions = [];
         $objForm = new ResolveForm( $id, $arrOptions );
