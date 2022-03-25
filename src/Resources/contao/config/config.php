@@ -96,7 +96,7 @@ if (\Config::get('doNotUseThirdPartyStylesNScriptsInFrontend') && TL_MODE == 'FE
     $GLOBALS['CM_THIRD_PARTY_WIDGETS']['STYLES'] = [];
 }
 
-if (\Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts()) {
+if (\Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() && class_exists('Alnv\ContaoAssetsManagerBundle\Library\AssetsManager')) {
     $objFormAssetsManager = \Alnv\ContaoAssetsManagerBundle\Library\AssetsManager::getInstance();
     $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/helpers/validator.js');
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/single-form-component.js' );
@@ -105,14 +105,6 @@ if (\Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts()) {
     foreach ($GLOBALS['CM_THIRD_PARTY_WIDGETS']['SCRIPTS'] as $strScript) {
         $objFormAssetsManager->addIfNotExist($strScript);
     }
-    // $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/libs/flatpickr/js/flatpickr.min.js');
-    // $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/libs/dropzone/js/dropzone.min.js');
-    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/vue-flatpickr-component.min.js' );
-    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/js/de.js' );
-    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/lists/table-list-component.js' );
-    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/date-field-component.js' );
-    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/form-wizard-component.js' );
-    // $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/upload-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/text-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/radio-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/email-field-component.js' );
@@ -125,15 +117,11 @@ if (\Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts()) {
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/explain-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/custom-option-wizard-field-component.js' );
     $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/modals/modal-view-component.js' );
-
     $objFormCssCombiner = new \Combiner();
     foreach ($GLOBALS['CM_THIRD_PARTY_WIDGETS']['STYLES'] as $strStyle) {
         $objFormCssCombiner->add($strStyle);
     }
-    // $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/flatpickr/styles/flatpickr.min.scss' );
-    // $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/basic.scss' );
-    // $objFormCssCombiner->add( 'bundles/alnvcontaoformmanager/js/libs/dropzone/styles/dropzone.scss' );
-    if ( TL_MODE == 'BE' ) {
+    if (TL_MODE == 'BE') {
         $objFormCssCombiner->add('bundles/alnvcontaoformmanager/css/form-wizard-component.scss');
     }
     $objFormCssCombiner->add('bundles/alnvcontaoformmanager/css/form-manager-bundle.scss');
