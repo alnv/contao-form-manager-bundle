@@ -17,7 +17,8 @@
   },
   "require": {
     "contao/core-bundle":"~4.9",
-    "sensio/framework-extra-bundle": "^5.2"
+    "sensio/framework-extra-bundle": "^5.2",
+    "alnv/catalog-manager-bundle": "self.version"
   },
   "config": {
     "preferred-install": "dist"
