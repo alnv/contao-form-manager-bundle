@@ -11,7 +11,7 @@ Vue.component( 'custom-option-wizard-field', {
             if (Array.isArray(this.value)) {
                 return this.value.indexOf(strValue) !== -1;
             }
-            return strValue == this.value;
+            return strValue === this.value;
         },
         setCssClass: function() {
             let objCssClass = {};
@@ -31,20 +31,20 @@ Vue.component( 'custom-option-wizard-field', {
                 return null;
             }
             if (this.newValue && this.newFormVisible) {
-                this.$http.post( '/form-manager/addOption', {
+                this.$http.post('/form-manager/addOption', {
                     option: this.newValue,
                     name: this.name
                 },{
                     emulateJSON: true,
                     'Content-Type': 'application/x-www-form-urlencoded'
-                }).then(function ( objResponse ) {
-                    if ( objResponse.body && objResponse.ok ) {
+                }).then(function (objResponse) {
+                    if (objResponse.body && objResponse.ok) {
                         this.options.push({
                             value: objResponse.body.value,
                             label: objResponse.body.label,
                             delete: true
                         });
-                        this.value.push(objResponse.body.value);
+                        this.$set(this.value, objResponse.body.value.length, objResponse.body.value);
                     }
                 }.bind(this));
             }
@@ -52,18 +52,18 @@ Vue.component( 'custom-option-wizard-field', {
             this.newFormVisible = false;
         },
         deleteOption: function (option) {
-            for (var i = this.options.length-1; i > -1; i--) {
+            for (let i = this.options.length-1; i > -1; i--) {
                 if (this.options[i] === option) {
-                    this.$http.post( '/form-manager/deleteOption', {
+                    this.$http.post('/form-manager/deleteOption', {
                         option: this.options[i]['value'],
                         name: this.name,
                         index: i
                     },{
                         emulateJSON: true,
                         'Content-Type': 'application/x-www-form-urlencoded'
-                    }).then(function ( objResponse ) {
-                        if ( objResponse.body && objResponse.ok ) {
-                            for (var j = 0; j < this.value.length; j++) {
+                    }).then(function (objResponse) {
+                        if (objResponse.body && objResponse.ok) {
+                            for (let j = 0; j < this.value.length; j++) {
                                 if (this.value[j] === objResponse.body.value) {
                                     this.value.splice(j,1);
                                 }
@@ -95,7 +95,7 @@ Vue.component( 'custom-option-wizard-field', {
             required: true
         },
         value: {
-            default: null,
+            default: [],
             type: Array
         },
         idPrefix: {
@@ -114,7 +114,7 @@ Vue.component( 'custom-option-wizard-field', {
             '<div class="field-component-container">' +
                 '<p v-if="!noLabel" class="label" v-html="eval.label"></p>' +
                 '<div v-for="(option,index) in options" class="checkbox-container" v-bind:class="{\'checked\': checked(option.value)}">' +
-                    '<input type="checkbox" v-model="value" :name="name + \'[]\'" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
+                    '<input type="checkbox" v-model="value" :name="name + \'[]\'" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index" multiple>' +
                     '<label :for="idPrefix + \'id_\' + name + \'_\' + index" v-html="option.label"></label>' +
                     '<form class="form-delete">' +
                         '<button class="delete button" v-if="option.delete" @click.prevent="deleteOption(option)"><i class="delete"></i></button>' +
