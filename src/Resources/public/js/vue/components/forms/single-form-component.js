@@ -239,7 +239,7 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
                     language: this.language
                 }, {
                     emulateJSON: true
-                }).then( function (objResponse) {
+                }).then(function(objResponse) {
                     if (!objResponse.body.error) {
                         this.model = {};
                         localStorage.setItem('model-' + this.id, '');
@@ -259,7 +259,7 @@ const singleFormComponent = Vue.component('single-form', function (resolve, reje
             },
             getParameters: function() {
                 var arrParameters = [];
-                if ( typeof this.attributes !== 'undefined' && this.attributes ) {
+                if (typeof this.attributes !== 'undefined' && this.attributes) {
                     for (var strName in this.attributes) {
                         if (this.attributes.hasOwnProperty(strName)) {
                             arrParameters.push('attributes[' + strName + ']' + '=' + encodeURIComponent(this.attributes[strName]));

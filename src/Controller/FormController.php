@@ -91,6 +91,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         $arrOptions['initialized'] = \Input::get('initialized') ?: '';
         $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
         $objForm = new ResolveDca($table, $arrOptions);
+
         return new JsonResponse($objForm->getForm());
     }
 

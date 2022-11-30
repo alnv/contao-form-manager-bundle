@@ -16,9 +16,11 @@ class ResolveDca extends Resolver {
         $this->strTable = $strTable;
         $this->arrOptions = $arrOptions;
         $this->strModuleId = $arrOptions['id'];
+
         if ($arrOptions['id']) {
             $this->objModule = \ModuleModel::findByPk($arrOptions['id']);
         }
+
         \System::loadLanguageFile('default', $GLOBALS['TL_LANGUAGE']);
         \System::loadLanguageFile($this->strTable, $GLOBALS['TL_LANGUAGE']);
         \Controller::loadDataContainer($this->strTable);
@@ -70,10 +72,13 @@ class ResolveDca extends Resolver {
 
                 $arrAttributes = $strClass::getAttributesFromDca($arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable);
                 $arrAttributes = $this->parseAttributes($arrAttributes);
+
                 if ($arrAttributes === null) {
                     continue;
                 }
+
                 $this->addParentData($strFieldname, $arrAttributes);
+
                 if (is_array($arrSelectors) && in_array($strFieldname, $arrSelectors) && $strFieldname != 'type') {
                     $arrAttributes['isSelector'] = true;
                 }
@@ -206,7 +211,7 @@ class ResolveDca extends Resolver {
             return null;
         }
 
-        if ( !in_array( 'notification_center', array_keys(\System::getContainer()->getParameter('kernel.bundles'))) ) {
+        if (!in_array('notification_center', array_keys(\System::getContainer()->getParameter('kernel.bundles')))) {
             return null;
         }
 
