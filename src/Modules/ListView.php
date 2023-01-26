@@ -70,15 +70,17 @@ class ListView {
         $strMemberField = $objRoleResolver->getFieldByRole('member') ?: $objRoleResolver->getFieldByRole('members');
 
         if ($strMemberField) {
+            $strTable = ($GLOBALS['TL_DCA'][$this->strTable]['config']['_table']??$this->strTable);
             $arrOptions['value'][] = $objMember->id;
-            $arrPermissionQueries[] = 'FIND_IN_SET(?, '.($GLOBALS['TL_DCA'][$this->strTable]['config']['_table']??$this->strTable).'.'.$strMemberField.')';
+            $arrPermissionQueries[] = 'FIND_IN_SET(?, '.($strTable?$strTable.'.':'').$strMemberField.')';
         }
 
         if ($strGroupField = $objRoleResolver->getFieldByRole('group')) {
             if (is_array($objMember->groups) && !empty($objMember->groups)) {
                 foreach ($objMember->groups as $strGroupId) {
+                    $strTable = ($GLOBALS['TL_DCA'][$this->strTable]['config']['_table']??$this->strTable);
                     $arrOptions['value'][] = $strGroupId;
-                    $arrPermissionQueries[] = 'FIND_IN_SET('.($GLOBALS['TL_DCA'][$this->strTable]['config']['_table']??$this->strTable).'.'.$strGroupField.', ?)';
+                    $arrPermissionQueries[] = 'FIND_IN_SET('.($strTable?$strTable.'.':'').$strGroupField.', ?)';
                 }
             }
         }
