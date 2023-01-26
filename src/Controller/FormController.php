@@ -293,20 +293,47 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
 
         $this->container->get('contao.framework')->initialize();
 
-        $objField = \Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel::findByFieldname(\Input::post('name'));
+        $objCatalog = \Alnv\ContaoCatalogManagerBundle\Models\CatalogModel::findByTableOrModule(\Input::post('table'));
+        if ($objCatalog === null) {
+            return new JsonResponse([], 500);
+        }
+
+        $objField = \Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel::findByFieldnameAndPid(\Input::post('name'), $objCatalog->id);
         if ($objField === null) {
             return new JsonResponse([], 500);
         }
-        $objOption = new \Alnv\ContaoCatalogManagerBundle\Models\CatalogOptionModel();
-        $objOption->value = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::generateAlias(\Input::post('option'), 'value', 'tl_catalog_option', $objField->id);
-        $objOption->label = \StringUtil::decodeEntities(\Input::post('option'));
-        $objOption->pid = $objField->id;
-        $objOption->tstamp = time();
-        $objOption->save();
+
+        $strLabel = \StringUtil::decodeEntities(\Input::post('option'));
+        $strValue = '';
+
+        switch ($objField->optionsSource) {
+            case 'options':
+                $objOption = new \Alnv\ContaoCatalogManagerBundle\Models\CatalogOptionModel();
+                $objOption->value = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::generateAlias(\Input::post('option'), 'value', 'tl_catalog_option', $objField->id);
+                $objOption->label = $strLabel;
+                $objOption->pid = $objField->id;
+                $objOption->tstamp = time();
+                $objOption->save();
+                break;
+            case 'dbOptions':
+                $arrSet = [
+                    'tstamp' => time(),
+                    'alias' => \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::generateAlias(\Input::post('option'), 'alias', $objField->dbTable), // get dyn alias
+                ];
+                $arrSet[$objField->dbLabel] = $strLabel;
+                if ($objField->dbKey != 'id') {
+                    $arrSet[$objField->dbKey] = $strValue;
+                }
+                $objInsert = \Database::getInstance()->prepare('INSERT INTO ' . $objField->dbTable . ' %s')->set($arrSet)->execute();
+                if ($objField->dbKey == 'id') {
+                    $strValue = $objInsert->insertId;
+                }
+                break;
+        }
 
         return new JsonResponse([
-            'value' => $objOption->value,
-            'label' => $objOption->label
+            'value' => $strValue,
+            'label' => $strLabel
         ]);
     }
 
@@ -318,15 +345,29 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
     public function deleteOption() {
 
         $this->container->get( 'contao.framework' )->initialize();
-        $objField = \Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel::findByFieldname(\Input::post('name'));
+
+        $objCatalog = \Alnv\ContaoCatalogManagerBundle\Models\CatalogModel::findByTableOrModule(\Input::post('table'));
+        if ($objCatalog === null) {
+            return new JsonResponse([], 500);
+        }
+
+        $objField = \Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel::findByFieldnameAndPid(\Input::post('name'), $objCatalog->id);
         if ($objField === null) {
             return new JsonResponse([], 500);
         }
-        $objOption = \Alnv\ContaoCatalogManagerBundle\Models\CatalogOptionModel::findByValueAndPid(\Input::post('option'), $objField->id);
-        if ($objOption === null) {
-            return new JsonResponse([], 500);
+
+        switch ($objField->optionsSource) {
+            case 'options':
+                $objOption = \Alnv\ContaoCatalogManagerBundle\Models\CatalogOptionModel::findByValueAndPid(\Input::post('option'), $objField->id);
+                if ($objOption) {
+                    $objOption->delete();
+                }
+                break;
+            case 'dbOptions':
+                \Database::getInstance()->prepare('DELETE FROM ' . $objField->dbTable . ' WHERE `'.$objField->dbKey.'`=?')->execute(\Input::post('option'));
+                break;
         }
-        $objOption->delete();
+
         return new JsonResponse([
             'index' => \Input::post('index'),
             'value' => \Input::post('option')

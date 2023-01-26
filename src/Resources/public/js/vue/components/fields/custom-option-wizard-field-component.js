@@ -32,6 +32,7 @@ Vue.component( 'custom-option-wizard-field', {
             }
             if (this.newValue && this.newFormVisible) {
                 this.$http.post('/form-manager/addOption', {
+                    table: this.eval['_table'],
                     option: this.newValue,
                     name: this.name
                 },{
@@ -39,12 +40,12 @@ Vue.component( 'custom-option-wizard-field', {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }).then(function (objResponse) {
                     if (objResponse.body && objResponse.ok) {
-                        this.options.push({
+                        this.$set(this.options, this.options.length, {
                             value: objResponse.body.value,
                             label: objResponse.body.label,
                             delete: true
                         });
-                        this.$set(this.value, objResponse.body.value.length, objResponse.body.value);
+                        this.value.push(objResponse.body.value);
                     }
                 }.bind(this));
             }
@@ -55,6 +56,7 @@ Vue.component( 'custom-option-wizard-field', {
             for (let i = this.options.length-1; i > -1; i--) {
                 if (this.options[i] === option) {
                     this.$http.post('/form-manager/deleteOption', {
+                        table: this.eval['_table'],
                         option: this.options[i]['value'],
                         name: this.name,
                         index: i
@@ -112,9 +114,10 @@ Vue.component( 'custom-option-wizard-field', {
     template:
         '<div class="field-component custom-option-wizard" v-bind:class="setCssClass()">' +
             '<div class="field-component-container">' +
+                '<input type="hidden" :name="name" :value="this.value">' +
                 '<p v-if="!noLabel" class="label" v-html="eval.label"></p>' +
-                '<div v-for="(option,index) in options" class="checkbox-container" v-bind:class="{\'checked\': checked(option.value)}">' +
-                    '<input type="checkbox" v-model="value" :name="name + \'[]\'" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index" multiple>' +
+                '<div v-for="(option, index) in options" class="checkbox-container" v-bind:class="{\'checked\': checked(option.value)}">' +
+                    '<input type="checkbox" v-model="value" :value="option.value" :id="idPrefix + \'id_\' + name + \'_\' + index">' +
                     '<label :for="idPrefix + \'id_\' + name + \'_\' + index" v-html="option.label"></label>' +
                     '<form class="form-delete">' +
                         '<button class="delete button" v-if="option.delete" @click.prevent="deleteOption(option)"><i class="delete"></i></button>' +

@@ -12,10 +12,15 @@ class CustomOptionWizard extends \CheckBoxWizard {
         \DataContainer::loadDataContainer($this->strTable);
         \System::loadLanguageFile($this->strTable);
 
-        $arrAttributes = $this->getAttributesFromDca($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strName],$this->strName, null, $this->strName, $this->strTable, null);
+        $arrAttributes = $this->getAttributesFromDca($GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strName], $this->strName, null, $this->strName, $this->strTable, null);
+        $arrAttributes['_table'] = $this->strTable;
 
-        if ($this->varValue == '') {
+        if (empty($this->varValue)) {
             $this->varValue = [];
+        }
+
+        if (is_string($this->varValue)) {
+            $this->varValue = explode(',', $this->varValue);
         }
 
         $strValue = htmlspecialchars(json_encode($this->varValue),ENT_QUOTES,'UTF-8');

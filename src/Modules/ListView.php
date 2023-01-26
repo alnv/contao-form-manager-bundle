@@ -71,14 +71,14 @@ class ListView {
 
         if ($strMemberField) {
             $arrOptions['value'][] = $objMember->id;
-            $arrPermissionQueries[] = 'FIND_IN_SET(?, '.$GLOBALS['TL_DCA'][$this->strTable]['config']['_table'].'.'.$strMemberField.')';
+            $arrPermissionQueries[] = 'FIND_IN_SET(?, '.($GLOBALS['TL_DCA'][$this->strTable]['config']['_table']??$this->strTable).'.'.$strMemberField.')';
         }
 
         if ($strGroupField = $objRoleResolver->getFieldByRole('group')) {
             if (is_array($objMember->groups) && !empty($objMember->groups)) {
                 foreach ($objMember->groups as $strGroupId) {
                     $arrOptions['value'][] = $strGroupId;
-                    $arrPermissionQueries[] = 'FIND_IN_SET('.$GLOBALS['TL_DCA'][$this->strTable]['config']['_table'].'.'.$strGroupField.', ?)';
+                    $arrPermissionQueries[] = 'FIND_IN_SET('.($GLOBALS['TL_DCA'][$this->strTable]['config']['_table']??$this->strTable).'.'.$strGroupField.', ?)';
                 }
             }
         }
@@ -133,6 +133,7 @@ class ListView {
         $arrFields = \StringUtil::deserialize($this->objModule->cmFields, true);
         \System::loadLanguageFile('default', 'de');
         \System::loadLanguageFile($this->strTable, 'de');
+
         foreach ($this->objListing->parse() as $arrEntity) {
             $arrRow = [
                 'id' => $arrEntity['id']

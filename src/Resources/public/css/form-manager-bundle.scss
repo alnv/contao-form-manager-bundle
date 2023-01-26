@@ -20,17 +20,26 @@
     display: flex;
     input {
       outline: none;
-      padding: 7px 12px;
-      margin-right: 10px;
+      padding: 0 6px;
+      margin-right: 6px;
+      line-height: 26px;
+      height: 26px;
+      border-radius: 3px;
+      color: #222;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
     }
     button {
       outline: none;
-      padding: 7px 12px;
+      padding: 0 6px;
+      height: 26px;
+      line-height: 26px;
       border: 1px solid #aaa;
-      border-radius: 2px;
       box-sizing: border-box;
       cursor: pointer;
-      background: #fff;
+      background: #eee;
+      color: #222;
+      border-radius: 3px;
     }
   }
   form.form-delete {
@@ -39,6 +48,12 @@
   .checkbox-container {
     display: flex;
     align-items: center;
+    padding: 3px 6px;
+    border-radius: 3px;
+    background: #f3f3f5;
+    border: 1px solid #ddd;
+    margin-right: 3px;
+    margin-bottom: 3px;
     input[type="checkbox"] {
       width: auto;
       margin-right: 3px;
@@ -47,6 +62,11 @@
       display: inline-block;
       margin-bottom: 0;
     }
+  }
+  .field-component-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
   }
 }
 .widget {
