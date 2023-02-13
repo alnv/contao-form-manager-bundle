@@ -309,16 +309,18 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         switch ($objField->optionsSource) {
             case 'options':
                 $objOption = new \Alnv\ContaoCatalogManagerBundle\Models\CatalogOptionModel();
-                $objOption->value = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::generateAlias(\Input::post('option'), 'value', 'tl_catalog_option', $objField->id);
+                $objOption->value = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::generateAlias(\Input::post('option'), 'value', 'tl_catalog_option');
                 $objOption->label = $strLabel;
                 $objOption->pid = $objField->id;
                 $objOption->tstamp = time();
                 $objOption->save();
+
+                $strValue = $objOption->value;
                 break;
             case 'dbOptions':
                 $arrSet = [
                     'tstamp' => time(),
-                    'alias' => \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::generateAlias(\Input::post('option'), 'alias', $objField->dbTable), // get dyn alias
+                    'alias' => \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::generateAlias(\Input::post('option'), 'alias', $objField->dbTable),
                 ];
                 $arrSet[$objField->dbLabel] = $strLabel;
                 if ($objField->dbKey != 'id') {
