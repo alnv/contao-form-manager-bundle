@@ -11,6 +11,7 @@ class CatalogField {
             $arrField['inputType'] = 'customOptionWizard';
             $arrField['eval']['tl_class'] = 'clr';
             $arrField['eval']['multiple'] = true;
+            $arrField['filter'] = true;
             $arrField['eval']['csv'] = ',';
             $arrField['eval']['addButtonLabel1'] = 'Tag hinzufügen';
             $arrField['eval']['addButtonLabel2'] = 'Hinzufügen';
