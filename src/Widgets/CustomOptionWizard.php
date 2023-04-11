@@ -65,8 +65,9 @@ class CustomOptionWizard extends \Widget {
 
         $strValue = htmlspecialchars(\json_encode($this->varValue),ENT_QUOTES,'UTF-8');
 
-        asort($arrAttributes['options'] ?? []);
-        $arrAttributes['options'] = array_values($arrAttributes['options']);
+        $arrOptions = $arrAttributes['options'] ?? [];
+        asort($arrOptions);
+        $arrAttributes['options'] = array_values($arrOptions);
 
         return '<div class="v-component"><custom-option-wizard-field :no-label="true" :value="'.$strValue.'" :eval="'. htmlspecialchars(\json_encode($arrAttributes),ENT_QUOTES,'UTF-8') .'" name="'.$this->strName.'"></custom-option-wizard-field></div>';
     }
