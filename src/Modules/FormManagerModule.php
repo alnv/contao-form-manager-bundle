@@ -2,39 +2,58 @@
 
 namespace Alnv\ContaoFormManagerBundle\Modules;
 
-class FormManagerModule extends \Module {
+use Alnv\ContaoCatalogManagerBundle\Library\RoleResolver;
+use Alnv\ContaoCatalogManagerBundle\Views\Listing;
+use Alnv\ContaoCatalogManagerBundle\Views\Master;
+use Alnv\ContaoFormManagerBundle\Library\MemberPermissions;
+use Alnv\ContaoTranslationManagerBundle\Library\Translation;
+use Contao\BackendTemplate;
+use Contao\Controller;
+use Contao\CoreBundle\Exception\InsufficientAuthenticationException;
+use Contao\Environment;
+use Contao\FilesModel;
+use Contao\FrontendUser;
+use Contao\Input;
+use Contao\Module;
+use Contao\PageModel;
+use Contao\System;
+
+class FormManagerModule extends Module
+{
 
     protected $arrActiveRecord = [];
     protected $strTemplate = 'mod_form_manager';
 
-    public function generate() {
+    public function generate()
+    {
 
-        if (\System::getContainer()->get( 'request_stack' )->getCurrentRequest()->get('_scope') == 'backend') {
+        if (System::getContainer()->get('request_stack')->getCurrentRequest()->get('_scope') == 'backend') {
 
-            $objTemplate = new \BackendTemplate('be_wildcard');
+            $objTemplate = new BackendTemplate('be_wildcard');
             $objTemplate->id = $this->id;
             $objTemplate->link = $this->name;
             $objTemplate->title = $this->headline;
             $objTemplate->href = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
-            $objTemplate->wildcard = '### ' . strtoupper( $GLOBALS['TL_LANG']['FMD']['form-manager'][0] ) . ' ###';
+            $objTemplate->wildcard = '### ' . strtoupper($GLOBALS['TL_LANG']['FMD']['form-manager'][0]) . ' ###';
 
             return $objTemplate->parse();
         }
 
-        if ($objFile = \FilesModel::findByPath(\Input::get('file'))) {
-            \Controller::sendFileToBrowser($objFile->path, true);
+        if ($objFile = FilesModel::findByPath(Input::get('file'))) {
+            Controller::sendFileToBrowser($objFile->path, true);
         }
 
         $this->arrActiveRecord = $this->getActiveRecord();
-        $objPermission = new \Alnv\ContaoFormManagerBundle\Library\MemberPermissions();
+        $objPermission = new MemberPermissions();
         if (!empty($this->arrActiveRecord) && !$objPermission->hasPermission($this->cmIdentifier, $this->arrActiveRecord)) {
-            throw new \CoreBundle\Exception\InsufficientAuthenticationException('Page access denied:  ' . \Environment::get('uri'));
+            throw new InsufficientAuthenticationException('Page access denied:  ' . Environment::get('uri'));
         }
 
         return parent::generate();
     }
 
-    protected function compile() {
+    protected function compile()
+    {
 
         $this->Template->source = $this->cmSource;
         $this->Template->formHint = $this->cmFormHint;
@@ -42,10 +61,11 @@ class FormManagerModule extends \Module {
         $this->Template->language = $GLOBALS['TL_LANGUAGE'] ?: '';
         $this->Template->successRedirect = $this->getFrontendUrl($this->cmSuccessRedirect);
         $this->Template->model = $this->getJsModelObject();
-        $this->Template->submitLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate('form.' . $this->cmIdentifier . '.submit',  'Speichern');
+        $this->Template->submitLabel = Translation::getInstance()->translate('form.' . $this->cmIdentifier . '.submit', 'Speichern');
     }
 
-    protected function getJsModelObject() {
+    protected function getJsModelObject()
+    {
 
         if (empty($this->arrActiveRecord)) {
             return null;
@@ -65,21 +85,25 @@ class FormManagerModule extends \Module {
             }
             $arrModel[$strField] = $varValue;
         }
-        return htmlspecialchars(json_encode($arrModel),ENT_QUOTES,'UTF-8');
+        return htmlspecialchars(json_encode($arrModel), ENT_QUOTES, 'UTF-8');
     }
 
-    protected function getFrontendUrl($strPageId) {
+    protected function getFrontendUrl($strPageId)
+    {
         if (!$strPageId) {
             return '';
         }
-        $objPage = \PageModel::findByPk($strPageId);
-        if ( $objPage === null ) {
+
+        $objPage = PageModel::findByPk($strPageId);
+        if ($objPage === null) {
             return '';
         }
+
         return $objPage->getFrontendUrl();
     }
 
-    protected function getActiveRecord() {
+    protected function getActiveRecord()
+    {
 
         if ($this->cmSource != 'dc') {
             return [];
@@ -89,17 +113,17 @@ class FormManagerModule extends \Module {
             if (!$this->cmStandalone) {
                 return [];
             }
-            $objUser = \FrontendUser::getInstance();
+            $objUser = FrontendUser::getInstance();
             if (!$objUser->id) {
                 return [];
             }
-            $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->cmIdentifier);
+            $objRoleResolver = RoleResolver::getInstance($this->cmIdentifier);
             $strUserField = $objRoleResolver->getFieldByRole('member');
             if (!$strUserField) {
                 return [];
             }
-            $arrListings = (new \Alnv\ContaoCatalogManagerBundle\Views\Listing($this->cmIdentifier, [
-                'column' => [''.$strUserField.'=?'],
+            $arrListings = (new Listing($this->cmIdentifier, [
+                'column' => ['' . $strUserField . '=?'],
                 'value' => [$objUser->id],
                 'ignoreVisibility' => true,
                 'limit' => 1,
@@ -113,8 +137,8 @@ class FormManagerModule extends \Module {
                 return $arrListings[0];
             }
         } else {
-            return (new \Alnv\ContaoCatalogManagerBundle\Views\Master($this->cmIdentifier, [
-                'alias' => \Input::get('auto_item'),
+            return (new Master($this->cmIdentifier, [
+                'alias' => Input::get('auto_item'),
                 'ignoreVisibility' => true,
                 'fastMode' => true,
                 'isForm' => true,

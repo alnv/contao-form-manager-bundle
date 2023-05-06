@@ -2,9 +2,13 @@
 
 namespace Alnv\ContaoFormManagerBundle\Hooks;
 
-class CatalogField {
+use Alnv\ContaoCatalogManagerBundle\Library\Options;
 
-    public function parseCatalogField($arrField, $arrCatalogField) {
+class CatalogField
+{
+
+    public function parseCatalogField($arrField, $arrCatalogField)
+    {
 
         if ($arrCatalogField['type'] == 'customOptionWizard') {
 
@@ -16,8 +20,8 @@ class CatalogField {
             $arrField['eval']['addButtonLabel1'] = 'Tag hinzufügen';
             $arrField['eval']['addButtonLabel2'] = 'Hinzufügen';
 
-            $arrField['options_callback'] = function ($objDataContainer=null) use ($arrCatalogField) {
-                $objOptions = \Alnv\ContaoCatalogManagerBundle\Library\Options::getInstance($arrCatalogField['fieldname'] . '.' . $arrCatalogField['pid']);
+            $arrField['options_callback'] = function ($objDataContainer = null) use ($arrCatalogField) {
+                $objOptions = Options::getInstance($arrCatalogField['fieldname'] . '.' . $arrCatalogField['pid']);
                 $objOptions::setParameter($arrCatalogField, $objDataContainer);
                 return $objOptions::getOptions();
             };

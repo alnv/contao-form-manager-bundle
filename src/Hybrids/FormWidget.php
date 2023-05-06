@@ -2,9 +2,18 @@
 
 namespace Alnv\ContaoFormManagerBundle\Hybrids;
 
-class FormWidget extends \Widget {
+use Contao\Database;
+use Contao\Date;
+use Contao\Input;
+use Contao\StringUtil;
+use Contao\Validator;
+use Contao\Widget;
 
-    public function validate() {
+class FormWidget extends Widget
+{
+
+    public function validate()
+    {
 
         $varValues = $this->getPost($this->strName);
 
@@ -13,8 +22,9 @@ class FormWidget extends \Widget {
         }
 
         if ($this->readOnly) {
-            $objEntity = \Database::getInstance()->prepare('SELECT * FROM ' . $this->strTable . ' WHERE id=?')->execute(\Input::get('id'));
-            $varValues = \StringUtil::deserialize($objEntity->{$this->id}, true);
+            $objEntity = Database::getInstance()->prepare('SELECT * FROM ' . $this->strTable . ' WHERE id=?')->execute(Input::get('id'));
+            $varValues = StringUtil::deserialize($objEntity->{$this->id}, true);
+
             return $varValues;
         }
 
@@ -22,45 +32,45 @@ class FormWidget extends \Widget {
             $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['mandatory'], $this->strLabel));
         }
 
-        \Input::setGet('params', $this->getParams());
-        $arrFields =  $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strName]['eval']['form'];
+        Input::setGet('params', $this->getParams());
+        $arrFields = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strName]['eval']['form'];
 
-        if ( is_array($varValues) && !empty($varValues)) {
+        if (is_array($varValues) && !empty($varValues)) {
             foreach ($varValues as $strIndex => $arrValue) {
                 foreach ($arrValue as $strFieldname => $strValue) {
 
                     $strPost = $this->strName . '_' . $strIndex . '_' . $strFieldname;
-                    $strClass = $GLOBALS['TL_FFL'][ $arrFields[$strFieldname]['inputType'] ];
+                    $strClass = $GLOBALS['TL_FFL'][$arrFields[$strFieldname]['inputType']];
 
-                    if ( !class_exists( $strClass ) ) {
+                    if (!class_exists($strClass)) {
                         continue;
                     }
 
-                    \Input::setPost($strPost, $strValue);
+                    Input::setPost($strPost, $strValue);
 
-                    if ( is_string($strValue) && (\Validator::isDate( $strValue ) || \Validator::isDatim( $strValue )) ) {
-                        $strValue = (new \Date( $strValue, $arrFields[$strFieldname]['eval']['dateFormat']))->tstamp;
+                    if (is_string($strValue) && (Validator::isDate($strValue) || Validator::isDatim($strValue))) {
+                        $strValue = (new Date($strValue, $arrFields[$strFieldname]['eval']['dateFormat']))->tstamp;
                     }
 
-                    $varValues[ $strIndex ][ $strFieldname ] = $strValue;
-                    $arrFields[ $strFieldname ]['value'] = $strValue;
-                    $arrAttributes = $strClass::getAttributesFromDca($arrFields[ $strFieldname ], $strPost, $arrFields[ $strFieldname ]['default'], $strPost, $this->strTable);
+                    $varValues[$strIndex][$strFieldname] = $strValue;
+                    $arrFields[$strFieldname]['value'] = $strValue;
+                    $arrAttributes = $strClass::getAttributesFromDca($arrFields[$strFieldname], $strPost, $arrFields[$strFieldname]['default'], $strPost, $this->strTable);
                     $arrAttributes['name'] = $strPost;
                     $objField = new $strClass($arrAttributes);
                     $objField->validate();
 
-                    if ( $objField->hasErrors() ) {
+                    if ($objField->hasErrors()) {
                         $arrErrors = $objField->getErrors();
-                        if ( is_array($arrErrors) && !empty($arrErrors)) {
-                            foreach ( $arrErrors as $strError ) {
+                        if (is_array($arrErrors) && !empty($arrErrors)) {
+                            foreach ($arrErrors as $strError) {
                                 $this->addError($strError);
                             }
                         }
                     }
 
-                    if ( isset( $GLOBALS['TL_HOOKS']['validateFormWidgetField'] ) && is_array( $GLOBALS['TL_HOOKS']['validateFormWidgetField'] ) ) {
-                        foreach ( $GLOBALS['TL_HOOKS']['validateFormWidgetField'] as $arrCallback ) {
-                            $this->import( $arrCallback[0] );
+                    if (isset($GLOBALS['TL_HOOKS']['validateFormWidgetField']) && is_array($GLOBALS['TL_HOOKS']['validateFormWidgetField'])) {
+                        foreach ($GLOBALS['TL_HOOKS']['validateFormWidgetField'] as $arrCallback) {
+                            $this->import($arrCallback[0]);
                             $this->{$arrCallback[0]}->{$arrCallback[1]}($strPost, $arrAttributes, $objField, $this);
                         }
                     }
@@ -69,46 +79,52 @@ class FormWidget extends \Widget {
         }
 
         $this->varValue = $varValues;
+
+        return $varValues;
     }
 
-    protected function getValues() {
+    protected function getValues()
+    {
 
-        $this->varValue = \StringUtil::deserialize( $this->varValue,true );
+        $this->varValue = StringUtil::deserialize($this->varValue, true);
 
-        if ( empty( $this->varValue ) ) {
+        if (empty($this->varValue)) {
             return $this->varValue;
         }
 
-        $arrFields =  $GLOBALS['TL_DCA'][$this->strTable]['fields'][ $this->strName ]['eval']['form'];
-        foreach ( $this->varValue as $strIndex => $arrValue ) {
-            foreach ( $arrValue as $strFieldname => $strValue ) {
-                $this->varValue[$strIndex][$strFieldname] = $this->parseValue($strValue,$arrFields[$strFieldname]);
+        $arrFields = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$this->strName]['eval']['form'];
+        foreach ($this->varValue as $strIndex => $arrValue) {
+            foreach ($arrValue as $strFieldname => $strValue) {
+                $this->varValue[$strIndex][$strFieldname] = $this->parseValue($strValue, $arrFields[$strFieldname]);
             }
         }
 
         return $this->varValue;
     }
 
-    protected function parseValue($strValue, $arrField) {
+    protected function parseValue($strValue, $arrField)
+    {
 
-        if ( !is_array($strValue) && \Validator::isNumeric($strValue) && in_array($arrField['eval']['rgxp'], ['date', 'time', 'datim']) ) {
-            $strValue = (new \Date($strValue, \Date::getFormatFromRgxp($arrField['eval']['rgxp'])))->{$arrField['eval']['rgxp']};
+        if (!is_array($strValue) && Validator::isNumeric($strValue) && in_array($arrField['eval']['rgxp'], ['date', 'time', 'datim'])) {
+            $strValue = (new Date($strValue, Date::getFormatFromRgxp($arrField['eval']['rgxp'])))->{$arrField['eval']['rgxp']};
         }
 
         return $strValue;
     }
 
-    protected function getParams() {
+    protected function getParams()
+    {
 
         return [
-            'do' => \Input::get('do'),
-            'id' => \Input::get('id'),
-            'act' => \Input::get('act'),
-            'table' => \Input::get('table') ?: '',
+            'do' => Input::get('do'),
+            'id' => Input::get('id'),
+            'act' => Input::get('act'),
+            'table' => Input::get('table') ?: '',
         ];
     }
 
-    protected function hasValue($varValues) {
+    protected function hasValue($varValues)
+    {
 
         if (!$varValues || empty($varValues)) {
             return false;
@@ -125,5 +141,7 @@ class FormWidget extends \Widget {
         return true;
     }
 
-    public function generate() {}
+    public function generate()
+    {
+    }
 }

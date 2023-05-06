@@ -7,27 +7,21 @@
       "Alnv\\ContaoFormManagerBundle\\": "src/"
     },
     "classmap": [
-      "src/Resources/contao/"
+      "contao/"
     ],
     "exclude-from-classmap": [
-      "src/Resources/contao/dca/",
-      "src/Resources/contao/config/",
-      "src/Resources/contao/languages/"
+      "contao/dca/",
+      "contao/config/",
+      "contao/languages/"
     ]
   },
   "require": {
-    "contao/core-bundle":"~4.9",
-    "sensio/framework-extra-bundle": "^5.2"
+    "contao/core-bundle":"~5.1"
   },
   "config": {
     "preferred-install": "dist"
   },
   "extra": {
-    "contao": {
-      "sources": {
-        "": "system/modules/contao-form-manager-bundle"
-      }
-    },
     "contao-manager-plugin": "Alnv\\ContaoFormManagerBundle\\ContaoManager\\Plugin"
   }
 }

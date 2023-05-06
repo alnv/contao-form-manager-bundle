@@ -2,40 +2,55 @@
 
 namespace Alnv\ContaoFormManagerBundle\Library;
 
+use NotificationCenter\Model\Notification;
+use Alnv\ContaoCatalogManagerBundle\Library\RoleResolver;
 use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
+use Alnv\ContaoFormManagerBundle\Helper\NotificationTokens;
+use Alnv\ContaoFormManagerBundle\Helper\VirtualDataContainer;
+use Contao\Database;
+use Contao\FrontendUser;
+use Contao\Input;
+use Contao\StringUtil;
+use Contao\System;
+use Contao\ModuleModel;
+use Contao\Controller;
 
-class ResolveDca extends Resolver {
+class ResolveDca extends Resolver
+{
 
     protected $objModule = null;
+
     protected $strTable = null;
+
     protected $arrOptions = [];
+
     protected $arrPalette = [];
 
-    public function __construct($strTable, $arrOptions = []) {
+    public function __construct($strTable, $arrOptions = [])
+    {
 
         $this->strTable = $strTable;
         $this->arrOptions = $arrOptions;
         $this->strModuleId = $arrOptions['id'];
 
         if ($arrOptions['id']) {
-            $this->objModule = \ModuleModel::findByPk($arrOptions['id']);
+            $this->objModule = ModuleModel::findByPk($arrOptions['id']);
         }
 
-        \System::loadLanguageFile('default', $GLOBALS['TL_LANGUAGE']);
-        \System::loadLanguageFile($this->strTable, $GLOBALS['TL_LANGUAGE']);
-        \Controller::loadDataContainer($this->strTable);
-
-        parent::__construct();
+        System::loadLanguageFile('default', $GLOBALS['TL_LANGUAGE']);
+        System::loadLanguageFile($this->strTable, $GLOBALS['TL_LANGUAGE']);
+        Controller::loadDataContainer($this->strTable);
     }
 
-    public function getForm() {
+    public function getForm()
+    {
 
         if (!$GLOBALS['TL_DCA'][$this->strTable]) {
             return [];
         }
 
         if (!$this->arrOptions['initialized']) {
-            $this->arrOptions['type'] = $GLOBALS['TL_DCA'][ $this->strTable ]['fields']['type']['default'];
+            $this->arrOptions['type'] = $GLOBALS['TL_DCA'][$this->strTable]['fields']['type']['default'];
         }
 
         if (!$this->arrOptions['type']) {
@@ -92,7 +107,8 @@ class ResolveDca extends Resolver {
         return $arrPalettes;
     }
 
-    protected function getActiveSelector() {
+    protected function getActiveSelector()
+    {
 
         $arrSubpalettes = [];
         if (is_array($this->arrOptions['subpalettes']) && !empty($this->arrOptions['subpalettes'])) {
@@ -101,33 +117,34 @@ class ResolveDca extends Resolver {
                 if ($strValue == '1') {
                     $strValue = '';
                 }
-                $strPalette = $strFieldname . ($strValue ? '_' . $strValue : ''); $GLOBALS['TL_DCA'][$this->strTable]['subpalettes'][$strFieldname . ($strValue ? '_' . $strValue : '')];
-                if (isset($GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strPalette ])) {
-                    $arrSubpalettes[$strPalette] = $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][$strPalette];
+                $strPalette = $strFieldname . ($strValue ? '_' . $strValue : '');
+                // $GLOBALS['TL_DCA'][$this->strTable]['subpalettes'][$strFieldname . ($strValue ? '_' . $strValue : '')];
+                if (isset($GLOBALS['TL_DCA'][$this->strTable]['subpalettes'][$strPalette])) {
+                    $arrSubpalettes[$strPalette] = $GLOBALS['TL_DCA'][$this->strTable]['subpalettes'][$strPalette];
                 }
             }
         }
         return $arrSubpalettes;
     }
 
-    public function saveRecord($arrForm) {
+    public function saveRecord($arrForm)
+    {
 
         $arrSubmitted = [];
         $arrSubmitted['tstamp'] = time();
-        $objMember = \FrontendUser::getInstance();
+        $objMember = FrontendUser::getInstance();
 
         foreach ($arrForm as $objPalette) {
             foreach ($objPalette->fields as $arrField) {
                 $strName = $arrField['name'];
-                if (!\Database::getInstance()->fieldExists($strName, $this->strTable)) {
-                    \System::log('Field '. $strName .' in '.$this->strTable.' do not exist', __METHOD__, TL_ERROR);
+                if (!Database::getInstance()->fieldExists($strName, $this->strTable)) {
                     continue;
                 }
                 $arrSubmitted[$strName] = Toolkit::getDbValue($arrField['postValue'], $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]);
             }
         }
 
-        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable, $arrSubmitted);
+        $objRoleResolver = RoleResolver::getInstance($this->strTable, $arrSubmitted);
         if ($strMemberField = $objRoleResolver->getFieldByRole('member')) {
             if ($objMember->id) {
                 $arrSubmitted[$strMemberField] = $objMember->id;
@@ -137,8 +154,8 @@ class ResolveDca extends Resolver {
         if ($strMemberField = $objRoleResolver->getFieldByRole('members')) {
             if ($objMember->id) {
                 $arrMembers = [];
-                if ($strEntityId = \Input::post('id')) {
-                    $objEntity = \Database::getInstance()->prepare('SELECT * FROM '. $this->strTable .' WHERE id=?')->limit(1)->execute($strEntityId);
+                if ($strEntityId = Input::post('id')) {
+                    $objEntity = Database::getInstance()->prepare('SELECT * FROM ' . $this->strTable . ' WHERE id=?')->limit(1)->execute($strEntityId);
                     if ($strMembers = $objEntity->{$strMemberField}) {
                         $arrMembers = explode(',', $strMembers);
                     }
@@ -152,41 +169,29 @@ class ResolveDca extends Resolver {
 
         if (isset($GLOBALS['TL_HOOKS']['prepareDataBeforeSave']) && is_array($GLOBALS['TL_HOOKS']['prepareDataBeforeSave'])) {
             foreach ($GLOBALS['TL_HOOKS']['prepareDataBeforeSave'] as $arrCallback) {
-                if (is_array($arrCallback)) {
-                    $this->import($arrCallback[0]);
-                    $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, $arrForm, $this->arrOptions, $this);
-                }
-                elseif (\is_callable($arrCallback)) {
-                    $arrCallback($arrSubmitted, $arrForm, $this->arrOptions, $this);
-                }
+                System::importStatic($arrCallback[0])->{$arrCallback[1]}($arrSubmitted, $arrForm, $this->arrOptions, $this);
             }
         }
 
-        if (isset($GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave']) && is_array( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'])) {
-            foreach ($GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] as $arrCallback) {
-                if (is_array($arrCallback)) {
-                    $this->import($arrCallback[0]);
-                    $this->strRedirect = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, false, $this->arrOptions, $this);
-                }
-                elseif (\is_callable($arrCallback)) {
-                    $this->strRedirect = $arrCallback($arrSubmitted, false, $this->arrOptions, $this);
-                }
+        if (isset($GLOBALS['TL_DCA'][$this->strTable]['config']['executeOnSave']) && is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['executeOnSave'])) {
+            foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['executeOnSave'] as $arrCallback) {
+                System::importStatic($arrCallback[0])->{$arrCallback[1]}($arrSubmitted, false, $this->arrOptions, $this);
             }
             return null;
         }
 
-        if (\Input::post('id')) {
+        if (Input::post('id')) {
             $strNotification = 'onUpdate';
-            \Database::getInstance()->prepare('UPDATE '. $this->strTable .' %s WHERE id=?')->set($arrSubmitted)->execute(\Input::post('id'));
+            Database::getInstance()->prepare('UPDATE ' . $this->strTable . ' %s WHERE id=?')->set($arrSubmitted)->execute(Input::post('id'));
         } else {
             $strNotification = 'onCreate';
-            $objInsert = \Database::getInstance()->prepare('INSERT INTO '. $this->strTable .' %s')->set($arrSubmitted)->execute();
-            \Input::setPost('id', $objInsert->insertId);
+            $objInsert = Database::getInstance()->prepare('INSERT INTO ' . $this->strTable . ' %s')->set($arrSubmitted)->execute();
+            Input::setPost('id', $objInsert->insertId);
         }
 
-        $objDataContainer = new \Alnv\ContaoFormManagerBundle\Helper\VirtualDataContainer($this->strTable);
+        $objDataContainer = new VirtualDataContainer($this->strTable);
         $objDataContainer->table = $this->strTable;
-        $objDataContainer->activeRecord = \Input::post('id');
+        $objDataContainer->activeRecord = Input::post('id');
         $objDataContainer->ptable = $GLOBALS['TL_DCA'][$this->strTable]['config']['ptable'];
         $objDataContainer->ctable = $GLOBALS['TL_DCA'][$this->strTable]['config']['ctable'];
 
@@ -195,8 +200,7 @@ class ResolveDca extends Resolver {
                 if (is_array($arrCallback)) {
                     $this->import($arrCallback[0]);
                     $this->{$arrCallback[0]}->{$arrCallback[1]}($objDataContainer);
-                }
-                elseif (\is_callable($arrCallback)) {
+                } elseif (\is_callable($arrCallback)) {
                     $arrCallback($objDataContainer);
                 }
             }
@@ -205,30 +209,30 @@ class ResolveDca extends Resolver {
         $this->sendNotifications($strNotification);
     }
 
-    protected function sendNotifications($strNotification) {
+    protected function sendNotifications($strNotification)
+    {
 
         if ($this->objModule === null || !$strNotification) {
             return null;
         }
 
-        if (!in_array('notification_center', array_keys(\System::getContainer()->getParameter('kernel.bundles')))) {
+        if (!in_array('notification_center', array_keys(System::getContainer()->getParameter('kernel.bundles')))) {
             return null;
         }
 
-        $arrNotifications = \StringUtil::deserialize($this->objModule->cmNotifications, true);
+        $arrNotifications = StringUtil::deserialize($this->objModule->cmNotifications, true);
 
         if (empty($arrNotifications)) {
             return null;
         }
 
         foreach ($arrNotifications as $strId) {
-            $objNotification = \NotificationCenter\Model\Notification::findByPk($strId);
+            $objNotification = Notification::findByPk($strId);
             if ($objNotification->type == $strNotification) {
-                $arrTokens = (new \Alnv\ContaoFormManagerBundle\Helper\NotificationTokens($this->strTable, \Input::post('id')))->getTokens($objNotification->flatten_delimiter);
+                $arrTokens = (new NotificationTokens($this->strTable, Input::post('id')))->getTokens($objNotification->flatten_delimiter);
                 if (isset($GLOBALS['TL_HOOKS']['beforeSendFeNotification']) && is_array($GLOBALS['TL_HOOKS']['beforeSendFeNotification'])) {
                     foreach ($GLOBALS['TL_HOOKS']['beforeSendFeNotification'] as $arrCallback) {
-                        $objClass = new $arrCallback[0]();
-                        $arrTokens = $objClass->{$arrCallback[1]}($arrTokens, $strNotification, $this->strTable, \Input::post('id'), $objNotification, $this);
+                        $arrTokens =  System::importStatic($arrCallback[0])->{$arrCallback[1]}($arrTokens, $strNotification, $this->strTable, Input::post('id'), $objNotification, $this);
                     }
                 }
                 $objNotification->send($arrTokens);
@@ -236,23 +240,26 @@ class ResolveDca extends Resolver {
         }
     }
 
-    public function getTable() {
+    public function getTable()
+    {
 
         return $this->strTable;
     }
 
-    protected function addParentData($strFieldname, &$arrAttributes) {
+    protected function addParentData($strFieldname, &$arrAttributes)
+    {
 
         $arrAttributes['_source'] = 'dc';
         $arrAttributes['_table'] = $this->strTable;
         $arrAttributes['_identifier'] = $strFieldname;
     }
 
-    public function getWizard() {
+    public function getWizard()
+    {
 
         $this->arrOptions['type'] = null;
 
-        if (!$GLOBALS['TL_DCA'][ $this->strTable ]) {
+        if (!$GLOBALS['TL_DCA'][$this->strTable]) {
             return null;
         }
 

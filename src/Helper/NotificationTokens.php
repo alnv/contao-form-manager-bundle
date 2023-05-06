@@ -2,25 +2,35 @@
 
 namespace Alnv\ContaoFormManagerBundle\Helper;
 
-class NotificationTokens {
+use Alnv\ContaoCatalogManagerBundle\Helper\Toolkit;
+use Contao\Config;
+use Contao\Controller;
+use Haste\Util\StringUtil;
+
+class NotificationTokens
+{
 
     protected $strTable = null;
+
     protected $arrData = [];
 
-    public function __construct($strTable, $strId) {
+    public function __construct($strTable, $strId)
+    {
 
         $this->strTable = $strTable;
-        \Controller::loadDataContainer($strTable);
+        Controller::loadDataContainer($strTable);
+
         $this->arrData = (new \Alnv\ContaoCatalogManagerBundle\Views\Master($strTable, [
             'alias' => $strId,
             'ignoreVisibility' => true
         ]))->parse()[0];
     }
 
-    public function getTokens($strDelimiter=', ') {
+    public function getTokens($strDelimiter = ', ')
+    {
 
         $arrTokens = [];
-        $arrTokens['admin_email'] = \Config::get('adminEmail');
+        $arrTokens['admin_email'] = Config::get('adminEmail');
 
         foreach ($this->arrData as $strFieldname => $varValue) {
 
@@ -37,7 +47,7 @@ class NotificationTokens {
                     switch ($arrField['inputType']) {
                         case 'fileTree':
                             if (isset($arrField['eval']['isImage']) && $arrField['eval']['isImage'] == true) {
-                                $arrTokens['form_' . $strFieldname] = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parseImage($varValue);
+                                $arrTokens['form_' . $strFieldname] = Toolkit::parseImage($varValue);
                                 $blnParsed = true;
                             }
                             break;
@@ -47,25 +57,26 @@ class NotificationTokens {
                     $varValue = array_filter($varValue);
                     $arrTokens['form_' . $strFieldname] = implode($strDelimiter, $this->pluckArray($varValue));
                     $blnParsed = true;
-               }
+                }
             }
             if ($blnParsed) {
                 continue;
             }
 
-            \Haste\Util\StringUtil::flatten($varValue, 'form_' . $strFieldname, $arrTokens, $strDelimiter);
+            StringUtil::flatten($varValue, 'form_' . $strFieldname, $arrTokens, $strDelimiter);
         }
-        
+
         return $arrTokens;
     }
 
-    protected function pluckArray($varValue) {
+    protected function pluckArray($varValue)
+    {
 
         if (is_array($varValue) && isset($varValue[0])) {
             if (isset($varValue[0]['label'])) {
                 $arrReturn = [];
                 foreach ($varValue as $arrValue) {
-                    $arrReturn[] = $arrValue['label']?:$arrValue['value'];
+                    $arrReturn[] = $arrValue['label'] ?: $arrValue['value'];
                 }
                 return $arrReturn;
             }

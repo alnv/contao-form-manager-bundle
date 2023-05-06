@@ -1,5 +1,7 @@
 <?php
 
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'cmForm';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'cmSource';
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['cmSource_dc'] = 'cmIdentifier';
@@ -8,7 +10,7 @@ $GLOBALS['TL_DCA']['tl_module']['subpalettes']['cmForm'] = 'cmFormPage,cmFormMod
 $GLOBALS['TL_DCA']['tl_module']['palettes']['form-manager'] = '{title_legend},name,headline,type;{form_setting},cmSource,cmStandalone,cmSuccessRedirect,cmNotifications,cmFormHint;{template_legend:hide},customTpl;{protected_legend:hide:hide},protected;{expert_legend:hide},guests,cssID,space';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['table-list-view'] = '{title_legend},name,headline,type;{form_setting},cmTable,cmFields,cmIgnoreVisibility,cmForm,cmNotifications;{template_legend:hide},customTpl;{protected_legend:hide:hide},protected;{expert_legend:hide},guests,cssID,space';
 
-\Contao\CoreBundle\DataContainer\PaletteManipulator::create()->addField('cmMaster', 'cmForm')->applyToPalette('table-list-view', 'tl_module');
+PaletteManipulator::create()->addField('cmMaster', 'cmForm')->applyToPalette('table-list-view', 'tl_module');
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['cmForm'] = [
     'inputType' => 'checkbox',
@@ -34,7 +36,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cmFormModule'] = [
     'eval' => [
         'chosen' => true,
         'tl_class' => 'w50',
-        'includeBlankOption'=> true
+        'includeBlankOption' => true
     ],
     'foreignKey' => 'tl_module.name',
     'relation' => [
@@ -80,7 +82,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['cmIdentifier'] = [
         'tl_class' => 'w50',
         'maxlength' => 128,
         'mandatory' => true,
-        'includeBlankOption'=> true
+        'includeBlankOption' => true
     ],
     'exclude' => true,
     'options_callback' => ['formmanager.datacontainer.module', 'getFormIdentifier'],

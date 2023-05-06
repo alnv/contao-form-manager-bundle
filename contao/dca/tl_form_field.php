@@ -1,5 +1,8 @@
 <?php
 
+use Contao\ArrayUtil;
+use Alnv\ContaoCatalogManagerBundle\Helper\OptionSourcePalette;
+
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['__selector__'][] = 'optionsSource';
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['__selector__'][] = 'dbFilter';
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['__selector__'][] = 'dbFilterType';
@@ -9,13 +12,13 @@ $GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['dbFilter'] = 'dbFilterType';
 $GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['includeBlankOption'] = 'blankOptionLabel';
 $GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['dbFilterType_wizard'] = 'dbWizardFilterSettings';
 $GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['dbFilterType_expert'] = 'dbFilterColumn,dbFilterValue';
-$GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['optionsSource_dbOptions'] = \Alnv\ContaoCatalogManagerBundle\Helper\OptionSourcePalette::getPalette();
-$GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['optionsSource_dbActiveOptions'] = \Alnv\ContaoCatalogManagerBundle\Helper\OptionSourcePalette::getActivePalette();
+$GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['optionsSource_dbOptions'] = OptionSourcePalette::getPalette();
+$GLOBALS['TL_DCA']['tl_form_field']['subpalettes']['optionsSource_dbActiveOptions'] = OptionSourcePalette::getActivePalette();
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox'] = str_replace('{options_legend},options', '{options_legend},optionsSource', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['checkbox']);
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select'] = str_replace('{options_legend},options', '{options_legend},optionsSource,includeBlankOption', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['select']);
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio'] = str_replace('{options_legend},options', '{options_legend},optionsSource,includeBlankOption', $GLOBALS['TL_DCA']['tl_form_field']['palettes']['radio']);
 $GLOBALS['TL_DCA']['tl_form_field']['palettes']['text'] .= ';{filter_legend:hide},isReactive;';
-array_insert($GLOBALS['TL_DCA']['tl_form_field']['fields'], 0, \Alnv\ContaoCatalogManagerBundle\Helper\OptionSourcePalette::getFields());
+ArrayUtil::arrayInsert($GLOBALS['TL_DCA']['tl_form_field']['fields'], 0, OptionSourcePalette::getFields());
 
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['type']['options_callback'] = ['formmanager.datacontainer.formfield', 'getFields'];
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['includeBlankOption'] = [
@@ -59,7 +62,7 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['conditions'] = [
         'allowHtml' => true
     ],
     'exclude' => true,
-    'sql' => ['type' => 'blob', 'notnull' => false ]
+    'sql' => ['type' => 'blob', 'notnull' => false]
 ];
 $GLOBALS['TL_DCA']['tl_form_field']['fields']['isReactive'] = [
     'inputType' => 'checkbox',
@@ -68,5 +71,5 @@ $GLOBALS['TL_DCA']['tl_form_field']['fields']['isReactive'] = [
         'multiple' => false
     ],
     'exclude' => true,
-    'sql' => [ 'type' => 'string', 'length' => 1, 'fixed' => true, 'default' => '' ]
+    'sql' => ['type' => 'string', 'length' => 1, 'fixed' => true, 'default' => '']
 ];

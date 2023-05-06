@@ -2,21 +2,23 @@
 
 namespace Alnv\ContaoFormManagerBundle\Library;
 
-class MultiFormResolver extends \System {
+use Contao\Input;
+use Contao\System;
+use NotificationCenter\Model\Notification;
+
+class MultiFormResolver
+{
 
     protected $blnSuccess = true;
+
     protected $arrErrorMessages = [];
 
-    public function __construct() {
+    public function save()
+    {
 
-        parent::__construct();
-    }
+        $arrForms = Input::post('forms');
 
-    public function save() {
-
-        $arrForms = \Input::post('forms');
-
-        if ( !is_array($arrForms) || empty($arrForms) ) {
+        if (!is_array($arrForms) || empty($arrForms)) {
             $this->blnSuccess = false;
             return $this->getState();
         }
@@ -25,9 +27,9 @@ class MultiFormResolver extends \System {
             $this->setPost($arrForm['model']);
             switch ($arrForm['_source']) {
                 case 'form':
-                    $objFormResolver = new \Alnv\ContaoFormManagerBundle\Library\ResolveForm($arrForm['_formId'], []);
+                    $objFormResolver = new ResolveForm($arrForm['_formId'], []);
                     $arrState = $objFormResolver->validate();
-                    if ( !$arrState['success'] ) {
+                    if (!$arrState['success']) {
                         $this->setErrorMessages($arrState['form']);
                         $this->blnSuccess = false;
                     }
@@ -35,9 +37,9 @@ class MultiFormResolver extends \System {
                     break;
 
                 case 'dc':
-                    $objFormResolver = new \Alnv\ContaoFormManagerBundle\Library\ResolveDca($arrForm['_formId'], []);
+                    $objFormResolver = new ResolveDca($arrForm['_formId'], []);
                     $arrState = $objFormResolver->validate();
-                    if ( !$arrState['success'] ) {
+                    if (!$arrState['success']) {
                         $this->setErrorMessages($arrState['form']);
                         $this->blnSuccess = false;
                     }
@@ -53,7 +55,7 @@ class MultiFormResolver extends \System {
         $arrSubmitted = [];
         foreach ($arrForms as $arrForm) {
             $arrPalettes = $arrForm['palettes'];
-            foreach ($arrPalettes as $arrPalette ) {
+            foreach ($arrPalettes as $arrPalette) {
                 foreach ($arrPalette['fields'] as $arrField) {
                     $arrSubmitted[$arrField['name']] = $arrField['value']; // @todo parse values
                 }
@@ -62,25 +64,13 @@ class MultiFormResolver extends \System {
 
         if (isset($GLOBALS['TL_HOOKS']['prepareMultiFormDataBeforeSave']) && is_array($GLOBALS['TL_HOOKS']['prepareMultiFormDataBeforeSave'])) {
             foreach ($GLOBALS['TL_HOOKS']['prepareMultiFormDataBeforeSave'] as $arrCallback) {
-                if (is_array($arrCallback)) {
-                    $this->import($arrCallback[0]);
-                    $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, $arrForms, $this);
-                }
-                elseif (\is_callable($arrCallback)) {
-                    $arrCallback($arrSubmitted, $arrForms, $this);
-                }
+                System::importStatic($arrCallback[0])->{$arrCallback[1]}($arrSubmitted, $arrForms, $this);
             }
         }
 
         if (isset($GLOBALS['TL_HOOKS']['executeMultiFormOnSave']) && is_array($GLOBALS['TL_HOOKS']['executeMultiFormOnSave'])) {
             foreach ($GLOBALS['TL_HOOKS']['executeMultiFormOnSave'] as $arrCallback) {
-                if (is_array($arrCallback)) {
-                    $this->import($arrCallback[0]);
-                    return $this->{$arrCallback[0]}->{$arrCallback[1]}($this->getState(), $arrSubmitted, $arrForms, $this);
-                }
-                elseif (\is_callable($arrCallback)) {
-                    return $arrCallback($this->getState(), $arrSubmitted, $arrForms, $this);
-                }
+                return System::importStatic($arrCallback[0])->{$arrCallback[1]}($this->getState(), $arrSubmitted, $arrForms, $this);
             }
             return null;
         }
@@ -90,17 +80,18 @@ class MultiFormResolver extends \System {
         return $arrState;
     }
 
-    public function sendNotifications($strNotificationId, $arrSubmitted) {
+    public function sendNotifications($strNotificationId, $arrSubmitted)
+    {
 
         if (!$strNotificationId) {
             return null;
         }
 
-        if ( !in_array( 'notification_center', array_keys(\System::getContainer()->getParameter('kernel.bundles'))) ) {
+        if (!in_array('notification_center', \array_keys(System::getContainer()->getParameter('kernel.bundles')))) {
             return null;
         }
 
-        $objNotification = \NotificationCenter\Model\Notification::findByPk($strNotificationId);
+        $objNotification = Notification::findByPk($strNotificationId);
         if ($objNotification === null) {
             return null;
         }
@@ -113,7 +104,8 @@ class MultiFormResolver extends \System {
         $objNotification->send($arrTokens);
     }
 
-    protected function getState() {
+    protected function getState()
+    {
         return [
             'messages' => $this->arrErrorMessages,
             'success' => $this->blnSuccess,
@@ -122,23 +114,25 @@ class MultiFormResolver extends \System {
     }
 
 
-    protected function setPost( $arrModels ) {
+    protected function setPost($arrModels)
+    {
 
-        if ( is_array( $arrModels ) && !empty( $arrModels ) ) {
-            foreach ( $arrModels as $strFieldname => $varValue ) {
-                \Input::setPost( $strFieldname, $varValue );
+        if (is_array($arrModels) && !empty($arrModels)) {
+            foreach ($arrModels as $strFieldname => $varValue) {
+                Input::setPost($strFieldname, $varValue);
             }
         }
     }
 
 
-    protected function setErrorMessages( $arrForms ) {
+    protected function setErrorMessages($arrForms)
+    {
 
-        if ( is_array( $arrForms ) && !empty( $arrForms ) ) {
-            foreach ( $arrForms as $objPalette ) {
-                foreach ( $objPalette->fields as $arrField ) {
-                    if ( !$arrField['validate'] ) {
-                        foreach ( $arrField['messages'] as $strMessage ) {
+        if (is_array($arrForms) && !empty($arrForms)) {
+            foreach ($arrForms as $objPalette) {
+                foreach ($objPalette->fields as $arrField) {
+                    if (!$arrField['validate']) {
+                        foreach ($arrField['messages'] as $strMessage) {
                             $this->arrErrorMessages[] = $strMessage;
                         }
                     }

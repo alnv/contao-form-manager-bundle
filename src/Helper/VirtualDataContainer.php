@@ -2,7 +2,10 @@
 
 namespace Alnv\ContaoFormManagerBundle\Helper;
 
-class VirtualDataContainer extends \DataContainer {
+use Contao\DataContainer;
+use Contao\Database;
+
+class VirtualDataContainer extends DataContainer {
 
     public function __construct( $strTable ) {
 
@@ -13,7 +16,7 @@ class VirtualDataContainer extends \DataContainer {
     public function __set($strKey, $varValue) {
         switch ( $strKey ) {
             case 'activeRecord':
-                $this->objActiveRecord = \Database::getInstance()->prepare(sprintf( 'SELECT * FROM %s WHERE id=?', $this->table ))->limit(1)->execute($varValue);
+                $this->objActiveRecord = Database::getInstance()->prepare(sprintf( 'SELECT * FROM %s WHERE id=?', $this->table ))->limit(1)->execute($varValue);
                 break;
 
             default:
@@ -23,5 +26,6 @@ class VirtualDataContainer extends \DataContainer {
     }
 
     public function getPalette(){}
+
     public function save( $varValue ){}
 }

@@ -2,20 +2,35 @@
 
 namespace Alnv\ContaoFormManagerBundle\Modules;
 
-class ListView {
+use Alnv\ContaoCatalogManagerBundle\Helper\Toolkit;
+use Alnv\ContaoCatalogManagerBundle\Library\RoleResolver;
+use Alnv\ContaoCatalogManagerBundle\Views\Listing;
+use Alnv\ContaoFormManagerBundle\Helper\NotificationTokens;
+use Alnv\ContaoTranslationManagerBundle\Library\Translation;
+use Contao\Database;
+use Contao\FrontendUser;
+use Contao\Input;
+use Contao\ModuleModel;
+use Contao\StringUtil;
+use Contao\System;
+use NotificationCenter\Model\Notification;
+
+class ListView
+{
 
     protected $strTable = null;
     protected $objModule = null;
     protected $objListing = null;
     protected $blnSuccess = true;
 
-    public function __construct($strModule) {
+    public function __construct($strModule)
+    {
 
         if (!$strModule) {
             return null;
         }
 
-        $this->objModule = \ModuleModel::findByPk($strModule);
+        $this->objModule = ModuleModel::findByPk($strModule);
         if ($this->objModule === null) {
             return null;
         }
@@ -34,53 +49,55 @@ class ListView {
             $this->blnSuccess = $this->getPermissionQuery($arrOptions);
         }
 
-        $arrOrder = \Input::post('order') ?: [];
+        $arrOrder = Input::post('order') ?: [];
         if (!empty($arrOrder)) {
             $arrOrders = [];
             foreach ($arrOrder as $strField => $strOrder) {
                 $arrOrders[] = [
-                    'field' => $this->strTable.'.'.$strField,
+                    'field' => $this->strTable . '.' . $strField,
                     'order' => $strOrder
                 ];
             }
-            $arrOptions['order'] = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::getOrderByStatementFromArray($arrOrders);
+            $arrOptions['order'] = Toolkit::getOrderByStatementFromArray($arrOrders);
         }
 
         if ($this->blnSuccess) {
-            $this->objListing = new \Alnv\ContaoCatalogManagerBundle\Views\Listing($this->strTable, $arrOptions);
+            $this->objListing = new Listing($this->strTable, $arrOptions);
         }
     }
 
-    protected function hasPermissions() {
+    protected function hasPermissions()
+    {
 
-        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable, []);
-        return $objRoleResolver->getFieldByRole('member') || $objRoleResolver->getFieldByRole('members')  || $objRoleResolver->getFieldByRole('group');
+        $objRoleResolver = RoleResolver::getInstance($this->strTable, []);
+        return $objRoleResolver->getFieldByRole('member') || $objRoleResolver->getFieldByRole('members') || $objRoleResolver->getFieldByRole('group');
     }
 
-    protected function getPermissionQuery(&$arrOptions) {
+    protected function getPermissionQuery(&$arrOptions)
+    {
 
         $arrPermissionQueries = [];
-        $objMember = \FrontendUser::getInstance();
+        $objMember = FrontendUser::getInstance();
 
         if (!$objMember->id) {
             return false;
         }
 
-        $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable, []);
+        $objRoleResolver = RoleResolver::getInstance($this->strTable, []);
         $strMemberField = $objRoleResolver->getFieldByRole('member') ?: $objRoleResolver->getFieldByRole('members');
 
         if ($strMemberField) {
-            $strTable = ($GLOBALS['TL_DCA'][$this->strTable]['config']['_table']??$this->strTable);
+            $strTable = ($GLOBALS['TL_DCA'][$this->strTable]['config']['_table'] ?? $this->strTable);
             $arrOptions['value'][] = $objMember->id;
-            $arrPermissionQueries[] = 'FIND_IN_SET(?, '.($strTable?$strTable.'.':'').$strMemberField.')';
+            $arrPermissionQueries[] = 'FIND_IN_SET(?, ' . ($strTable ? $strTable . '.' : '') . $strMemberField . ')';
         }
 
         if ($strGroupField = $objRoleResolver->getFieldByRole('group')) {
             if (is_array($objMember->groups) && !empty($objMember->groups)) {
                 foreach ($objMember->groups as $strGroupId) {
-                    $strTable = ($GLOBALS['TL_DCA'][$this->strTable]['config']['_table']??$this->strTable);
+                    $strTable = ($GLOBALS['TL_DCA'][$this->strTable]['config']['_table'] ?? $this->strTable);
                     $arrOptions['value'][] = $strGroupId;
-                    $arrPermissionQueries[] = 'FIND_IN_SET('.($strTable?$strTable.'.':'').$strGroupField.', ?)';
+                    $arrPermissionQueries[] = 'FIND_IN_SET(' . ($strTable ? $strTable . '.' : '') . $strGroupField . ', ?)';
                 }
             }
         }
@@ -94,7 +111,8 @@ class ListView {
         return true;
     }
 
-    public function delete($strId) {
+    public function delete($strId)
+    {
 
         if (!$this->blnSuccess || !$this->objListing) {
             return [
@@ -103,17 +121,17 @@ class ListView {
         }
 
         foreach ($this->objListing->parse() as $arrEntity) {
-            if ( $arrEntity['id'] == $strId ) {
-                if ( in_array( 'notification_center', array_keys(\System::getContainer()->getParameter('kernel.bundles'))) ) {
-                    $arrNotifications = \StringUtil::deserialize($this->objModule->cmNotifications, true);
+            if ($arrEntity['id'] == $strId) {
+                if (in_array('notification_center', array_keys(System::getContainer()->getParameter('kernel.bundles')))) {
+                    $arrNotifications = StringUtil::deserialize($this->objModule->cmNotifications, true);
                     foreach ($arrNotifications as $strNotificationId) {
-                        $objNotification = \NotificationCenter\Model\Notification::findByPk($strNotificationId);
+                        $objNotification = Notification::findByPk($strNotificationId);
                         if ($objNotification->type == 'onDelete') {
-                            $objNotification->send((new \Alnv\ContaoFormManagerBundle\Helper\NotificationTokens($this->strTable, $strId))->getTokens($objNotification->flatten_delimiter));
+                            $objNotification->send((new NotificationTokens($this->strTable, $strId))->getTokens($objNotification->flatten_delimiter));
                         }
                     }
                 }
-                \Database::getInstance()->prepare('DELETE FROM ' . $this->strTable . ' WHERE id=?')->execute($strId);
+                Database::getInstance()->prepare('DELETE FROM ' . $this->strTable . ' WHERE id=?')->execute($strId);
             }
         }
 
@@ -122,7 +140,8 @@ class ListView {
         ];
     }
 
-    public function parse() {
+    public function parse()
+    {
 
         if (!$this->blnSuccess || !$this->objListing) {
             return [
@@ -132,9 +151,9 @@ class ListView {
         }
 
         $arrListView = [];
-        $arrFields = \StringUtil::deserialize($this->objModule->cmFields, true);
-        \System::loadLanguageFile('default', 'de');
-        \System::loadLanguageFile($this->strTable, 'de');
+        $arrFields = StringUtil::deserialize($this->objModule->cmFields, true);
+        System::loadLanguageFile('default', 'de');
+        System::loadLanguageFile($this->strTable, 'de');
 
         foreach ($this->objListing->parse() as $arrEntity) {
             $arrRow = [
@@ -145,17 +164,17 @@ class ListView {
             }
             $arrRow['operations'] = [];
             $arrRow['operations']['master'] = [
-                'label' => \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate($this->strTable . '.operator.master', $GLOBALS['TL_LANG']['MSC']['operator']['master'][0]),
+                'label' => Translation::getInstance()->translate($this->strTable . '.operator.master', $GLOBALS['TL_LANG']['MSC']['operator']['master'][0]),
                 'icon' => '',
                 'href' => $arrEntity['masterUrl']
             ];
             $arrRow['operations']['edit'] = [
-                'label' => \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate($this->strTable . '.operator.edit', $GLOBALS['TL_LANG']['MSC']['operator']['edit'][0]),
+                'label' => Translation::getInstance()->translate($this->strTable . '.operator.edit', $GLOBALS['TL_LANG']['MSC']['operator']['edit'][0]),
                 'icon' => '',
                 'href' => $arrEntity['editUrl']()
             ];
             $arrRow['operations']['delete'] = [
-                'label' => \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate($this->strTable . '.operator.delete', $GLOBALS['TL_LANG']['MSC']['operator']['delete'][0]),
+                'label' => Translation::getInstance()->translate($this->strTable . '.operator.delete', $GLOBALS['TL_LANG']['MSC']['operator']['delete'][0]),
                 'icon' => '',
                 'href' => $arrEntity['deleteUrl']()
             ];
@@ -163,10 +182,10 @@ class ListView {
         }
 
         $arLabels = [];
-        $arLabels['operations'] = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()
+        $arLabels['operations'] = Translation::getInstance()
             ->translate($this->strTable . '.field.title.operations', $GLOBALS['TL_DCA'][$this->strTable]['fields']['operations']['name']);
         foreach ($arrFields as $strField) {
-            $arLabels[$strField] = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()
+            $arLabels[$strField] = Translation::getInstance()
                 ->translate($this->strTable . '.field.title.' . $strField, $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strField]['name']);
         }
 

@@ -2,38 +2,49 @@
 
 namespace Alnv\ContaoFormManagerBundle\Controller;
 
-use Alnv\ContaoFormManagerBundle\Library\Upload;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Alnv\ContaoCatalogManagerBundle\Helper\Toolkit;
+use Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel;
+use Alnv\ContaoCatalogManagerBundle\Models\CatalogModel;
+use Alnv\ContaoCatalogManagerBundle\Models\CatalogOptionModel;
+use Alnv\ContaoFormManagerBundle\Library\MultiFormResolver;
 use Alnv\ContaoFormManagerBundle\Library\ResolveDca;
 use Alnv\ContaoFormManagerBundle\Library\ResolveForm;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Alnv\ContaoFormManagerBundle\Library\Upload;
+use Alnv\ContaoFormManagerBundle\Modules\ListView;
+use Contao\Database;
+use Contao\Input;
+use Contao\StringUtil;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  *
  * @Route("/form-manager", defaults={"_scope"="frontend", "_token_check"=false})
  */
-class FormController extends \Contao\CoreBundle\Controller\AbstractController {
+class FormController extends \Contao\CoreBundle\Controller\AbstractController
+{
 
     /**
      *
      * @Route("/upload", name="upload")
      * @Method({"POST"})
      */
-    public function upload() {
+    public function upload()
+    {
 
         $this->container->get('contao.framework')->initialize();
         $objUpload = new Upload();
         $intStatus = 200;
         $arrUpload = $objUpload->upload([
-            'identifier' => \Input::post('identifier'),
-            'source' => \Input::post('source'),
-            'table' => \Input::post('table')
+            'identifier' => Input::post('identifier'),
+            'source' => Input::post('source'),
+            'table' => Input::post('table')
         ]);
-        if ( !$arrUpload['success'] ) {
+
+        if (!$arrUpload['success']) {
             $intStatus = 400;
         }
-        return new JsonResponse($arrUpload,$intStatus);
+
+        return new JsonResponse($arrUpload, $intStatus);
     }
 
     /**
@@ -41,14 +52,16 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/getFiles", name="getFiles")
      * @Method({"POST"})
      */
-    public function getFiles() {
+    public function getFiles()
+    {
 
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
         $objUpload = new Upload();
+
         return new JsonResponse($objUpload->getFiles([
-            'files' => \Input::post('files'),
-            'table' => \Input::post('table'),
-            'fieldname' => \Input::post('fieldname')
+            'files' => Input::post('files'),
+            'table' => Input::post('table'),
+            'fieldname' => Input::post('fieldname')
         ]));
     }
 
@@ -57,14 +70,16 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/deleteFile", name="deleteFile")
      * @Method({"POST"})
      */
-    public function deleteFile() {
+    public function deleteFile()
+    {
 
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
         $objUpload = new Upload();
+
         return new JsonResponse($objUpload->delete([
-            'file' => \Input::post('file'),
-            'table' => \Input::post('table'),
-            'fieldname' => \Input::post('fieldname')
+            'file' => Input::post('file'),
+            'table' => Input::post('table'),
+            'fieldname' => Input::post('fieldname')
         ]));
     }
 
@@ -73,23 +88,24 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/getDcForm/{table}", name="getDcFormByTable")
      * @Method({"GET"})
      */
-    public function getDcFormByTable($table) {
+    public function getDcFormByTable($table)
+    {
 
         $this->container->get('contao.framework')->initialize();
 
         header("Access-Control-Allow-Origin: *");
 
-        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $GLOBALS['TL_LANGUAGE'] = Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
 
         global $objPage;
         if ($objPage) {
             $objPage->language = $GLOBALS['TL_LANGUAGE'];
         }
 
-        $arrOptions = \Input::get('attributes') ?: [];
-        $arrOptions['type'] = \Input::get('type') ?: '';
-        $arrOptions['initialized'] = \Input::get('initialized') ?: '';
-        $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
+        $arrOptions = Input::get('attributes') ?: [];
+        $arrOptions['type'] = Input::get('type') ?: '';
+        $arrOptions['initialized'] = Input::get('initialized') ?: '';
+        $arrOptions['subpalettes'] = Input::get('subpalettes') ?: [];
         $objForm = new ResolveDca($table, $arrOptions);
 
         return new JsonResponse($objForm->getForm());
@@ -100,24 +116,27 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/getFormWizard/{table}", name="getFormWizard")
      * @Method({"GET"})
      */
-    public function getFormWizard($table) {
+    public function getFormWizard($table)
+    {
 
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
 
         header("Access-Control-Allow-Origin: *");
 
-        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $GLOBALS['TL_LANGUAGE'] = Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
 
         global $objPage;
+
         if ($objPage) {
             $objPage->language = $GLOBALS['TL_LANGUAGE'];
         }
 
         $arrOptions = [
-            'wizard' => \Input::get('wizard') ?: null,
-            'params' => \Input::get('params') ?: []
+            'wizard' => Input::get('wizard') ?: null,
+            'params' => Input::get('params') ?: []
         ];
         $objForm = new ResolveDca($table, $arrOptions);
+
         return new JsonResponse($objForm->getWizard());
     }
 
@@ -126,25 +145,27 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/save/dc/{table}", name="validateAndSaveDc")
      * @Method({"POST"})
      */
-    public function validateAndSaveDc($table) {
+    public function validateAndSaveDc($table)
+    {
 
         $this->container->get('contao.framework')->initialize();
 
         header("Access-Control-Allow-Origin: *");
 
-        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $GLOBALS['TL_LANGUAGE'] = Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
 
         global $objPage;
         if ($objPage) {
             $objPage->language = $GLOBALS['TL_LANGUAGE'];
         }
 
-        $arrOptions = \Input::get('attributes') ?: [];
-        $arrOptions['id'] = \Input::get('id') ?: null;
-        $arrOptions['type'] = \Input::get('type') ?: '';
-        $arrOptions['initialized'] = \Input::get('initialized') ?: '';
-        $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
+        $arrOptions = Input::get('attributes') ?: [];
+        $arrOptions['id'] = Input::get('id') ?: null;
+        $arrOptions['type'] = Input::get('type') ?: '';
+        $arrOptions['initialized'] = Input::get('initialized') ?: '';
+        $arrOptions['subpalettes'] = Input::get('subpalettes') ?: [];
         $objForm = new ResolveDca($table, $arrOptions);
+
         return new JsonResponse($objForm->save());
     }
 
@@ -153,21 +174,23 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/validate/dc/{table}", name="validateDc")
      * @Method({"POST"})
      */
-    public function validateDc($table) {
+    public function validateDc($table)
+    {
 
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
 
         header("Access-Control-Allow-Origin: *");
 
         global $objPage;
-        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $GLOBALS['TL_LANGUAGE'] = Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
         $objPage->language = $GLOBALS['TL_LANGUAGE'];
 
-        $arrOptions = \Input::get('attributes') ?: [];
-        $arrOptions['type'] = \Input::get('type') ?: '';
-        $arrOptions['initialized'] = \Input::get('initialized') ?: '';
-        $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
+        $arrOptions = Input::get('attributes') ?: [];
+        $arrOptions['type'] = Input::get('type') ?: '';
+        $arrOptions['initialized'] = Input::get('initialized') ?: '';
+        $arrOptions['subpalettes'] = Input::get('subpalettes') ?: [];
         $objForm = new ResolveDca($table, $arrOptions);
+
         return new JsonResponse($objForm->validate());
     }
 
@@ -176,19 +199,21 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/getForm/{id}", name="getFormById")
      * @Method({"GET"})
      */
-    public function getFormByTable($id) {
+    public function getFormByTable($id)
+    {
 
         $this->container->get('contao.framework')->initialize();
 
         header("Access-Control-Allow-Origin: *");
 
         global $objPage;
-        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $GLOBALS['TL_LANGUAGE'] = Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
         if ($objPage) {
             $objPage->language = $GLOBALS['TL_LANGUAGE'];
         }
         $arrOptions = [];
         $objForm = new ResolveForm($id, $arrOptions);
+
         return new JsonResponse($objForm->getForm());
     }
 
@@ -197,13 +222,14 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/validate/form/{id}", name="validateForm")
      * @Method({"POST"})
      */
-    public function validateForm($id) {
+    public function validateForm($id)
+    {
 
         $this->container->get('contao.framework')->initialize();
 
         header("Access-Control-Allow-Origin: *");
 
-        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $GLOBALS['TL_LANGUAGE'] = Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
 
         global $objPage;
         if ($objPage) {
@@ -211,7 +237,8 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         }
 
         $arrOptions = [];
-        $objForm = new ResolveForm( $id, $arrOptions );
+        $objForm = new ResolveForm($id, $arrOptions);
+
         return new JsonResponse($objForm->validate());
     }
 
@@ -220,14 +247,16 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/save/form/{id}", name="validateAndSaveForm")
      * @Method({"POST"})
      */
-    public function validateAndSaveForm($id) {
+    public function validateAndSaveForm($id)
+    {
 
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
 
         header("Access-Control-Allow-Origin: *");
 
         $arrOptions = [];
-        $objForm = new ResolveForm( $id, $arrOptions );
+        $objForm = new ResolveForm($id, $arrOptions);
+
         return new JsonResponse($objForm->save());
     }
 
@@ -236,10 +265,12 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/save/multiform", name="saveMultiForm")
      * @Method({"POST"})
      */
-    public function saveMultiForm() {
+    public function saveMultiForm()
+    {
 
-        $this->container->get( 'contao.framework' )->initialize();
-        $objMultiFormResolver = new \Alnv\ContaoFormManagerBundle\Library\MultiFormResolver();
+        $this->container->get('contao.framework')->initialize();
+        $objMultiFormResolver = new MultiFormResolver();
+
         return new JsonResponse($objMultiFormResolver->save());
     }
 
@@ -248,11 +279,12 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/list-view", name="getListView")
      * @Method({"POST"})
      */
-    public function getListView() {
+    public function getListView()
+    {
 
         $this->container->get('contao.framework')->initialize();
 
-        $objListView = new \Alnv\ContaoFormManagerBundle\Modules\ListView(\Input::post('module'));
+        $objListView = new ListView(Input::post('module'));
         $arrReturn = $objListView->parse();
         $arrList = [];
 
@@ -260,7 +292,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
             $arrRow = [];
             foreach ($arrEntity as $strField => $varValue) {
                 if (is_array($varValue) && !in_array($strField, ['operations'])) {
-                    $varValue = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::parse($varValue);
+                    $varValue = Toolkit::parse($varValue);
                 }
                 $arrRow[$strField] = $varValue;
             }
@@ -277,10 +309,12 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/deleteItem/{id}", name="deleteItem")
      * @Method({"POST"})
      */
-    public function deleteItem($id) {
+    public function deleteItem($id)
+    {
 
-        $this->container->get( 'contao.framework' )->initialize();
-        $objListView = new \Alnv\ContaoFormManagerBundle\Modules\ListView(\Input::post('module'));
+        $this->container->get('contao.framework')->initialize();
+        $objListView = new ListView(Input::post('module'));
+
         return new JsonResponse($objListView->delete($id));
     }
 
@@ -289,27 +323,28 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/addOption", name="addOption")
      * @Method({"POST"})
      */
-    public function addOption() {
+    public function addOption()
+    {
 
         $this->container->get('contao.framework')->initialize();
 
-        $objCatalog = \Alnv\ContaoCatalogManagerBundle\Models\CatalogModel::findByTableOrModule(\Input::post('table'));
+        $objCatalog = CatalogModel::findByTableOrModule(Input::post('table'));
         if ($objCatalog === null) {
             return new JsonResponse([], 500);
         }
 
-        $objField = \Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel::findByFieldnameAndPid(\Input::post('name'), $objCatalog->id);
+        $objField = CatalogFieldModel::findByFieldnameAndPid(Input::post('name'), $objCatalog->id);
         if ($objField === null) {
             return new JsonResponse([], 500);
         }
 
-        $strLabel = \StringUtil::decodeEntities(\Input::post('option'));
+        $strLabel = StringUtil::decodeEntities(Input::post('option'));
         $strValue = '';
 
         switch ($objField->optionsSource) {
             case 'options':
                 $objOption = new \Alnv\ContaoCatalogManagerBundle\Models\CatalogOptionModel();
-                $objOption->value = \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::generateAlias(\Input::post('option'), 'value', 'tl_catalog_option');
+                $objOption->value = Toolkit::generateAlias(Input::post('option'), 'value', 'tl_catalog_option');
                 $objOption->label = $strLabel;
                 $objOption->pid = $objField->id;
                 $objOption->tstamp = time();
@@ -320,13 +355,13 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
             case 'dbOptions':
                 $arrSet = [
                     'tstamp' => time(),
-                    'alias' => \Alnv\ContaoCatalogManagerBundle\Helper\Toolkit::generateAlias(\Input::post('option'), 'alias', $objField->dbTable),
+                    'alias' => Toolkit::generateAlias(Input::post('option'), 'alias', $objField->dbTable),
                 ];
                 $arrSet[$objField->dbLabel] = $strLabel;
                 if ($objField->dbKey != 'id') {
                     $arrSet[$objField->dbKey] = $strValue;
                 }
-                $objInsert = \Database::getInstance()->prepare('INSERT INTO ' . $objField->dbTable . ' %s')->set($arrSet)->execute();
+                $objInsert = Database::getInstance()->prepare('INSERT INTO ' . $objField->dbTable . ' %s')->set($arrSet)->execute();
                 if ($objField->dbKey == 'id') {
                     $strValue = $objInsert->insertId;
                 }
@@ -344,35 +379,36 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
      * @Route("/deleteOption", name="deleteOption")
      * @Method({"POST"})
      */
-    public function deleteOption() {
+    public function deleteOption()
+    {
 
-        $this->container->get( 'contao.framework' )->initialize();
+        $this->container->get('contao.framework')->initialize();
 
-        $objCatalog = \Alnv\ContaoCatalogManagerBundle\Models\CatalogModel::findByTableOrModule(\Input::post('table'));
+        $objCatalog = CatalogModel::findByTableOrModule(Input::post('table'));
         if ($objCatalog === null) {
             return new JsonResponse([], 500);
         }
 
-        $objField = \Alnv\ContaoCatalogManagerBundle\Models\CatalogFieldModel::findByFieldnameAndPid(\Input::post('name'), $objCatalog->id);
+        $objField = CatalogFieldModel::findByFieldnameAndPid(Input::post('name'), $objCatalog->id);
         if ($objField === null) {
             return new JsonResponse([], 500);
         }
 
         switch ($objField->optionsSource) {
             case 'options':
-                $objOption = \Alnv\ContaoCatalogManagerBundle\Models\CatalogOptionModel::findByValueAndPid(\Input::post('option'), $objField->id);
+                $objOption = CatalogOptionModel::findByValueAndPid(Input::post('option'), $objField->id);
                 if ($objOption) {
                     $objOption->delete();
                 }
                 break;
             case 'dbOptions':
-                \Database::getInstance()->prepare('DELETE FROM ' . $objField->dbTable . ' WHERE `'.$objField->dbKey.'`=?')->execute(\Input::post('option'));
+                Database::getInstance()->prepare('DELETE FROM ' . $objField->dbTable . ' WHERE `' . $objField->dbKey . '`=?')->execute(Input::post('option'));
                 break;
         }
 
         return new JsonResponse([
-            'index' => \Input::post('index'),
-            'value' => \Input::post('option')
+            'index' => Input::post('index'),
+            'value' => Input::post('option')
         ]);
     }
 }

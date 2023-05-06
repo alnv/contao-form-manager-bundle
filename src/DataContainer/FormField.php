@@ -2,9 +2,11 @@
 
 namespace Alnv\ContaoFormManagerBundle\DataContainer;
 
-class FormField {
+class FormField
+{
 
-    public function getFields() {
+    public function getFields()
+    {
 
         $arrFields = (new \tl_form_field())->getFields();
         $arrDisabled = ['formWizard', 'customOptionWizard', 'multiDatesWizard', 'ajaxSelect', 'nouislider'];

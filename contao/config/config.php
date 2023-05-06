@@ -1,6 +1,14 @@
 <?php
 
-array_insert( $GLOBALS['FE_MOD'], 2, [
+use Alnv\ContaoAssetsManagerBundle\Library\AssetsManager;
+use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
+use Contao\ArrayUtil;
+use Contao\Combiner;
+use Contao\Config;
+use Contao\System;
+use Symfony\Component\HttpFoundation\Request;
+
+ArrayUtil::arrayInsert($GLOBALS['FE_MOD'], 2, [
     'form-manager-bundle' => [
         'form-manager' => 'Alnv\ContaoFormManagerBundle\Modules\FormManagerModule',
         'table-list-view' => 'Alnv\ContaoFormManagerBundle\Modules\TableListViewModule'
@@ -8,7 +16,7 @@ array_insert( $GLOBALS['FE_MOD'], 2, [
 ]);
 
 $GLOBALS['TL_HOOKS']['parseCatalogField'][] = ['Alnv\ContaoFormManagerBundle\Hooks\CatalogField', 'parseCatalogField'];
-$GLOBALS['TL_HOOKS']['parseEntity'][] = ['Alnv\ContaoFormManagerBundle\Hooks\View','parseEntity'];
+$GLOBALS['TL_HOOKS']['parseEntity'][] = ['Alnv\ContaoFormManagerBundle\Hooks\View', 'parseEntity'];
 
 $GLOBALS['FORM_MANAGER_FIELD_COMPONENTS'] = [
     'text' => [
@@ -91,37 +99,37 @@ $GLOBALS['CM_THIRD_PARTY_WIDGETS'] = [
     ]
 ];
 
-if (\Config::get('doNotUseThirdPartyStylesNScriptsInFrontend') && TL_MODE == 'FE') {
+if (Config::get('doNotUseThirdPartyStylesNScriptsInFrontend') && System::getContainer()->get('contao.routing.scope_matcher')->isFrontendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
     $GLOBALS['CM_THIRD_PARTY_WIDGETS']['SCRIPTS'] = [];
     $GLOBALS['CM_THIRD_PARTY_WIDGETS']['STYLES'] = [];
 }
 
-if (\Alnv\ContaoFormManagerBundle\Helper\Toolkit::shouldLoadVueScripts() && class_exists('Alnv\ContaoAssetsManagerBundle\Library\AssetsManager')) {
-    $objFormAssetsManager = \Alnv\ContaoAssetsManagerBundle\Library\AssetsManager::getInstance();
+if (Toolkit::shouldLoadVueScripts() && class_exists('Alnv\ContaoAssetsManagerBundle\Library\AssetsManager')) {
+    $objFormAssetsManager = AssetsManager::getInstance();
     $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/helpers/validator.js');
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/single-form-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/forms/multi-form-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/lists/table-list-component.js' );
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/forms/single-form-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/forms/multi-form-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/lists/table-list-component.js');
     foreach ($GLOBALS['CM_THIRD_PARTY_WIDGETS']['SCRIPTS'] as $strScript) {
         $objFormAssetsManager->addIfNotExist($strScript);
     }
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/text-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/radio-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/email-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/select-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/hidden-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/number-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/checkbox-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/textarea-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/fieldset-start-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/explain-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/fields/custom-option-wizard-field-component.js' );
-    $objFormAssetsManager->addIfNotExist( 'bundles/alnvcontaoformmanager/js/vue/components/modals/modal-view-component.js' );
-    $objFormCssCombiner = new \Combiner();
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/text-field-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/radio-field-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/email-field-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/select-field-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/hidden-field-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/number-field-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/checkbox-field-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/textarea-field-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/fieldset-start-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/explain-field-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/fields/custom-option-wizard-field-component.js');
+    $objFormAssetsManager->addIfNotExist('bundles/alnvcontaoformmanager/js/vue/components/modals/modal-view-component.js');
+    $objFormCssCombiner = new Combiner();
     foreach ($GLOBALS['CM_THIRD_PARTY_WIDGETS']['STYLES'] as $strStyle) {
         $objFormCssCombiner->add($strStyle);
     }
-    if (TL_MODE == 'BE') {
+    if (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create(''))) {
         $objFormCssCombiner->add('bundles/alnvcontaoformmanager/css/form-wizard-component.scss');
     }
     $objFormCssCombiner->add('bundles/alnvcontaoformmanager/css/form-manager-bundle.scss');
