@@ -9,7 +9,7 @@ class FormWidget extends \Widget {
         $varValues = $this->getPost($this->strName);
 
         if (is_string($varValues)) {
-            $varValues = json_decode($varValues, true);
+            $varValues = json_decode(\StringUtil::decodeEntities($varValues), true);
         }
 
         if ($this->readOnly) {
