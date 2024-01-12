@@ -69,7 +69,7 @@ abstract class Resolver extends \System {
             }
 
             if ($arrImplements = class_implements($objField)) {
-                if (in_array('uploadable', $arrImplements)) {
+                if (in_array('uploadable', $arrImplements) || in_array('Contao\UploadableWidgetInterface', $arrImplements)) {
                     if ($objField->mandatory) {
                         if (!empty(\Input::post($arrFieldAttributes['name']))) {
                             $arrFieldAttributes['messages'] = [];
