@@ -119,6 +119,9 @@ Vue.component( 'form-wizard', {
             return value;
         },
         getStringifyValue: function() {
+            if (!Array.isArray(this.value)) {
+                this.value = [this.value];
+            }
             return JSON.stringify(this.value);
         }
     },
