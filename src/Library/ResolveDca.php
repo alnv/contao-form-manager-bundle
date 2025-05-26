@@ -15,9 +15,9 @@ class ResolveDca extends Resolver {
 
         $this->strTable = $strTable;
         $this->arrOptions = $arrOptions;
-        $this->strModuleId = $arrOptions['id'];
+        $this->strModuleId = $arrOptions['id'] ?? 0;
 
-        if ($arrOptions['id']) {
+        if ($arrOptions['id'] ?? 0) {
             $this->objModule = \ModuleModel::findByPk($arrOptions['id']);
         }
 
@@ -29,6 +29,12 @@ class ResolveDca extends Resolver {
     }
 
     public function getForm() {
+
+        global $objPage;
+
+        if (!$objPage) {
+            $objPage = \PageModel::findByPk(\Database::getInstance()->prepare('SELECT * FROM tl_page WHERE type=?')->limit(1)->execute('regular')->id);
+        }
 
         if (!$GLOBALS['TL_DCA'][$this->strTable]) {
             return [];
@@ -70,7 +76,7 @@ class ResolveDca extends Resolver {
                     $arrField['default'] = $this->arrOptions['type'];
                 }
 
-                $arrAttributes = $strClass::getAttributesFromDca($arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable);
+                $arrAttributes = $strClass::getAttributesFromDca($arrField, $strFieldname, ($arrField['default'] ?? ''), $strFieldname, $this->strTable);
                 $arrAttributes = $this->parseAttributes($arrAttributes);
 
                 if ($arrAttributes === null) {
@@ -101,7 +107,7 @@ class ResolveDca extends Resolver {
                 if ($strValue == '1') {
                     $strValue = '';
                 }
-                $strPalette = $strFieldname . ($strValue ? '_' . $strValue : ''); $GLOBALS['TL_DCA'][$this->strTable]['subpalettes'][$strFieldname . ($strValue ? '_' . $strValue : '')];
+                $strPalette = $strFieldname . ($strValue ? '_' . $strValue : ''); // $GLOBALS['TL_DCA'][$this->strTable]['subpalettes'][$strFieldname . ($strValue ? '_' . $strValue : '')];
                 if (isset($GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strPalette ])) {
                     $arrSubpalettes[$strPalette] = $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][$strPalette];
                 }
@@ -271,7 +277,7 @@ class ResolveDca extends Resolver {
                 continue;
             }
 
-            $arrAttributes = $strClass::getAttributesFromDca($arrField, $strFieldname, $arrField['default'], $strFieldname, $this->strTable);
+            $arrAttributes = $strClass::getAttributesFromDca($arrField, $strFieldname, ($arrField['default'] ?? ''), $strFieldname, $this->strTable);
             $arrAttributes = $this->parseAttributes($arrAttributes);
             if ($arrAttributes === null) {
                 continue;

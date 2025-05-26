@@ -3,6 +3,7 @@
 namespace Alnv\ContaoFormManagerBundle\Library;
 
 use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
+use Contao\PageModel;
 
 abstract class Resolver extends \System {
 
@@ -40,7 +41,7 @@ abstract class Resolver extends \System {
             }
         }
 
-        if ($arrFieldAttributes['multiple'] == true && is_array(\Input::post($arrFieldAttributes['name']))) {
+        if (($arrFieldAttributes['multiple'] ?? false) == true && is_array(\Input::post($arrFieldAttributes['name']))) {
             $arrValues = \Input::post($arrFieldAttributes['name']);
             $arrReducedValues = [];
             $blnAssoc = false;
@@ -96,12 +97,12 @@ abstract class Resolver extends \System {
 
         $arrFieldAttributes['label'] = $this->parseString($strLabel);
         $arrFieldAttributes['isReactive'] = $this->isReactive($arrFieldAttributes);
-        $arrFieldAttributes['text'] = $this->parseString($arrFieldAttributes['text']);
+        $arrFieldAttributes['text'] = $this->parseString($arrFieldAttributes['text'] ?? '');
         $arrFieldAttributes['description'] = $this->parseString($strDescription);
         $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
-        $arrFieldAttributes['blankOptionLabel'] = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable?$this->strTable.'.':'') . 'blankOptionLabel.' . $arrFieldAttributes['name']), $arrFieldAttributes['blankOptionLabel']);
-        $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent($arrFieldAttributes['type'], $arrFieldAttributes['rgxp']);
-        $arrFieldAttributes['multiple'] = Toolkit::convertMultiple($arrFieldAttributes['multiple'], $arrFieldAttributes);
+        $arrFieldAttributes['blankOptionLabel'] = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable?$this->strTable.'.':'') . 'blankOptionLabel.' . $arrFieldAttributes['name']), $arrFieldAttributes['blankOptionLabel'] ?? '');
+        $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent($arrFieldAttributes['type'], $arrFieldAttributes['rgxp'] ?? '');
+        $arrFieldAttributes['multiple'] = Toolkit::convertMultiple($arrFieldAttributes['multiple'] ?? false, $arrFieldAttributes);
         $arrFieldAttributes['value'] = Toolkit::convertValue($arrFieldAttributes['value'], $arrFieldAttributes);
         $arrFieldAttributes['labelValue'] = Toolkit::getLabelValue($arrFieldAttributes['value'], $arrFieldAttributes);
 
@@ -113,8 +114,20 @@ abstract class Resolver extends \System {
             $arrFieldAttributes['selectAllLabel'] = $this->parseString($strSelectAll);
         }
 
-        if (in_array($arrFieldAttributes['rgxp'], ['date', 'time', 'datim'])) {
-            $arrFieldAttributes['dateFormat'] = \Date::getFormatFromRgxp($arrFieldAttributes['rgxp']);
+        if (in_array(($arrFieldAttributes['rgxp'] ?? ''), ['date', 'time', 'datim'])) {
+
+            switch ($arrFieldAttributes['rgxp'])
+            {
+                case 'date':
+                    $arrFieldAttributes['dateFormat'] = \Config::get('dateFormat') ?: 'd.m.Y';
+                    break;
+                case 'time':
+                    $arrFieldAttributes['dateFormat'] = \Config::get('timeFormat') ?: 'H:i';
+                    break;
+                case 'datim':
+                    $arrFieldAttributes['dateFormat'] = \Config::get('datimFormat') ?: 'd.m.Y H:i';
+                    break;
+            }
         }
 
         if (isset($GLOBALS['TL_HOOKS']['compileFormField']) && is_array($GLOBALS['TL_HOOKS']['compileFormField'])) {
@@ -135,6 +148,7 @@ abstract class Resolver extends \System {
 
         $strString = \StringUtil::decodeEntities($strString);
         $strString = \Controller::replaceInsertTags($strString, false);
+
         return $strString;
     }
 
@@ -149,7 +163,7 @@ abstract class Resolver extends \System {
             return true;
         }
 
-        return $arrField['isReactive'] ? true : false;
+        return ($arrField['isReactive'] ?? '') ? true : false;
     }
 
     public function save($blnValidateOnly = false) {

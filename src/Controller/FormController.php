@@ -6,20 +6,13 @@ use Alnv\ContaoFormManagerBundle\Library\Upload;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Alnv\ContaoFormManagerBundle\Library\ResolveDca;
 use Alnv\ContaoFormManagerBundle\Library\ResolveForm;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Routing\Annotation\Route;
 
-/**
- *
- * @Route("/form-manager", defaults={"_scope"="frontend", "_token_check"=false})
- */
+
+#[Route(path: '/form-manager', name: 'form-manager-controller', defaults: ['_scope' => 'frontend', '_token_check' => false])]
 class FormController extends \Contao\CoreBundle\Controller\AbstractController {
 
-    /**
-     *
-     * @Route("/upload", name="upload")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/upload', methods: ["POST"])]
     public function upload() {
 
         $this->container->get('contao.framework')->initialize();
@@ -36,11 +29,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($arrUpload,$intStatus);
     }
 
-    /**
-     *
-     * @Route("/getFiles", name="getFiles")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/getFiles', methods: ["POST"])]
     public function getFiles() {
 
         $this->container->get( 'contao.framework' )->initialize();
@@ -52,11 +41,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         ]));
     }
 
-    /**
-     *
-     * @Route("/deleteFile", name="deleteFile")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/deleteFile', methods: ["POST"])]
     public function deleteFile() {
 
         $this->container->get( 'contao.framework' )->initialize();
@@ -68,11 +53,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         ]));
     }
 
-    /**
-     *
-     * @Route("/getDcForm/{table}", name="getDcFormByTable")
-     * @Method({"GET"})
-     */
+    #[Route(path: '/getDcForm/{table}', methods: ["POST", "GET"])]
     public function getDcFormByTable($table) {
 
         $this->container->get('contao.framework')->initialize();
@@ -95,11 +76,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($objForm->getForm());
     }
 
-    /**
-     *
-     * @Route("/getFormWizard/{table}", name="getFormWizard")
-     * @Method({"GET"})
-     */
+    #[Route(path: '/getFormWizard/{table}', methods: ["POST", "GET"])]
     public function getFormWizard($table) {
 
         $this->container->get( 'contao.framework' )->initialize();
@@ -121,11 +98,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($objForm->getWizard());
     }
 
-    /**
-     *
-     * @Route("/save/dc/{table}", name="validateAndSaveDc")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/save/dc/{table}', methods: ["POST", "GET"])]
     public function validateAndSaveDc($table) {
 
         $this->container->get('contao.framework')->initialize();
@@ -148,11 +121,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($objForm->save());
     }
 
-    /**
-     *
-     * @Route("/validate/dc/{table}", name="validateDc")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/validate/dc/{table}', methods: ["POST", "GET"])]
     public function validateDc($table) {
 
         $this->container->get( 'contao.framework' )->initialize();
@@ -171,11 +140,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($objForm->validate());
     }
 
-    /**
-     *
-     * @Route("/getForm/{id}", name="getFormById")
-     * @Method({"GET"})
-     */
+    #[Route(path: '/getForm/{id}', methods: ["POST", "GET"])]
     public function getFormByTable($id) {
 
         $this->container->get('contao.framework')->initialize();
@@ -192,11 +157,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($objForm->getForm());
     }
 
-    /**
-     *
-     * @Route("/validate/form/{id}", name="validateForm")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/validate/form/{id}', methods: ["POST", "GET"])]
     public function validateForm($id) {
 
         $this->container->get('contao.framework')->initialize();
@@ -215,11 +176,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($objForm->validate());
     }
 
-    /**
-     *
-     * @Route("/save/form/{id}", name="validateAndSaveForm")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/save/form/{id}', methods: ["POST", "GET"])]
     public function validateAndSaveForm($id) {
 
         $this->container->get( 'contao.framework' )->initialize();
@@ -231,11 +188,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($objForm->save());
     }
 
-    /**
-     *
-     * @Route("/save/multiform", name="saveMultiForm")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/save/multiform', methods: ["POST", "GET"])]
     public function saveMultiForm() {
 
         $this->container->get( 'contao.framework' )->initialize();
@@ -243,11 +196,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($objMultiFormResolver->save());
     }
 
-    /**
-     *
-     * @Route("/list-view", name="getListView")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/list-view', methods: ["POST", "GET"])]
     public function getListView() {
 
         $this->container->get('contao.framework')->initialize();
@@ -272,11 +221,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($arrReturn);
     }
 
-    /**
-     *
-     * @Route("/deleteItem/{id}", name="deleteItem")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/deleteItem/{id}', methods: ["POST"])]
     public function deleteItem($id) {
 
         $this->container->get( 'contao.framework' )->initialize();
@@ -284,11 +229,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         return new JsonResponse($objListView->delete($id));
     }
 
-    /**
-     *
-     * @Route("/addOption", name="addOption")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/addOption', methods: ["POST"])]
     public function addOption() {
 
         $this->container->get('contao.framework')->initialize();
@@ -339,11 +280,7 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
         ]);
     }
 
-    /**
-     *
-     * @Route("/deleteOption", name="deleteOption")
-     * @Method({"POST"})
-     */
+    #[Route(path: '/deleteOption', methods: ["POST"])]
     public function deleteOption() {
 
         $this->container->get( 'contao.framework' )->initialize();

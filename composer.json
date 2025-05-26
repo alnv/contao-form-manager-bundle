@@ -16,8 +16,7 @@
     ]
   },
   "require": {
-    "contao/core-bundle":"~4.9",
-    "sensio/framework-extra-bundle": "^5.2"
+    "contao/core-bundle":"~4.13"
   },
   "config": {
     "preferred-install": "dist"
