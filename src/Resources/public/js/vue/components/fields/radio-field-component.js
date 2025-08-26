@@ -44,7 +44,7 @@ Vue.component('radio-field', {
         value: function() {
             this.$emit('input', this.value);
             if (this.eval.submitOnChange) {
-                this.$parent.submitOnChange(this.value, this.name)
+                this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
             }
             this.eval['validate'] = true;
         }

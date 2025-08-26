@@ -4,14 +4,16 @@ namespace Alnv\ContaoFormManagerBundle\Library;
 
 use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
 
-class ResolveDca extends Resolver {
+class ResolveDca extends Resolver
+{
 
     protected $objModule = null;
     protected $strTable = null;
     protected $arrOptions = [];
     protected $arrPalette = [];
 
-    public function __construct($strTable, $arrOptions = []) {
+    public function __construct($strTable, $arrOptions = [])
+    {
 
         $this->strTable = $strTable;
         $this->arrOptions = $arrOptions;
@@ -28,7 +30,8 @@ class ResolveDca extends Resolver {
         parent::__construct();
     }
 
-    public function getForm() {
+    public function getForm(): array
+    {
 
         global $objPage;
 
@@ -36,37 +39,51 @@ class ResolveDca extends Resolver {
             $objPage = \PageModel::findByPk(\Database::getInstance()->prepare('SELECT * FROM tl_page WHERE type=?')->limit(1)->execute('regular')->id);
         }
 
-        if (!$GLOBALS['TL_DCA'][$this->strTable]) {
+        if (!isset($GLOBALS['TL_DCA'][$this->strTable]) || !$GLOBALS['TL_DCA'][$this->strTable]) {
             return [];
         }
 
         if (!$this->arrOptions['initialized']) {
-            $this->arrOptions['type'] = $GLOBALS['TL_DCA'][ $this->strTable ]['fields']['type']['default'];
+            $this->arrOptions['type'] = $GLOBALS['TL_DCA'][$this->strTable]['fields']['type']['default'] ?? '';
         }
 
         if (!$this->arrOptions['type']) {
             $this->arrOptions['type'] = 'default';
         }
 
-        $strPalette = $GLOBALS['TL_DCA'][$this->strTable]['palettes'][$this->arrOptions['type']];
+        $arrSelectors = $GLOBALS['TL_DCA'][$this->strTable]['palettes']['__selector__'] ?? [];
+
+        foreach ($arrSelectors as $strSelectorField) {
+            $strValue = \Input::post($strSelectorField) ?: \Input::get($strSelectorField);
+            $arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strSelectorField] ?? [];
+
+            if (!$strValue) {
+                $strValue = $arrField['default'] ?? '';
+            }
+
+            if ($strValue && !isset($this->arrOptions['subpalettes'][$strSelectorField])) {
+                $this->arrOptions['subpalettes'][$strSelectorField] = $strSelectorField . '::' . $strValue;
+            }
+        }
+
+        $strPalette = $GLOBALS['TL_DCA'][$this->strTable]['palettes'][$this->arrOptions['type']] ?? '';
         $arrActiveSelectors = $this->getActiveSelector();
         $this->arrPalette = Toolkit::extractPaletteToArray($strPalette, $arrActiveSelectors);
 
         $arrPalettes = [];
-        $arrSelectors = $GLOBALS['TL_DCA'][$this->strTable]['palettes']['__selector__'];
 
         foreach ($this->arrPalette as $strPalette => $arrPalette) {
 
             $objPalette = new \stdClass();
-            $objPalette->label = $GLOBALS['TL_LANG'][$this->strTable][$strPalette];
+            $objPalette->label = $GLOBALS['TL_LANG'][$this->strTable][$strPalette] ?? '';
             $objPalette->fields = [];
             $objPalette->name = $strPalette ?: '';
             $objPalette->hide = $arrPalette['blnHide'];
 
             foreach ($arrPalette['arrFields'] as $strFieldname) {
 
-                $arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strFieldname];
-                $strClass = Toolkit::convertBackendFieldToFrontendField($arrField['inputType']);
+                $arrField = $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strFieldname] ?? [];
+                $strClass = Toolkit::convertBackendFieldToFrontendField($arrField['inputType'] ?? '');
 
                 if (!class_exists($strClass)) {
                     continue;
@@ -79,13 +96,13 @@ class ResolveDca extends Resolver {
                 $arrAttributes = $strClass::getAttributesFromDca($arrField, $strFieldname, ($arrField['default'] ?? ''), $strFieldname, $this->strTable);
                 $arrAttributes = $this->parseAttributes($arrAttributes);
 
-                if ($arrAttributes === null) {
+                if (!$arrAttributes) {
                     continue;
                 }
 
                 $this->addParentData($strFieldname, $arrAttributes);
 
-                if (is_array($arrSelectors) && in_array($strFieldname, $arrSelectors) && $strFieldname != 'type') {
+                if (\is_array($arrSelectors) && \in_array($strFieldname, $arrSelectors) && $strFieldname != 'type') {
                     $arrAttributes['isSelector'] = true;
                 }
 
@@ -98,25 +115,34 @@ class ResolveDca extends Resolver {
         return $arrPalettes;
     }
 
-    protected function getActiveSelector() {
+    protected function getActiveSelector(): array
+    {
 
         $arrSubpalettes = [];
-        if (is_array($this->arrOptions['subpalettes']) && !empty($this->arrOptions['subpalettes'])) {
+
+        if (is_array(($this->arrOptions['subpalettes'] ?? [])) && !empty($this->arrOptions['subpalettes'])) {
+
             foreach ($this->arrOptions['subpalettes'] as $strSelector) {
-                list($strFieldname, $strValue) = explode('::', $strSelector);
+
+                list($strFieldname, $strValue) = \explode('::', $strSelector);
+
                 if ($strValue == '1') {
                     $strValue = '';
                 }
+
                 $strPalette = $strFieldname . ($strValue ? '_' . $strValue : ''); // $GLOBALS['TL_DCA'][$this->strTable]['subpalettes'][$strFieldname . ($strValue ? '_' . $strValue : '')];
-                if (isset($GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][ $strPalette ])) {
-                    $arrSubpalettes[$strPalette] = $GLOBALS['TL_DCA'][ $this->strTable ]['subpalettes'][$strPalette];
+
+                if (isset($GLOBALS['TL_DCA'][$this->strTable]['subpalettes'][$strPalette])) {
+                    $arrSubpalettes[$strPalette] = $GLOBALS['TL_DCA'][$this->strTable]['subpalettes'][$strPalette];
                 }
             }
         }
+
         return $arrSubpalettes;
     }
 
-    public function saveRecord($arrForm) {
+    public function saveRecord($arrForm)
+    {
 
         $arrSubmitted = [];
         $arrSubmitted['tstamp'] = time();
@@ -126,7 +152,7 @@ class ResolveDca extends Resolver {
             foreach ($objPalette->fields as $arrField) {
                 $strName = $arrField['name'];
                 if (!\Database::getInstance()->fieldExists($strName, $this->strTable)) {
-                    \System::log('Field '. $strName .' in '.$this->strTable.' do not exist', __METHOD__, TL_ERROR);
+                    \System::log('Field ' . $strName . ' in ' . $this->strTable . ' do not exist', __METHOD__, TL_ERROR);
                     continue;
                 }
                 $arrSubmitted[$strName] = Toolkit::getDbValue($arrField['postValue'], $GLOBALS['TL_DCA'][$this->strTable]['fields'][$strName]);
@@ -144,7 +170,7 @@ class ResolveDca extends Resolver {
             if ($objMember->id) {
                 $arrMembers = [];
                 if ($strEntityId = \Input::post('id')) {
-                    $objEntity = \Database::getInstance()->prepare('SELECT * FROM '. $this->strTable .' WHERE id=?')->limit(1)->execute($strEntityId);
+                    $objEntity = \Database::getInstance()->prepare('SELECT * FROM ' . $this->strTable . ' WHERE id=?')->limit(1)->execute($strEntityId);
                     if ($strMembers = $objEntity->{$strMemberField}) {
                         $arrMembers = explode(',', $strMembers);
                     }
@@ -161,20 +187,18 @@ class ResolveDca extends Resolver {
                 if (is_array($arrCallback)) {
                     $this->import($arrCallback[0]);
                     $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, $arrForm, $this->arrOptions, $this);
-                }
-                elseif (\is_callable($arrCallback)) {
+                } elseif (\is_callable($arrCallback)) {
                     $arrCallback($arrSubmitted, $arrForm, $this->arrOptions, $this);
                 }
             }
         }
 
-        if (isset($GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave']) && is_array( $GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'])) {
-            foreach ($GLOBALS['TL_DCA'][ $this->strTable ]['config']['executeOnSave'] as $arrCallback) {
+        if (isset($GLOBALS['TL_DCA'][$this->strTable]['config']['executeOnSave']) && is_array($GLOBALS['TL_DCA'][$this->strTable]['config']['executeOnSave'])) {
+            foreach ($GLOBALS['TL_DCA'][$this->strTable]['config']['executeOnSave'] as $arrCallback) {
                 if (is_array($arrCallback)) {
                     $this->import($arrCallback[0]);
                     $this->strRedirect = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrSubmitted, false, $this->arrOptions, $this);
-                }
-                elseif (\is_callable($arrCallback)) {
+                } elseif (\is_callable($arrCallback)) {
                     $this->strRedirect = $arrCallback($arrSubmitted, false, $this->arrOptions, $this);
                 }
             }
@@ -183,10 +207,10 @@ class ResolveDca extends Resolver {
 
         if (\Input::post('id')) {
             $strNotification = 'onUpdate';
-            \Database::getInstance()->prepare('UPDATE '. $this->strTable .' %s WHERE id=?')->set($arrSubmitted)->execute(\Input::post('id'));
+            \Database::getInstance()->prepare('UPDATE ' . $this->strTable . ' %s WHERE id=?')->set($arrSubmitted)->execute(\Input::post('id'));
         } else {
             $strNotification = 'onCreate';
-            $objInsert = \Database::getInstance()->prepare('INSERT INTO '. $this->strTable .' %s')->set($arrSubmitted)->execute();
+            $objInsert = \Database::getInstance()->prepare('INSERT INTO ' . $this->strTable . ' %s')->set($arrSubmitted)->execute();
             \Input::setPost('id', $objInsert->insertId);
         }
 
@@ -201,8 +225,7 @@ class ResolveDca extends Resolver {
                 if (is_array($arrCallback)) {
                     $this->import($arrCallback[0]);
                     $this->{$arrCallback[0]}->{$arrCallback[1]}($objDataContainer);
-                }
-                elseif (\is_callable($arrCallback)) {
+                } elseif (\is_callable($arrCallback)) {
                     $arrCallback($objDataContainer);
                 }
             }
@@ -211,7 +234,8 @@ class ResolveDca extends Resolver {
         $this->sendNotifications($strNotification);
     }
 
-    protected function sendNotifications($strNotification) {
+    protected function sendNotifications($strNotification)
+    {
 
         if ($this->objModule === null || !$strNotification) {
             return null;
@@ -242,23 +266,25 @@ class ResolveDca extends Resolver {
         }
     }
 
-    public function getTable() {
+    public function getTable()
+    {
 
         return $this->strTable;
     }
 
-    protected function addParentData($strFieldname, &$arrAttributes) {
-
+    protected function addParentData($strFieldname, &$arrAttributes)
+    {
         $arrAttributes['_source'] = 'dc';
         $arrAttributes['_table'] = $this->strTable;
         $arrAttributes['_identifier'] = $strFieldname;
     }
 
-    public function getWizard() {
+    public function getWizard()
+    {
 
         $this->arrOptions['type'] = null;
 
-        if (!$GLOBALS['TL_DCA'][ $this->strTable ]) {
+        if (!$GLOBALS['TL_DCA'][$this->strTable]) {
             return null;
         }
 

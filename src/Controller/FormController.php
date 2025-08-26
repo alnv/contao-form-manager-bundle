@@ -58,19 +58,21 @@ class FormController extends \Contao\CoreBundle\Controller\AbstractController {
 
         $this->container->get('contao.framework')->initialize();
 
-        header("Access-Control-Allow-Origin: *");
+        \header("Access-Control-Allow-Origin: *");
 
-        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: $GLOBALS['TL_LANGUAGE'];
+        $GLOBALS['TL_LANGUAGE'] = \Input::get('language') ?: ($GLOBALS['TL_LANGUAGE'] ?? 'de');
 
         global $objPage;
+
         if ($objPage) {
-            $objPage->language = $GLOBALS['TL_LANGUAGE'];
+            $objPage->language = ($GLOBALS['TL_LANGUAGE'] ?? 'de');
         }
 
         $arrOptions = \Input::get('attributes') ?: [];
         $arrOptions['type'] = \Input::get('type') ?: '';
         $arrOptions['initialized'] = \Input::get('initialized') ?: '';
         $arrOptions['subpalettes'] = \Input::get('subpalettes') ?: [];
+
         $objForm = new ResolveDca($table, $arrOptions);
 
         return new JsonResponse($objForm->getForm());

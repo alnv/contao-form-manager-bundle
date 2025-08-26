@@ -3,28 +3,32 @@
 namespace Alnv\ContaoFormManagerBundle\Library;
 
 use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
-use Contao\PageModel;
 
-abstract class Resolver extends \System {
+abstract class Resolver extends \System
+{
 
     protected $strTable;
-    protected $strErrorMessage = '';
-    protected $blnValidate = false;
+    protected string $strErrorMessage = '';
+    protected bool $blnValidate = false;
     protected $strRedirect = null;
-    public $blnSuccess = true;
+    public bool $blnSuccess = true;
 
     abstract public function getForm();
+
     abstract protected function saveRecord($arrForm);
 
-    public function setErrorMessage($strMessage) {
+    public function setErrorMessage($strMessage)
+    {
         $this->strErrorMessage = $strMessage;
     }
 
-    public function getErrorMessage() {
+    public function getErrorMessage()
+    {
         return $this->strErrorMessage;
     }
 
-    public function parseAttributes($arrFieldAttributes) {
+    public function parseAttributes($arrFieldAttributes)
+    {
 
         $arrFieldAttributes['messages'] = [];
         $arrFieldAttributes['validate'] = true;
@@ -64,7 +68,7 @@ abstract class Resolver extends \System {
 
             if ($objField->hasErrors()) {
                 $arrFieldAttributes['validate'] = false;
-                $arrFieldAttributes['messages'] = array_map(function ($strError){
+                $arrFieldAttributes['messages'] = array_map(function ($strError) {
                     return \Controller::replaceInsertTags(\StringUtil::decodeEntities($strError), false);
                 }, $objField->getErrors());
             }
@@ -92,15 +96,15 @@ abstract class Resolver extends \System {
             $arrFieldAttributes[$strFieldname] = $objField->{$strFieldname};
         }
 
-        $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable?$this->strTable.'.':'') . $arrFieldAttributes['name']), $arrFieldAttributes['label']);
-        $strDescription = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable?$this->strTable.'.':'') . 'description.' . $arrFieldAttributes['name']), $arrFieldAttributes['description']);
+        $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable ? $this->strTable . '.' : '') . $arrFieldAttributes['name']), $arrFieldAttributes['label']);
+        $strDescription = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable ? $this->strTable . '.' : '') . 'description.' . $arrFieldAttributes['name']), $arrFieldAttributes['description']);
 
         $arrFieldAttributes['label'] = $this->parseString($strLabel);
         $arrFieldAttributes['isReactive'] = $this->isReactive($arrFieldAttributes);
         $arrFieldAttributes['text'] = $this->parseString($arrFieldAttributes['text'] ?? '');
         $arrFieldAttributes['description'] = $this->parseString($strDescription);
         $arrFieldAttributes['postValue'] = \Input::post($arrFieldAttributes['name']);
-        $arrFieldAttributes['blankOptionLabel'] = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable?$this->strTable.'.':'') . 'blankOptionLabel.' . $arrFieldAttributes['name']), $arrFieldAttributes['blankOptionLabel'] ?? '');
+        $arrFieldAttributes['blankOptionLabel'] = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable ? $this->strTable . '.' : '') . 'blankOptionLabel.' . $arrFieldAttributes['name']), $arrFieldAttributes['blankOptionLabel'] ?? '');
         $arrFieldAttributes['component'] = Toolkit::convertTypeToComponent($arrFieldAttributes['type'], $arrFieldAttributes['rgxp'] ?? '');
         $arrFieldAttributes['multiple'] = Toolkit::convertMultiple($arrFieldAttributes['multiple'] ?? false, $arrFieldAttributes);
         $arrFieldAttributes['value'] = Toolkit::convertValue($arrFieldAttributes['value'], $arrFieldAttributes);
@@ -110,14 +114,13 @@ abstract class Resolver extends \System {
             if ($arrFieldAttributes['multiple'] === false) {
                 $arrFieldAttributes['options'][0]['label'] = $arrFieldAttributes['label'];
             }
-            $strSelectAll = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable?$this->strTable.'.':'') . $arrFieldAttributes['name'].'.selectAll'), '');
+            $strSelectAll = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable ? $this->strTable . '.' : '') . $arrFieldAttributes['name'] . '.selectAll'), '');
             $arrFieldAttributes['selectAllLabel'] = $this->parseString($strSelectAll);
         }
 
         if (in_array(($arrFieldAttributes['rgxp'] ?? ''), ['date', 'time', 'datim'])) {
 
-            switch ($arrFieldAttributes['rgxp'])
-            {
+            switch ($arrFieldAttributes['rgxp']) {
                 case 'date':
                     $arrFieldAttributes['dateFormat'] = \Config::get('dateFormat') ?: 'd.m.Y';
                     break;
@@ -133,40 +136,42 @@ abstract class Resolver extends \System {
         if (isset($GLOBALS['TL_HOOKS']['compileFormField']) && is_array($GLOBALS['TL_HOOKS']['compileFormField'])) {
             foreach ($GLOBALS['TL_HOOKS']['compileFormField'] as $arrCallback) {
                 $this->import($arrCallback[0]);
-                $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrFieldAttributes, $this) ;
+                $arrFieldAttributes = $this->{$arrCallback[0]}->{$arrCallback[1]}($arrFieldAttributes, $this);
             }
         }
 
         return $arrFieldAttributes;
     }
 
-    protected function parseString($strString) {
+    protected function parseString($strString)
+    {
 
         if (!is_string($strString)) {
             return $strString;
         }
 
         $strString = \StringUtil::decodeEntities($strString);
-        $strString = \Controller::replaceInsertTags($strString, false);
 
-        return $strString;
+        return \Controller::replaceInsertTags($strString, false);
     }
 
-    public function shouldValidate() {
-
+    public function shouldValidate()
+    {
         return $this->blnValidate;
     }
 
-    protected function isReactive( $arrField ) {
+    protected function isReactive($arrField)
+    {
 
-        if ( in_array( $arrField['type'], [ 'select', 'radio', 'checkbox', 'nouislider' ] ) ) {
+        if (in_array($arrField['type'], ['select', 'radio', 'checkbox', 'nouislider'])) {
             return true;
         }
 
         return ($arrField['isReactive'] ?? '') ? true : false;
     }
 
-    public function save($blnValidateOnly = false) {
+    public function save($blnValidateOnly = false)
+    {
 
         $this->blnValidate = true;
         $arrForm = $this->getForm();
@@ -196,8 +201,8 @@ abstract class Resolver extends \System {
         ];
     }
 
-    public function validate() {
-
+    public function validate()
+    {
         return $this->save(true);
     }
 }
