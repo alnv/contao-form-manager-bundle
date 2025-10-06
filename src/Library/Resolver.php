@@ -96,8 +96,8 @@ abstract class Resolver extends \System
             $arrFieldAttributes[$strFieldname] = $objField->{$strFieldname};
         }
 
-        $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable ? $this->strTable . '.' : '') . $arrFieldAttributes['name']), $arrFieldAttributes['label']);
-        $strDescription = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable ? $this->strTable . '.' : '') . 'description.' . $arrFieldAttributes['name']), $arrFieldAttributes['description']);
+        $strLabel = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable ? $this->strTable . '.' : '') . $arrFieldAttributes['name']), ($arrFieldAttributes['label'] ?? ''));
+        $strDescription = \Alnv\ContaoTranslationManagerBundle\Library\Translation::getInstance()->translate(('field.' . ($this->strTable ? $this->strTable . '.' : '') . 'description.' . $arrFieldAttributes['name']), ($arrFieldAttributes['description'] ?? ''));
 
         $arrFieldAttributes['label'] = $this->parseString($strLabel);
         $arrFieldAttributes['isReactive'] = $this->isReactive($arrFieldAttributes);
