@@ -23,7 +23,7 @@ Vue.component( 'form-wizard', {
                     this.fields = objResponse.body[0].fields;
                     this.setValues();
                 }
-            });
+            }.bind(this));
         },
         getIdentifier: function() {
             if (this.$parent.identifier) {
@@ -69,15 +69,28 @@ Vue.component( 'form-wizard', {
             this.stringifyValue = this.getStringifyValue();
         },
         setValues: function() {
+
+            let values = localStorage.getItem('field-' + this.name);
+            if (values) {
+                values = JSON.parse(values);
+                this.value = values;
+                setTimeout(function () {
+                    this.addValue(false);
+                }.bind(this), 250);
+            }
+
             if (typeof this.eval.values !== 'undefined') {
                 this.value = this.eval.values;
             }
+
             if (typeof this.value === 'undefined' || this.value === null) {
                 this.value = [];
             }
+
             if (Array.isArray(this.value) && !this.value.length && this.eval['showFormIsEmpty']) {
                 this.addValue(false);
             }
+
             this.stringifyValue = this.getStringifyValue();
         },
         setFieldCssClass: function(field,value) {
@@ -119,16 +132,19 @@ Vue.component( 'form-wizard', {
             return value;
         },
         getStringifyValue: function() {
+
             if (!Array.isArray(this.value)) {
                 this.value = [this.value];
             }
+
             return JSON.stringify(this.value);
         }
     },
     watch: {
         value: {
             handler: function () {
-                this.$emit('input',this.value);
+                this.$emit('input', this.value);
+                localStorage.setItem('field-' + this.name, this.getStringifyValue());
             },
             deep: true
         }

@@ -73,11 +73,20 @@ Vue.component( 'checkbox-field', {
                 this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
             }
             this.eval['messages'] = [];
+
+            if (!this.eval.multiple) {
+                localStorage.setItem('field-' + this.name + '-' + this.idPrefix, this.value);
+            }
         }
     },
     mounted: function () {
         if (this.eval.selectAllLabel) {
             this.selectAllLabel = this.eval.selectAllLabel;
+        }
+        if (!this.eval.multiple) {
+            setTimeout(function () {
+                this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+            }.bind(this), 50);
         }
     },
     props: {

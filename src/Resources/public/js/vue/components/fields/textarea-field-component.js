@@ -48,6 +48,7 @@ Vue.component( 'textarea-field', {
     watch: {
         value: function() {
             this.$emit('input', this.value);
+            localStorage.setItem('field-' + this.name + '-' + this.idPrefix, this.value);
         }
     },
     props: {
@@ -77,6 +78,9 @@ Vue.component( 'textarea-field', {
             this.loadTinymce();
             this.initTinymce();
         }
+        setTimeout(function () {
+            this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+        }.bind(this), 50);
     },
     template:
     '<div class="field-component textarea" v-bind:class="setCssClass()">' +

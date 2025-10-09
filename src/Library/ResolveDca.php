@@ -8,8 +8,12 @@ class ResolveDca extends Resolver
 {
 
     protected $objModule = null;
+
     protected $strTable = null;
+
     protected $arrOptions = [];
+    protected $strModuleId = '';
+
     protected $arrPalette = [];
 
     public function __construct($strTable, $arrOptions = [])
@@ -23,8 +27,9 @@ class ResolveDca extends Resolver
             $this->objModule = \ModuleModel::findByPk($arrOptions['id']);
         }
 
-        \System::loadLanguageFile('default', $GLOBALS['TL_LANGUAGE']);
-        \System::loadLanguageFile($this->strTable, $GLOBALS['TL_LANGUAGE']);
+        \System::loadLanguageFile('default');
+        \System::loadLanguageFile($this->strTable);
+
         \Controller::loadDataContainer($this->strTable);
 
         parent::__construct();

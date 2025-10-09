@@ -28,12 +28,16 @@ Vue.component( 'date-field', {
     watch: {
         value: function() {
             this.$emit('input', this.value);
+            localStorage.setItem('field-' + this.name + '-' + this.idPrefix, this.value);
         }
     },
     mounted: function() {
         if (this.eval['disableDatePicker'] && this.eval['disableDatePicker'] === true) {
             this.useDatePicker = false;
         }
+        setTimeout(function () {
+            this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+        }.bind(this), 50);
     },
     props: {
         eval: {

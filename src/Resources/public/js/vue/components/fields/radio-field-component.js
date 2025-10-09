@@ -47,6 +47,7 @@ Vue.component('radio-field', {
                 this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
             }
             this.eval['validate'] = true;
+            localStorage.setItem('field-' + this.name + '-' + this.idPrefix, this.value);
         }
     },
     props: {
@@ -77,6 +78,9 @@ Vue.component('radio-field', {
     },
     mounted: function () {
         this.setDefault();
+        setTimeout(function () {
+            this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+        }.bind(this), 50);
     },
     template:
     '<div class="field-component radio" v-bind:class="setCssClass()">' +

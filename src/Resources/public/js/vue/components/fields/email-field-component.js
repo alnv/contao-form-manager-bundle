@@ -21,7 +21,13 @@ Vue.component('email-field', {
         value: function() {
             this.$emit('input', this.value);
             this.eval['validate'] = true;
+            localStorage.setItem('field-' + this.name + '-' + this.idPrefix, this.value);
         }
+    },
+    mounted: function () {
+        setTimeout(function () {
+            this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+        }.bind(this), 50);
     },
     props: {
         eval: {

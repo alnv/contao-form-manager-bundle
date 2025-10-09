@@ -3,6 +3,7 @@
 namespace Alnv\ContaoFormManagerBundle\Library;
 
 use Alnv\ContaoFormManagerBundle\Helper\Toolkit;
+use Contao\System;
 
 abstract class Resolver extends \System
 {
@@ -32,6 +33,7 @@ abstract class Resolver extends \System
 
         $arrFieldAttributes['messages'] = [];
         $arrFieldAttributes['validate'] = true;
+
         $strClass = Toolkit::convertBackendFieldToFrontendField($arrFieldAttributes['type']);
 
         if (!class_exists($strClass)) {
@@ -46,15 +48,18 @@ abstract class Resolver extends \System
         }
 
         if (($arrFieldAttributes['multiple'] ?? false) == true && is_array(\Input::post($arrFieldAttributes['name']))) {
+
             $arrValues = \Input::post($arrFieldAttributes['name']);
             $arrReducedValues = [];
             $blnAssoc = false;
+
             foreach ($arrValues as $varValue) {
                 if (is_array($varValue) && isset($varValue['value'])) {
                     $arrReducedValues[] = $varValue['value'];
                     $blnAssoc = true;
                 }
             }
+
             if ($blnAssoc) {
                 \Input::setPost($arrFieldAttributes['name'], $arrReducedValues);
             }
@@ -67,6 +72,7 @@ abstract class Resolver extends \System
             $objField->validate();
 
             if ($objField->hasErrors()) {
+
                 $arrFieldAttributes['validate'] = false;
                 $arrFieldAttributes['messages'] = array_map(function ($strError) {
                     return \Controller::replaceInsertTags(\StringUtil::decodeEntities($strError), false);

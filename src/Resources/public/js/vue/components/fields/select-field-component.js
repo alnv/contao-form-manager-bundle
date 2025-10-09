@@ -40,6 +40,7 @@ Vue.component( 'select-field', {
             if (this.eval.submitOnChange) {
                 this.$parent.submitOnChange(this.value, this.name, this.eval['isSelector'])
             }
+            localStorage.setItem('field-' + this.name + '-' + this.idPrefix, this.value);
         }
     },
     created: function() {
@@ -58,6 +59,9 @@ Vue.component( 'select-field', {
         if (this.eval.useNativeSelect) {
             this.useNativeSelect = this.eval.useNativeSelect;
         }
+        setTimeout(function () {
+            this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+        }.bind(this), 50);
     },
     props: {
         eval: {
