@@ -165,7 +165,7 @@ class ResolveDca extends Resolver
                 $strName = $arrField['name'];
 
                 if (!Database::getInstance()->fieldExists($strName, $this->strTable)) {
-                    \System::log('Field ' . $strName . ' in ' . $this->strTable . ' do not exist', __METHOD__, TL_ERROR);
+                    // \System::log('Field ' . $strName . ' in ' . $this->strTable . ' do not exist', __METHOD__, TL_ERROR);
                     continue;
                 }
 
