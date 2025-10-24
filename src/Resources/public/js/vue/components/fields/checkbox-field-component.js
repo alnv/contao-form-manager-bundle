@@ -85,7 +85,9 @@ Vue.component( 'checkbox-field', {
         }
         if (!this.eval.multiple) {
             setTimeout(function () {
-                this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+                if (!this.value) {
+                    this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+                }
             }.bind(this), 50);
         }
     },

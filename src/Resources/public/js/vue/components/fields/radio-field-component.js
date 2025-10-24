@@ -79,7 +79,9 @@ Vue.component('radio-field', {
     mounted: function () {
         this.setDefault();
         setTimeout(function () {
-            this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+            if (!this.value) {
+                this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+            }
         }.bind(this), 50);
     },
     template:

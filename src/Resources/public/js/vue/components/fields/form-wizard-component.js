@@ -18,7 +18,7 @@ Vue.component('form-wizard', {
             }).then(function (objResponse) {
                 if (objResponse.body) {
                     if (!objResponse.body.length) {
-                        return null;
+                        return;
                     }
                     this.fields = objResponse.body[0].fields;
                     this.setValues();
@@ -139,6 +139,16 @@ Vue.component('form-wizard', {
             }
 
             return JSON.stringify(this.value);
+        },
+        isEmpty: function (value) {
+
+            if (typeof value === "undefined" || value === '' || value === null) {
+                return true;
+            }
+
+            const json = JSON.parse(value);
+
+            return  Object.values(json).some(v => v !== null && v !== undefined && v !== '' && v !== ' ');
         }
     },
     watch: {
@@ -211,13 +221,13 @@ Vue.component('form-wizard', {
                     '</template>' +
                 '</div>' +
                 '<div class="operations">' +
-                    '<button v-if="val !== selectedValue" type="button" v-on:click.prevent="editValue(val)" class="button edit"><span v-html="editButtonLabel"></span></button>' +
+                    '<button v-if="val !== selectedValue && !isEmpty(val)" type="button" v-on:click.prevent="editValue(val)" class="button edit"><span v-html="editButtonLabel"></span></button>' +
                     '<button v-if="eval.allowToDelete" type="button" v-on:click.prevent="deleteValue(val)" class="button delete"><span v-html="deleteButtonLabel"></span></button>' +
                 '</div>' +
             '</div>' +
         '</div>' +
         '<div class="forms" v-bind:class="{\'show-all\':eval.showAllForms}" v-if="editMode || eval.showFormIsEmpty">' +
-            '<div class="form" v-for="(val,index) in value" v-show="val === selectedValue || eval.showAllForms">' +
+            '<div class="form" v-for="(val,index) in value" v-show="val === selectedValue || eval.showAllForms || isEmpty(val)">'  +
                 '<template v-for="field in fields"  v-if="field.component">' +
                     '<component :is="field.component" :eval="field" :name="field.name" :id-prefix="name + \'_\' + index" v-model="value[index][field.name]" v-on:input="setInput"></component>' +
                 '</template>' +

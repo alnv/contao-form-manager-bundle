@@ -36,7 +36,9 @@ Vue.component( 'date-field', {
             this.useDatePicker = false;
         }
         setTimeout(function () {
-            this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+            if (!this.value) {
+                this.value = localStorage.getItem('field-' + this.name + '-' + this.idPrefix) ? localStorage.getItem('field-' + this.name + '-' + this.idPrefix) : '';
+            }
         }.bind(this), 50);
     },
     props: {

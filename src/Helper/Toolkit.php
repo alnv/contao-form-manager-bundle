@@ -9,7 +9,7 @@ class Toolkit
     {
 
         if ($varValue === null || $varValue === '') {
-            $varValue = \Widget::getEmptyStringOrNullByFieldType($arrField['sql']);
+            $varValue = \Widget::getEmptyStringOrNullByFieldType(($arrField['sql'] ?? ''));
         }
 
         if (($arrField['eval']['multiple'] ?? false) && isset($arrField['eval']['csv'])) {
