@@ -142,13 +142,20 @@ Vue.component('form-wizard', {
         },
         isEmpty: function (value) {
 
+            /*
             if (typeof value === "undefined" || value === '' || value === null) {
                 return true;
             }
 
-            const json = JSON.parse(value);
+            let json = value;
+            if (typeof value != "object") {
+                json = JSON.parse(value);
+            }
 
             return  Object.values(json).some(v => v !== null && v !== undefined && v !== '' && v !== ' ');
+            */
+
+            return true;
         }
     },
     watch: {
