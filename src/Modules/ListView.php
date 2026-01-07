@@ -2,14 +2,19 @@
 
 namespace Alnv\ContaoFormManagerBundle\Modules;
 
-class ListView {
+class ListView
+{
 
     protected $strTable = null;
+
     protected $objModule = null;
+
     protected $objListing = null;
+
     protected $blnSuccess = true;
 
-    public function __construct($strModule) {
+    public function __construct($strModule)
+    {
 
         if (!$strModule) {
             return null;
@@ -39,7 +44,7 @@ class ListView {
             $arrOrders = [];
             foreach ($arrOrder as $strField => $strOrder) {
                 $arrOrders[] = [
-                    'field' => $this->strTable.'.'.$strField,
+                    'field' => $this->strTable . '.' . $strField,
                     'order' => $strOrder
                 ];
             }
@@ -51,13 +56,15 @@ class ListView {
         }
     }
 
-    protected function hasPermissions() {
+    protected function hasPermissions()
+    {
 
         $objRoleResolver = \Alnv\ContaoCatalogManagerBundle\Library\RoleResolver::getInstance($this->strTable, []);
-        return $objRoleResolver->getFieldByRole('member') || $objRoleResolver->getFieldByRole('members')  || $objRoleResolver->getFieldByRole('group');
+        return $objRoleResolver->getFieldByRole('member') || $objRoleResolver->getFieldByRole('members') || $objRoleResolver->getFieldByRole('group');
     }
 
-    protected function getPermissionQuery(&$arrOptions) {
+    protected function getPermissionQuery(&$arrOptions)
+    {
 
         $arrPermissionQueries = [];
         $objMember = \FrontendUser::getInstance();
@@ -70,17 +77,17 @@ class ListView {
         $strMemberField = $objRoleResolver->getFieldByRole('member') ?: $objRoleResolver->getFieldByRole('members');
 
         if ($strMemberField) {
-            $strTable = ($GLOBALS['TL_DCA'][$this->strTable]['config']['_table']??$this->strTable);
+            $strTable = ($GLOBALS['TL_DCA'][$this->strTable]['config']['_table'] ?? $this->strTable);
             $arrOptions['value'][] = $objMember->id;
-            $arrPermissionQueries[] = 'FIND_IN_SET(?, '.($strTable?$strTable.'.':'').$strMemberField.')';
+            $arrPermissionQueries[] = 'FIND_IN_SET(?, ' . ($strTable ? $strTable . '.' : '') . $strMemberField . ')';
         }
 
         if ($strGroupField = $objRoleResolver->getFieldByRole('group')) {
             if (is_array($objMember->groups) && !empty($objMember->groups)) {
                 foreach ($objMember->groups as $strGroupId) {
-                    $strTable = ($GLOBALS['TL_DCA'][$this->strTable]['config']['_table']??$this->strTable);
+                    $strTable = ($GLOBALS['TL_DCA'][$this->strTable]['config']['_table'] ?? $this->strTable);
                     $arrOptions['value'][] = $strGroupId;
-                    $arrPermissionQueries[] = 'FIND_IN_SET('.($strTable?$strTable.'.':'').$strGroupField.', ?)';
+                    $arrPermissionQueries[] = 'FIND_IN_SET(' . ($strTable ? $strTable . '.' : '') . $strGroupField . ', ?)';
                 }
             }
         }
@@ -94,7 +101,8 @@ class ListView {
         return true;
     }
 
-    public function delete($strId) {
+    public function delete($strId)
+    {
 
         if (!$this->blnSuccess || !$this->objListing) {
             return [
@@ -103,8 +111,8 @@ class ListView {
         }
 
         foreach ($this->objListing->parse() as $arrEntity) {
-            if ( $arrEntity['id'] == $strId ) {
-                if ( in_array( 'notification_center', array_keys(\System::getContainer()->getParameter('kernel.bundles'))) ) {
+            if ($arrEntity['id'] == $strId) {
+                if (in_array('notification_center', array_keys(\System::getContainer()->getParameter('kernel.bundles')))) {
                     $arrNotifications = \StringUtil::deserialize($this->objModule->cmNotifications, true);
                     foreach ($arrNotifications as $strNotificationId) {
                         $objNotification = \NotificationCenter\Model\Notification::findByPk($strNotificationId);
@@ -122,7 +130,8 @@ class ListView {
         ];
     }
 
-    public function parse() {
+    public function parse()
+    {
 
         if (!$this->blnSuccess || !$this->objListing) {
             return [
